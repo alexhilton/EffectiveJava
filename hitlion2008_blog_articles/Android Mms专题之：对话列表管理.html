@@ -1,0 +1,8 @@
+
+    
+<span style="font-size:18px">Conversation这个类主要表示对话的数据结构，其内持有一个Thread所有的相关信息，如Recipients，ThreadId等等，也用于管理Thread，比如查询Thread，删除Thread，更新Thread，管理ThreadId，管理Thread的联系人等等。因为Thread表与其他表关联的信息比较多，如联系人，消息个数，这些信息有些直接会写在数据库。因为Thread上面的信息比较多，所以加载时会较费时，因此就有了一个在Conversation内部的Cache来提高加载Thread的速度。<br>
+</span>
+<p><span style="font-size:18px">获得Conversation对象的方式都是通过Conversation的静态方法Conversation.get()，这个方法先从内部的Cache来取Conversation对象，如果Cache中没有就构建对象，并从数据库中加载信息放到对象中。</span></p>
+<span style="font-size:18px">因为一个Conversation代表着一个Thread，所以Conversation的内部Cache的实现数据结构是一个HashSet，里面每一个元素都是一个Conversation对象。它提供了几个操作Cache的方法：get, put, remove, replace等。每个Conversation对象只能添加一次，否则会有Exception抛出。但是这个Cache的实现方式很不高效，直接用一个HashSet&lt;Conversation&gt;，所以在get和replace时，很不方便。更好的实现方式应该是一个Hash表，键是ThreadId，&#20540;就是Conversation对象，这样就可以利用Hash的高效率的优势来进行查询和替换等操作。这个Cache的实现方式很简单，Converation.init()方法会调用cacheAllThreads()进行Cache的工作。当Mms启动的时候，以及Thread发生变化时，如删除Thread时也都会调用Conversation.init()来进行Cache的更新。Convresation.init()会启动一个新的线程并在线程中调用cacheAllThreads()来构建Conversation的Cache，而获取Conversation的方法如Conversation.get()都会先试图从它的Cache中来拿Conversation对象，如果Cache中没有，就新建一个Conversation，并加入到Cache中。cacheAllThreads()会从数据库中查询出所有的Thread，构建新的Conversation对象，把数据库的信息全总加到Conversation对象中去，然后
+ 放入到Cache中。</span><br>
+

@@ -1,0 +1,70 @@
+
+    
+<p><span style="font-size:18px">曾几何时，goto是多么的让牛人绽放他们高超的精湛技术</span></p>
+<p><span style="font-size:18px">曾几何时，goto又变成了万恶之首</span></p>
+<p><span style="font-size:18px">曾几何时，goto只在教科书中的示例才会出现</span></p>
+<p><span style="font-size:18px">有太多的理由不让用goto，但有时，我们又想使用goto的功能，怎么办？</span></p>
+<p><span style="font-size:18px">用try/catch/finally便可实现同等于goto的功能，来看二个示例：</span></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="java">try {
+      // operation one
+      if (failed) {
+            throw Exception;
+      }
+
+      // operation two
+      if (failed) {
+            throw Exception;
+      }
+
+      // operation three
+      if (failed) {
+           throw Exception;
+      }
+} catch (Exception e) {
+      // do something when cases failed
+}</textarea><span style="font-size:18px">和：</span>
+<p></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="java">try {
+     // operation one
+     if (failed) {
+         return;
+     }
+
+     // operation two
+     if (failed) {
+         return;
+     }
+
+      // operation three
+      if (failed) {
+          return;
+      }
+} finally {
+      // do something when failed
+}</textarea><span style="font-size:18px">以上二段都等同于：</span>
+<p></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="java">       // operation one
+       if (failed) {
+           goto when_failed;
+       }
+
+       // operation one
+       if (failed) {
+           goto when_failed;
+       }
+
+       // operation one
+       if (failed) {
+           goto when_failed;
+       }
+when_failed:
+       // do something when failed</textarea>
+<p><span style="font-size:18px">用异常的方式有些暴力，但确实能正确的帮助实现类&#20284;goto的功能；用return和finally虽不是很暴力，但是比较难控制，因为涉及到return语句，它会在finally块执行后得以执行，所以如果不想退出程序的话，这个方法还不如用异常来控制。</span></p>
+<p><span style="font-size:18px">另外，break, continue也是比较强大的跳转语句，特别是break label和continue label，可以跳出一层循环或是多层循环; 但是要注意一点的是break只能在循环语句和switch语句中使用，continue只能在循环语句中使用。所以它们的局限性也很大。
+<br>
+</span></p>
+<p><span style="font-size:18px">这个小示例说明，<strong>goto不单单是一个语句，它是一种解决问题的思路和编程习惯，</strong>习惯了它的人，或者是想用它的人，即使不用goto也会写出类&#20284;goto逻辑出来。它的优点是会更容易的帮助找出解决方案。它的缺点也是众人皆知。但我们要避免的不单单是一个goto语句，而是这种“跳转式”的解决思路和编程习惯。</span></p>
+

@@ -1,0 +1,149 @@
+
+    
+<p><span style="font-size:18px">While learning how to program, it is inevitable to turn to reverse engineering, to learn the way that how others solve problem. There is no exception when learning development on Android platform. Here we talk about three main
+ methods to decompile an Apk file.</span></p>
+<h1><span style="font-size:18px">android-apktool</span></h1>
+<blockquote>
+<h2><span style="font-size:18px">Where to get:&nbsp;</span></h2>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote>
+<p><span style="font-size:18px">1. <a target="_blank" href="http://code.google.com/p/android-apktool/">
+Official website</a>&nbsp;</span></p>
+</blockquote>
+</blockquote>
+<blockquote><span style="font-size:18px"></span>
+<h2><span style="font-size:18px">How to use:&nbsp;&nbsp;</span></h2>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote>
+<p><span style="font-size:18px">Dowload the apktool.bz2 and decompress it with bzip2(might be other format, never mind)</span></p>
+</blockquote>
+<blockquote><textarea readonly name="code" class="python">#bzip2 -d apktool.bz2</textarea></blockquote>
+<blockquote><span style="font-size:18px">Then you will get two files: <span style="color:#33cc00">
+apktool</span>, which is a shell script and <span style="color:#ff0000">apktool.jar</span> the core. We use script<span style="color:#33cc00">apktool</span> rather than the Jar. Here is to decompile an apk file to some directory:</span></blockquote>
+<blockquote>
+<p><span style="font-size:18px">./<span style="color:#33cc00">apktool </span>d[ecode] [options] &lt;file.apk&gt; [&lt;out dir&gt;]</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">It will create a directory in &lt;out dir&gt; with the same name to apk file. Inside the directory, you can see almost as the same hierarchies as the source hierarchies when developing. Here is an example:</span></p>
+</blockquote>
+<blockquote><textarea readonly name="code" class="python">#./apktool d EffectiveAndroid.apk</textarea></blockquote>
+<blockquote><textarea readonly name="code" class="python">#ls EffectiveAndroid</textarea></blockquote>
+<blockquote><textarea readonly name="code" class="python">AndroidManifest.xml apktool.yml  res   smali</textarea></blockquote>
+<blockquote><span style="font-size:18px">In the decoded directory, there is an AndroidManifest.xml, res which is the same to /res in development source and smali is equavilent to /src in development source, except these are *.smali codes instead of *.java codes.
+ The *.xml files are text format and the same to ones when compiling. The codes are in a different coding--- smali which is also easy to read and modify.</span></blockquote>
+<blockquote>
+<p><span style="font-size:18px">This tool also supports re-compile the decompiled sources</span></p>
+</blockquote>
+<blockquote><span style="font-size:18px">into an apk file, which enables us to modify the apk files. For more info, please refer the help info.<br>
+</span></blockquote>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px"></span></p>
+</blockquote>
+<blockquote><span style="font-size:18px">This is the most convenient way from my standpoint. It decodes both the resources file and source codes for us in just one step. All other two ways need more than one.<br>
+</span></blockquote>
+<h1><span style="font-size:18px">dex2jar &#43; jd&#43; AXMLPrinter2</span></h1>
+<blockquote>
+<h2><span style="font-size:18px">Where to get:&nbsp;</span></h2>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote>
+<p><span style="font-size:18px">1. official website: <a href="http://code.google.com/p/dex2jar/" target="_blank">
+dex2jar </a>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;jd &nbsp; &nbsp; &nbsp; &nbsp;<a href="http://code.google.com/p/android4me/downloads/list" target="_blank">AXMLPrinter2</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">2. CSDN resources &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <a target="_blank" href="http://download.csdn.net/detail/hitlion2008/3685216">
+dex2jar</a>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a target="_blank" href="http://download.csdn.net/detail/hitlion2008/3685223"> jd</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a target="_blank" href="http://download.csdn.net/detail/hitlion2008/3685198">AXMLPrinter2</a>&nbsp; &nbsp; &nbsp;</span></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<h2><span style="font-size:18px">How to use:&nbsp;</span></h2>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote>
+<p><span style="font-size:18px">1. Unzip the tool after downloading it, u can see<span style="color:#33cc00">dex2jar.bat</span> and<span style="color:#33cc00">dex2jar.sh</span>, which are scripts. That are the tool we gonna use. Unziping AXMLPrinter2.zip, there
+ are<span style="color:#33cc00">AXMLPrinter2</span>and <span style="color:#cc0000">
+AXMLPrinter2.jar,</span>and same here, we use script<span style="color:#cc0000">&nbsp;<span style="font-size:18px; color:#33cc0">AXMLPrinter2&nbsp;</span></span></span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">2. rename *.apk file to *.zip, and unzip it;</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">3. After unziping, you will get a directory whose name is the same to apk file, in which you can see four things: AndroidManifest.xml, /res, classes.dex and /assets&nbsp;</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">4. use <span style="color:#33cc00">dex2jar.bat</span> or<span style="color:#33cc00">dex2jar.sh</span> to decompile the classes.dex file</span></p>
+</blockquote>
+<blockquote>
+<p></p>
+<textarea readonly name="code" class="plain">#./dex2jar.sh classes.dex</textarea>
+<p></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">5. use jd(Java Decompiler) to decompile the *.jar into Java source codes. It might be not correct and the same to original sources, but absolutely readable and referenceable.</span></p>
+</blockquote>
+<blockquote>
+<p></p>
+<textarea readonly name="code" class="plain">#./jd-gui classes.jar</textarea>
+<p></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">6. use AXMLPrinter2 to decompile the *.xml resources. The XML resources after unziping the Apk file are in binary format, which is unreadable for human. And dex2jar can decode *.dex only. So use AXMLPrinter2 to turn binary XML
+ to text format.</span></p>
+</blockquote>
+<span style="font-size:18px">The advantage of this tool is that you can see Java sources. The disadvantage is that this tool can only decompile an Apk file, but cannot re-compile, which means you cannot modify the apk in this way. It is ONLY for you to reference
+ or learning.</span></blockquote>
+<blockquote>
+<p><span style="font-size:18px"><span style="color:#cc0000"></span></span></p>
+</blockquote>
+<h1><span style="font-size:18px">baksmali/smali &#43; AXMLPrinter2</span></h1>
+<blockquote>
+<h2><span style="font-size:18px">Where to get:&nbsp;</span></h2>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote>
+<p><span style="font-size:18px">1. Official websites: &nbsp;<a href="http://code.google.com/p/smali/" target="_blank">baksmali/smali</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<a href="http://code.google.com/p/android4me/downloads/list" target="_blank">AXMLPrinter2</a>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span><span style="font-size:18px">&nbsp;
+ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<h2><span style="font-size:18px">How to use:&nbsp;</span></h2>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote>
+<p><span style="font-size:18px">1. After downloading tools, unzip it, you will get<span style="color:#cc0000">baksmali.jar</span>,<span style="color:#cc0000">smali.jar</span>,<span style="color:#33cc00">baksmali</span>and<span style="color:#33cc00">smali,</span>we
+ use<span style="color:#33cc00"> baksmali</span>and<span style="color:#33cc00">smali
+</span>which are shell scripts.&nbsp;<span style="font-size:18px">Unziping AXMLPrinter2.zip, there are&nbsp;<span style="color:#33cc00">AXMLPrinter2&nbsp;</span>and&nbsp;<span style="color:#cc0000">AXMLPrinter2.jar,&nbsp;</span>and same here, we use script<span style="color:#cc0000">&nbsp;<span style="font-size:18px; color:#33cc0">AXMLPrinter2&nbsp;</span></span></span></span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">2. rename *.apk file to *.zip, and unzip it</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">3. After unziping,&nbsp;you will get a directory whose name is the same to apk file, in which you can see four things: AndroidManifest.xml, /res, classes.dex and /assets&nbsp;</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">4. Use <span style="color:#33cc00">baksmali </span>
+to decode classes.dex to smali codes. After decoding, in the output folder, there are the same hierarchies to the source folder /src in development, except the code is *.smali instead of *.java</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">./<span style="color:#33cc00">baksmali </span>&lt;dex-file&gt;&nbsp; -o &lt;out dir&gt;</span></p>
+</blockquote>
+<blockquote>
+<p><span style="font-size:18px">5. The resources XMLs are in binary format, use AXMLPrinter2 to decode it to text format.</span></p>
+</blockquote>
+<p><span style="font-size:18px">This tool also supports re-compile. with <span style="color:#33cc00">
+smali </span>scripts you can re-compile the *.smali into a dex file:</span></p>
+</blockquote>
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<blockquote style="margin:0 0 0 40px; border:none; padding:0px">
+<p><span style="font-size:18px">./<span style="color:#33cc00">smali </span>*.smali|&lt;<em>dir containing *.smali</em>&gt; &nbsp;&lt;out-dex&gt;</span></p>
+</blockquote>
+</blockquote>
+<p><span style="font-size:18px">Comparing the three methods, I prefer apktool most. It is powerful and easy to use. The only drawback of this tool is that it can only decodes into smali codes. But smali codes are also readable, referenceable and modifiable.</span></p>
+<p><span style="font-size:18px">Finally, there are powerful tools indeed. But we should use them in a virtue way such reference, learning or localization.&nbsp;</span></p>
+<p><span style="font-size:18px">Have fun in android app reverse engineering trip.</span></p>
+<p><span style="font-size:18px"><a target="_blank" href="http://android.d.cn/bbs/thread-6358-1-1.html">This article</a> discusses how to de-compile and modify an apk in great detail.<br>
+</span></p>
+

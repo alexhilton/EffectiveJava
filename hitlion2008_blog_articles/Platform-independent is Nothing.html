@@ -1,0 +1,44 @@
+
+    
+<p><span style="font-size:18px">Last Friday I had to process some text files, adding some tags before some patterns in a text file. Perl is born for such a task. I first copied all the patterns into a file in Windows XP, then I switched to Linux to use Perl
+ to finishing the task. But it never worked in the way I expected. The script was simple just reading target file line by line, then testing whether matching the patterns which read from files and chomped, if matching adding the tag. But it never worked, the
+ line never matched the pattern, even they did match.</span></p>
+<p><span style="font-size:18px">Suddenly, I realized the problem, the file containing the patterns was created in Windows XP, but I read and chomped it in Linux, So newline terminator '\r\n' was not chomped completely. As a result, lines never matched patterns
+ except for last pattern, which was last line of that file and did not contain newline. So when ran it in Windows XP, I got expected results.<br>
+</span></p>
+<p><span style="font-size:18px">Here is the simple scene, the file is:</span></p>
+<p><textarea readonly name="code" class="plain"><span style="font-size:18px;">freedom
+is
+nothing
+but
+a
+chance
+to
+be
+better</span></textarea><span style="font-size:18px">Here is the Perl script:</span></p>
+<p><textarea readonly name="code" class="python"><span style="font-size:18px;">#!/usr/bin/perl -w
+my $src = &quot;file.txt&quot;;
+open SOURCE, $src or die &quot;failed to open $src, $!&quot;;
+chomp(@strings = &lt;SOURCE&gt;);
+print &quot;@strings\n&quot;;</span></textarea><span style="font-size:18px">Here is the output running in Linux:</span></p>
+<p><textarea readonly name="code" class="plain"><span style="font-size:18px;">user@desktop:~/home$ ls
+file.txt  toy.pl
+</span><pre name="code" class="plain"><span style="font-size:18px;">user@desktop:~/home$ file file.txt 
+file.txt: ASCII text, with CRLF line terminators
+</span><pre name="code" class="plain"><span style="font-size:18px;">user@desktop:~/home$ perl toy.pl file.txt 
+ betterg
+</span><pre name="code" class="plain"><span style="font-size:18px;">user@desktop:~/home$</span></textarea></p>
+<pre></pre>
+<pre></pre>
+<pre></pre>
+<span style="font-size:18px">if run toy.pl in windows, it get expected result:<br>
+</span><textarea readonly name="code" class="plain"><span style="font-size:18px;">z:\Explorer\assets&gt;perl toy.pl
+freedom is nothing but a chance to be better</span></textarea><span style="font-size:18px">So, Perl is doing the right thing here, the reason is that I shouldn't process Windows' text files directly in Linux, we should have converted it to Unix format or specified $/ to \r\n.<br>
+<br>
+This is a trivial issue, but revealing an idea that real platform independence is nothing. Nothing can run correctly without a change across different platforms. C, C&#43;&#43;, so called platform independent, but you have to pay extra attentions to word size, byte
+ order and architecture gaps between different platforms. Java so called &quot;compile once run everywhere&quot;, byte code is indeed platform independent, but byte code must run upon Java Virtual Machine, which is absolutely platform dependent, as a result, Java is
+ platform dependent, to some extent at least!<br>
+</span>
+<p></p>
+<br>
+

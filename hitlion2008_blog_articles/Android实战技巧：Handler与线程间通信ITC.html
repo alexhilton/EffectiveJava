@@ -1,0 +1,296 @@
+
+    
+<p><span style="font-size:18px">在上篇<a target="_blank" href="http://blog.csdn.net/hitlion2008/article/details/7562803">文章</a>中谈到了Handler是用于操作线程内部的消息队列，所以Handler可以用来线程间通信ITC，这种方式更加安全和高效，可以大大减少同步的烦恼，甚至都可以不用syncrhonized。<br>
+</span></p>
+<h2><span style="font-size:18px">线程间通讯ITC</span></h2>
+<span style="font-size:18px">正常情况下函数调用栈都会生存在同一个线程内，想要把执行逻辑交换到其他线程可以新建一个Thread，然后start()。另外一种方法就是用ITC，也即用消息队列来实现，线程需要把执行逻辑交到其他线程时就向另外的线程的消息队列发送一个消息，发送消息后函数就此结束返回，调用栈也停止。当消息队列中有了消息时，线程会被唤醒来执行处理消息，从而把执行逻辑从一个线程转到另外一个线程。这就实现了线程间的通信ITC，与进行间通讯IPC有十分类&#20284;的思想。<br>
+通常的做法都是，在主线程创建一个Handler，然后在新建线程中使用此Handler与主线程通讯。因为主线程的消息队列已经建好，所以直接创建Handler即可，新建的线程就可以直接使用。<br>
+</span>
+<p><span style="font-size:18px">有些情况，需要在多线程之间进行通信，这就要为每个线程都创建MessageQueue和Handler，只要线程能访问其他线程的Handler就可以与之通信。</span></p>
+<p><span style="font-size:18px">要正确的创建Handler，因为Handler要与线程绑定，所以在初始化Handler的时候就要注意：</span></p>
+<p><span style="font-size:18px">如果给Handler指定Looper对象new Handler(Looper)，那么此Handler便绑定到Looper对象所在的线程中，Handler的消息处理回调会在那个线程中执行。</span></p>
+<p><span style="font-size:18px">如果创建线程时不指定Looper对象，那么此Handler绑定到创建此Handler的线程内，消息回调处理会在那个线程中执行，所以像下面的例子，如果这样写：</span></p>
+<p></p>
+<textarea readonly name="code" class="java">private class CookServer extends Thread {
+       private Handler mHandler = new Handler() {
+               public void handleMessage(Message msg) {
+                     ....
+                }
+        };
+</textarea><span style="font-size:18px">那么，此mHandler会与创建此CookerServer的线程绑定，handleMessage也会运行于其中。显然，如果是主线程调用new CookServer()，那么mHandler其实是运行在主线程中的。正确的写法应该是：</span>
+<p></p>
+<p></p>
+<textarea readonly name="code" class="java">private class CookServer extends Thread {
+       public void run() {
+             Looper.prepare();
+                 // or new Handler(Looper.myLooper())
+                 private Handler mHandler = new Handler() {
+                       public void handleMessage(Message msg) {
+                     ....
+                }
+        };</textarea>
+<p></p>
+<h2><span style="font-size:18px">HandlerThread</span></h2>
+<p><span style="font-size:18px">如果要在一个线程中使用消息队列和Handler，Android API中已经有封装好了的一个类<a target="_blank" href="https://developer.android.com/reference/android/os/HandlerThread.html">HandlerThread</a>，这个类已经做好了Looper的初始化工作，你需要做的就是重写其onLooperPrepared()方法，在其中创建Handler：</span></p>
+<p><textarea readonly name="code" class="java">private class DeliverServer extends HandlerThread {
+      private Handler mHandler;
+      public DeliverServer(String name) {
+           super(name);
+      }
+
+      @Override
+      public void onLooperPrepared() {
+            mHandler = new Handler(getLooper()) {
+                    public void handleMessage(Message msg) {
+                        .....
+                    }
+             };
+       }
+}</textarea><br>
+<br>
+</p>
+<h2><span style="font-size:18px">实例</span></h2>
+<p><span style="font-size:18px">此实例模拟了一个网络订餐系统，客户点击“Submit order&quot;来产生一个定单，主线程中负责收集定单，然后交由CookServer来制作，CookServer在制作完成后会交由DeliverServer来把食物运送到客户，至此一个定单完成，同时CookServer和DeliverServer会更新状态。</span><br>
+</p>
+<p><img src="http://my.csdn.net/uploads/201205/13/1336920663_6345.png" alt=""></p>
+<p></p>
+<textarea readonly name="code" class="java">/**
+ * How to attach an Handler to a Thread:
+ * If you specify Looper object to Handler, i.e. new Handler(Looper), then the handler is attached to the thread owning
+ * the Looper object, in which handleMessage() is executed.
+ * If you do not specify the Looper object, then the handler is attached to the thread calling new Handler(), in which
+ * handleMessage() is executed.
+ * In this example, for class CookServer or DeliverServer, if you write this way:
+ *     private class CookServer extends Thread {
+		private Handler mHandler;
+		private Looper mLooper;
+	
+		public CookServer() {
+			mHandler = new Handler() {
+				@Override
+				public void handleMessage(Message msg) {
+					....
+				}
+	    		start();
+		}
+ * then mHandler is attached to thread calling new CookServer(), which is the main thread, so mHandler.handleMessage() will
+ * be executed in main thread.
+ * To attach mHandler to its own thread, you must put it in run(), or after mLooper is created. For our example, providing
+ * mLooper or not won't matter, because new Handler() is called in run(), which is in a new thread.
+ */
+public class HandlerITCDemo extends ListActivity {
+    private static final int COOKING_STARTED = 1;
+    private static final int COOKING_DONE = 2;
+    private static final int DELIVERING_STARTED = 3;
+    private static final int ORDER_DONE = 4;
+    
+    private ListView mListView;
+    private static final String[] mFoods = new String[] {
+	&quot;Cubake&quot;,
+	&quot;Donut&quot;,
+	&quot;Eclaire&quot;,
+	&quot;Gingerbread&quot;,
+	&quot;Honeycomb&quot;,
+	&quot;Ice Cream Sanwitch&quot;,
+	&quot;Jelly Bean&quot;,
+    };
+    private ArrayList&lt;String&gt; mOrderList;
+    private TextView mGeneralStatus;
+    private Button mSubmitOrder;
+    private static Random mRandomer = new Random(47);
+    private int mOrderCount;
+    private int mCookingCount;
+    private int mDeliveringCount;
+    private int mDoneCount;
+    
+    private Handler mMainHandler = new Handler() {
+	@Override
+	public void handleMessage(Message msg) {
+	    switch (msg.what) {
+	    case COOKING_STARTED:
+		mCookingCount++;
+		break;
+	    case COOKING_DONE:
+		mCookingCount--;
+		break;
+	    case DELIVERING_STARTED:
+		mDeliveringCount++;
+		break;
+	    case ORDER_DONE:
+		mDeliveringCount--;
+		mDoneCount++;
+	    default:
+		break;
+	    }
+	    mGeneralStatus.setText(makeStatusLabel());
+	}
+    };
+    
+    private CookServer mCookServer;
+    private DeliverServer mDeliverServer;
+    
+    @Override
+    protected void onDestroy() {
+	super.onDestroy();
+	if (mCookServer != null) {
+	    mCookServer.exit();
+	    mCookServer = null;
+	}
+	if (mDeliverServer != null) {
+	    mDeliverServer.exit();
+	    mDeliverServer = null;
+	}
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	mListView = getListView();
+	mOrderList = new ArrayList&lt;String&gt;();
+	mGeneralStatus = new TextView(getApplication());
+	mGeneralStatus.setText(makeStatusLabel());
+	mSubmitOrder = new Button(getApplication());
+	mSubmitOrder.setText(&quot;Submit order&quot;);
+	mSubmitOrder.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		String order = mFoods[mRandomer.nextInt(mFoods.length)];
+		mOrderList.add(order);
+		mOrderCount = mOrderList.size();
+		mGeneralStatus.setText(makeStatusLabel());
+		setAdapter();
+		mCookServer.cook(order);
+	    }
+	});
+	mListView.addHeaderView(mGeneralStatus);
+	mListView.addFooterView(mSubmitOrder);
+	setAdapter();
+	mCookServer = new CookServer();
+	mDeliverServer = new DeliverServer(&quot;deliver server&quot;);
+    }
+    
+    private String makeStatusLabel() {
+	StringBuilder sb = new StringBuilder();
+	sb.append(&quot;Total: &quot;);
+	sb.append(mOrderCount);
+	sb.append(&quot;    Cooking: &quot;);
+	sb.append(mCookingCount);
+	sb.append(&quot;    Delivering: &quot;);
+	sb.append(mDeliveringCount);
+	sb.append(&quot;    Done: &quot;);
+	sb.append(mDoneCount);
+	return sb.toString();
+    }
+    
+    private void setAdapter() {
+	final ListAdapter adapter = new ArrayAdapter&lt;String&gt;(getApplication(), android.R.layout.simple_list_item_1, mOrderList);
+	setListAdapter(adapter);
+    }
+    
+    private class CookServer extends Thread {
+	private Handler mHandler;
+	private Looper mLooper;
+	
+	public CookServer() {
+	    start();
+	}
+	
+	@Override
+	public void run() {
+	    Looper.prepare();
+	    mLooper = Looper.myLooper();
+	    mHandler = new Handler(mLooper, new Handler.Callback() {
+		public boolean handleMessage(Message msg) {
+		    new Cooker((String) msg.obj);
+		    return true;
+		}
+	    });
+	    Looper.loop();
+	}
+	
+	public void cook(String order) {
+	    if (mLooper == null || mHandler == null) {
+		return;
+	    }
+	    Message msg = Message.obtain();
+	    msg.obj = order;
+	    mHandler.sendMessage(msg);
+	}
+	
+	public void exit() {
+	    if (mLooper != null) {
+		mLooper.quit();
+		mHandler = null;
+		mLooper = null;
+	    }
+	}
+    }
+    
+    private class Cooker extends Thread {
+	private String order;
+	public Cooker(String order) {
+	    this.order = order;
+	    start();
+	}
+	
+	@Override
+	public void run() {
+            mMainHandler.sendEmptyMessage(COOKING_STARTED);
+            SystemClock.sleep(mRandomer.nextInt(50000));
+            mDeliverServer.deliver(order);
+            mMainHandler.sendEmptyMessage(COOKING_DONE);
+	}
+    }
+    
+    private class DeliverServer extends HandlerThread {
+	private Handler mHandler;
+	
+	public DeliverServer(String name) {
+	    super(name);
+	    start();
+	}
+	
+	@Override
+	protected void onLooperPrepared() {
+	    super.onLooperPrepared();
+	    mHandler = new Handler(getLooper(), new Handler.Callback() {
+		public boolean handleMessage(Message msg) {
+		    new Deliver((String) msg.obj);
+		    return true;
+		}
+	    });
+	}
+
+	public void deliver(String order) {
+	    if (mHandler == null || getLooper() == null) {
+		return;
+	    }
+	    Message msg = Message.obtain();
+	    msg.obj = order;
+	    mHandler.sendMessage(msg);
+	}
+	
+	public void exit() {
+	    quit();
+	    mHandler = null;
+	}
+    }
+    
+    private class Deliver extends Thread {
+	private String order;
+	public Deliver(String order) {
+	    this.order = order;
+	    start();
+	}
+	
+	@Override
+	public void run() {
+	    mMainHandler.sendEmptyMessage(DELIVERING_STARTED);
+	    SystemClock.sleep(mRandomer.nextInt(50000));
+	    mMainHandler.sendEmptyMessage(ORDER_DONE);
+	}
+    }
+}</textarea><br>
+<br>
+<p></p>
+<br>
+

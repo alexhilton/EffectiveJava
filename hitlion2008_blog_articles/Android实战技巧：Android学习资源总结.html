@@ -1,0 +1,28 @@
+
+    
+<p><span style="font-size:18px">要想对一门技术有所了解，或是掌握一门技术，或是想成为高手或专家，学习是必然的途径。学习，我认为，有二个因素决定着学习的效率和成果：一个是学习方法和个人的领悟能力，另外一个就是要有一套较好的学习资源。学习Android开发也是一样，本主将总结一下在Android学习中的一些比较好的比较有价&#20540;的学习资源。</span></p>
+<h2>1. Android SDK documents</h2>
+<p><span style="font-size:18px">这个是非常容易获得的，你可以从官网来看，也可以从本地安装的SDK里面看，因为要想进行Android开发，是一定要有Android SDK的，而所有的SDK里面都有文档的。我建议看官网的，因为它总是最新的，以前官网被和谐了，看不了但是后来是完全可以看的，而且服务器响应也很快，很流畅。<br>
+</span></p>
+<p><span style="font-size:18px">为什么要看官方文档呢？首先，它是官方文档，换句话说，它最权威，所以你可以放心的看，不用担心这个东西是否是真的；其次，也是最重要的，文档中的内容十分丰富，从如何下载安装SDK，到HelloWorld的初级体验，到基本的开发知识，再到整个SDK的API的索引，再到一些有用的文章的资源。可以这样子讲，如果你能把SDK文档全部都仔细读一遍，你就已经是一个成熟的Android开发者。</span></p>
+<p><span style="font-size:18px">建议先看一遍Dev Guide栏内的东西，它会让你了解Android的开发方式的所有项目都会用到的一些公共基础知识。然后就可以去References栏中查找相应的API的详细使用方法，这个没有必要从第一个看到最后一个，而应该是像使用字典那样的去使用它，也就是说，当你想用某个API时，或者不知道某个API怎么用时再去查References。这里要说明下，一定学会用搜索，在References栏的右上角有一个搜索框，可以帮你快速定位到某个类，当打开了某个类后，也要多用Ctrl&#43;F搜索你的要方法或是常量，善用搜索，可以节省很多时间。然后，就要时不时去Resources栏里面看一看，这里面的文档都&#20540;得仔细阅读，可以帮助你成为高手，或是让你的程序更加的健壮。</span></p>
+<h2>2. API Demo</h2>
+<p><span style="font-size:18px">如同它的名字所暗示的那样，这个Sample的目的就是向你展示如何使用Android的API，虽然它不是很全面，也不是很深入，但对于很多常用的API，比如Activity，Dialog，View，Graphics等，还是提供了相当&#20540;得参考的代码。最最重要的是，它不是文档，教你如何使用，而是非常直接的代码，很多时候，你都可以直接拷贝。</span></p>
+<h2>3. Other samples in SDK</h2>
+<p><span style="font-size:18px">比如，NotePad， Snake，Spinner， SpinnerTest等等，这些Sample，不像API Demo零散的展示API怎么用，都非常专注的着重讲某一方面。比如NotePad可以全面的学习如何使用ContentProvider；Snake可以全面的学习如何创建自定义的View;SpinnerTest则展示如何写Android的单元测试（UnitTest）。</span></p>
+<p><span style="font-size:18px">其实SDK里面除了文档以外，很多东西都被很多人所忽略，现在马上打开SDK文件夹，看看 里面到底有什么，有多少东西是&#20540;得看一看，研究研究的。</span></p>
+<h2>4. Android Source Code</h2>
+<p><span style="font-size:18px">不用多说，这里是学习和研究Android的最佳场所。所有，所有关于Android的东西，都在这里面，而且你可以很容易的免费的获得它，然后研究它，学习它，我想这也是开源软件最大的优势：你可以轻松的获得源代码进行学习和研究。</span></p>
+<p><span style="font-size:18px">Android的源码可学习的部分主要有三个文件夹，一个是externals，这是一个第三方开源包集合的地方，里面有着Android用到的所有的开源的第三方库比如webkit, opencore, openssl等等，想研究它们的人可以直接杀进去; 另一个则是 frameworks，这里是Android的Frameworks，主要是为上层App提供支持的地方，Android SDK的API都是出自这里，当然它里面的内容要比开放出来的API多得多;如果你想自定义个View，或是实现个高级的容器，可以进去参考，或是想直接研究那些API是怎么实现的，也是直接杀进去；最后一个就是
+ packages，这个packages含有Android本身自带的App层的一些系统核心应用和系统级的Provider和输入法。这些应用都是展示API如何使用的非常好的例子。虽然被厂商定制过后系统核心应用都被改了许多，Market上面的一些系统软件也比原生的好用，但是这些自带的原生的App还是相当&#20540;得研究和学习的，它们不但展示了如何正确的使用各种API，同时也展示了如何使用系统没有开放出来的一些API，也就是com.android.internal.*下面的东西，还有这些核心应用程序，重点展示了如何使用一些系统的关键的包，比如android.telephony.*;android.provider.*;android.media.*;还有PackageInstaller和Launcher也是相当&#20540;得研究的。</span></p>
+<p><span style="font-size:18px">如果你想研究Android的工作机制和底层是如何实现的，那么externals下面的东西是必须看的，Android很多的Frameworks层的东西最终都是由externals下面第三方的库来提供支持的。</span></p>
+<p><span style="font-size:18px">如果你想写一些自定义的组件，那么就可以参考Frameworks中的官方提供的组件，或是重写它，或是参考其中的实现式，比如你的应用需要一个特殊的GridView，但是官方的GridView又不能满足需求时，这时就可以考虑通过继承来重写（Override）GridView，或是完全参考GridView的实现方式来自己实现。<br>
+</span></p>
+<p><span style="font-size:18px">如果你想做电话和信息相关的应用，那么Phone和Mms还有TelephonyProvider是必须要参考的;如果想做多媒体方面的应用那么Music和Gallery是必须要参考的。如果要做硬件相关的，那么Camera和Bluetooth也是必须要参考的。</span></p>
+<p><span style="font-size:18px">另外，Android系统本身很注重测试，它有很大一部分代码都是专门用来测试的，主要有CTS测试，Monkey测试，另外就是每个应用里面都有一个测试应用，这些也是学习如何写Android的单元测试的很好的教材。</span><br>
+</p>
+<h2>5. 网络资源</h2>
+<p><span style="font-size:18px">现在网络时代，无论学习什么，研究什么，网络都是一个不可忽视的资源。主要的方式就是论坛和博客。</span></p>
+<p><span style="font-size:18px">目前论坛，专注于Android的有优亿eoeAndroid。博客倒是很多，CSDN上面也有很多优秀的博客。可以多多的搜索。</span><br>
+</p>
+

@@ -1,0 +1,31 @@
+
+    
+<p><span style="font-size:18px">When developing applications, long press is an essential type of events needing to handle in graphical user interface. For the customized view defined by yourself, you can handle it by implementing<span style="color:#000099">View.OnLongClickListener</span>
+ or implementing <span style="color:#000099">View.OnTouchEvent</span>. For the common widgets, you can also implement these two interfaces and set them to widgets.</span></p>
+<p><span style="font-size:18px">Now you must wanna know the differences between <span style="color:#000099">
+View.OnLongClickListener </span>and <span style="color:#000099">View.OnTouchEvent</span> when handling long press event:</span></p>
+<p><span style="font-size:18px">1. <span style="color:#000099">View.OnLongClickListener</span>&nbsp; has only one method and will be called only once, which is much similar to
+<span style="color:#000099">View.OnClickListener</span>. And the callback event is fired off after the action of long pressing, i.e. the
+<span style="color:#000099">onLongClick()</span> is called when you release your fingers.</span></p>
+<p><span style="font-size:18px">2. <span style="color:#000099">View.OnTouchEvent</span>, however, is a little big complex. You have to recognize current actions and do proper responses, i.e. you have to get the actions from
+<span style="color:#000099">MotionEvent</span> object and test what kind of action is and then do proper responses.
+<br>
+</span></p>
+<p><span style="font-size:18px">Generally speaking, you have to handle four types of actions:<br>
+</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#660000">MotionEvent.<em>ACTION_DOWN</em></span> ---- user has pressed on your view</span></p>
+<p><span style="font-size:18px">&nbsp;&nbsp; &nbsp;&nbsp;<span style="font-size:18px"><span style="color:#660000">MotionEvent.<em>ACTION_MOVE</em></span> ---- user is moving on your view</span></span></p>
+<p><span style="font-size:18px"><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#660000">
+MotionEvent.<em>ACTION_UP</em></span> ---- user has released his fingers</span></span></p>
+<p><span style="font-size:18px"><span style="font-size:18px">&nbsp;&nbsp;&nbsp;&nbsp; <span style="color:#660000">
+MotionEvent.<em>ACTION_CANCEL</em></span> ---- user has aborted his actions, released his fingers, etc.</span></span></p>
+<p><span style="font-size:18px"><span style="color:#000099">onTouch()</span> is hard to implement, though, it is powerful and flexible enough to handle any event you want.<span style="color:#000099">View.OnLongClick()</span>, for instance, can be implemented
+ with onTouch. Firing off<span style="color:#000099">onLongClick()</span> when getting
+<span style="font-size:18px; color:#660000"><span style="font-size:18px">MotionEvent.<em>ACTION_UP</em></span></span> in onTouch is eough to handle the long click event.</span></p>
+<p><span style="font-size:18px">In all, if you want to do some separate tasks when long pressing, like pop up some menus, or pop up a notification or enter into another screen or activities, you should use<span style="color:#000099">View.OnLongClickListener.</span></span></p>
+<p><span style="font-size:18px">But if you want to change some states or interact with other tasks, or need to know the details of user actions, you should implement<span style="color:#000099">View.OnTouchEvent</span>. For instance, if you wanna control something
+ should only happen when long pressing a button, you can use a flag which turn it on when<span style="color:#660000"><em>ACTION_DOWN</em></span> and turn it off when
+<em><span style="color:#660000">ACTION_UP.</span></em><br>
+</span></p>
+<br>
+

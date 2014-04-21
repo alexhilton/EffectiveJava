@@ -1,0 +1,22 @@
+
+    
+<p><span style="font-size:18px">对于厂商定制Android的时候，难免会在Frameworks中添加新的接口API，无论是给已有的类添加新接口，还是添加新的类，一定要标记为&quot;@hide&quot;，否则是就要进行update-api的相关工作，甚是麻烦。</span></p>
+<p><span style="font-size:18px">例如:</span><textarea readonly name="code" class="java">package android.widget.PopupDialog;
+
+/**
+ * @hide
+ */
+public class PopupDialog extends View {
+     // implementations
+}</textarea><textarea readonly name="code" class="java">public class TextView extends View {
+
+     /**
+      * @hide
+      */
+      public boolean removeText() {
+             // implementation
+      }
+}</textarea><br>
+<br>
+</p>
+

@@ -1,0 +1,27 @@
+
+    
+<span style="font-size:18px">Mms中的ComposeMessageActivity（以下简称Composer）是整个Mms中最重要的一个组件，它负责编辑信息，发送信息，管理信息，接收信息，与外部应用接口。在Mms内部与Composer关联的类和组件特别多，几乎所有的类和组件都与Composer有关联，关于信息的所有操作流程都起始于Composer；在外部Composer也是公开的接口，能够处理Intent.ACTION_SEND和Intent.ACTION_SENDTO以及文件类型为audio/*,image/*,video/*和text/*。<br>
+Composer是一个标准的Activity，它的启动流程也要经过onCreate(), onStart(),onResume()，销毁流程要经过onPause(),onStop()和onDestroy() 。除此之外，其他的操作都要经过用户来触发，或者由其他事件，比如新来信息，数据库变化等。<br>
+</span>
+<h2><span style="font-size:18px">初始化流程</span></h2>
+<span style="font-size:18px">Composer的初始化流程要做的事情有初始化UI，注册一些Receiver和Listener，初始化Conversation和WorkingMessage，查询信息等。其中，初始始化Conversation和WorkingMessage是最重要的，因为UI和一些操作要依赖于Conversation是否存在，以及消息数量和是否有草稿。所以这里我们主要讨论初始化Conversation和WorkingMessage。<br>
+初始化的主要流程都是在initialize()函数中进行的，这里也主要解析下initialize()函数。initialize()最先要做的就是初始化WorkingMessage，创建一个新的WorkingMessage对象mWorkingMessage；然后就是根据Intent和Bundle来初始化Conversation，这一过程相当重要，因为Conversation对象含有这一会话的所有重要数据，包括是否有草稿，信息的数量，是新建的信息还是已有信息，这些信息都将影响后续的初始化工作。<br>
+initActivityState()主要看二个参数一个是所传入的Bundle另一个就是Intent。它会优先查看Bundle，如果Bundle对象不为空的话，会从Bundle之中取出一些状态，比如收信人recipients，比如退出状态exit_on_sent等。根据所拿出来的的收信人就可以用Conversation的get()方法来获取Conversation对象mConversation，之后便会让mWorkingMessage从Bundle中读取相关的数据。其实，这里从Bundle中初始化是与onSaveInstanceState()相对应的，在onSaveInstanceState()中会保存recipients和让mWorkingMessage写数据到Bundle中，以保存Activity的状态。总体来讲，onSaveInstanceState是保存Activity的状态，而initActivityState()中当Bundle不为空时是恢复Activity的状态。<br>
+如果Bundle对象为空的话，那么就从Intent中来初始化相关的数据，这也是大多数的情况所走的逻辑。首先是检查Intent中是否有thread_id和address，也直接从Intent的Uri中搜寻收信人的相关信息，以便用Conversation.get()来获取Conversation对象mConversation。之后还会试图从Intent中获取其他信息比如消息的主体sms_body，主题subject等。<br>
+调用完initActivityState()以后，mWorkingMessage和mConversation二个对象应该都被正确的初始化了。这时候就要处理特殊的Intent：ACTION_SEND和Forward了。先是处理ACTION_SEND，这是对外的接口，当外部程序想通过MMS来发送文本(text/*)，图片(image/*)，音频(audio/*)和视频(video/*)时就会通过Intent.ACTION_SEND来发送。对于这个Intent的处理很简单就是把相关文件的Uri，通常放在intent.getExtras(Intent.EXTRA_STREAM)中，把Uri加载为附件，也可以通过Intent.SEND_MULTIPLE来处理多个附件，但是逻辑是一样的。Forward是Intent当中有forward_message时，同时取出另外二个选项，一个是要转发的信息的Uri，一个是主题subject和消息主体sms_body。因为对于SEND和Forward都仅指定信息的内容而没有指定收信人，所以mConversation对象是没有实际内容的，它们都会与新建信息是一样的，只不过有信息的内容。<br>
+除了ACTION_SEND和Forward的信息有内容外，其他的信息都需要检查是否有草稿，以便能加载草稿。加载草稿是由mWorkingMessage.loadDraft()来完成的，它会检查mConversation的状态，如果有草稿存在就从数据库中加载出来。<br>
+到此，初始化的关键操作都已完成，数据的加载都已完成，剩下的工作就是根据这些数据来初始化UI，比如是否显示收信编辑栏等。<br>
+</span>
+<h2><span style="font-size:18px">销毁流程</span></h2>
+<span style="font-size:18px">Composer的销毁要做的只有二件事，一个是保存当前编辑的信息内容，也就是保存草稿，如果有的话；另一个就是通过onSaveInstanceState来保存状态，不过这个通常用不到，只有当Composer被系统杀掉并希望重启时才会调用到。<br>
+保存草稿的工作主要放在onStop()的时候，所以每当用户离开Composer页面都会走进onStop()也就都会检查相关的条件以确定是否要保存草稿。保存草稿的条件有三个：信息有内容(mWorkingMessage.isWorthSaving()，有内容，有主题，有附件均可)，并且信息有正确的收信人(在不在数据库中均可)，还有就是Composer在等待其他Activity(这个通常出现在添加联系人或添加草稿过程中，因为要跳转到其他Activity，所以Composer也会走到onStop()，但是这个时候因为信息还在编辑中，所以就需要保存草稿)。如果以上条件不满足就丢弃信息内容(mWorkingMessage.discard())，否则就保存草稿(mWorkingMessage.saveDraft())。<br>
+</span>
+<h2><span style="font-size:18px">对外公开的接口</span></h2>
+<span style="font-size:18px">跟Android中组件复用的公开接口一样，Composer对外公开的接口也是通过处理Intent来完成的，主要是二个Intent一个是Intent.ACTION_SEND，另一个就是Intent.ACTION_SENDTO。接口的声明处是在AndroidManifest文件中的IntentFilter。对于处理，有二个地方，一个是在initActivityState()中，会从Intent中尝试取出address, sms_body 和subject；另外对于ACTION_SEND需要明显的处理handleSendIntent()，因为需要从Intent中取出信息的内容通常都是多媒体文件，取出多媒体文件然后通过mWorkingMessage.setAttachment()添加为信息的附件。<br>
+还有一个接口就是对于分享联系人，分享联系人的方式是把联系人的信息作为短信的内容发送出去。这个过程实际上是由Contacts中的ShareContactsViaSMS来先行处理，它会把联系人的信息从数据库中读取出来，然后拼成一个字串再用Intent当成sms_body传给Mms发送。<br>
+</span>
+<h2><span style="font-size:18px">与其他组件的交互</span></h2>
+<span style="font-size:18px">Composer在编辑信息过程中，特别是编辑MMS的过程中需要不断的与其他组件进行交互，比如添加图片，添加音频，添加视频或拍摄图片，拍摄视频等。对于选择图片，选择视频来讲是通过与Gallery应用进行交互，发送GET_CONTENT的Intent给Gallery，Gallery会列出图片和视频供用户选择，当用户选择后，Gallery会把用户所选择的图片或视频的Uri传给Composer，之后Composer就用传过来的Uir进行添加附件的动作。对于音频是与Music应用进行交互，逻辑类&#20284;。对于拍摄图片和拍摄视频和录制音频流程稍有不同。拍摄图片和拍摄视频在请求Intent中要指定输出的路径通过Intent.EXTRA_OUTPUT来指定输出Uri。Camera在拍摄的过程中会把数据写在所指定的Uri中，之后Composer会直接从这个Uri中读取文件(这里与2.3不同，2.3是Camera把文件的Uri放在Intent中)。TempFileProvider就专门用于管理拍摄图片和拍摄视频时临时存储数据的。传给Camera的Uri是”content://mms_temp_file/scrapSpace”，这个Uri由TempFileProvider来管理，由Camera来使用，当Camera要写数据时openFile()时，TempFileProvider就会创建一个临时文件，在外部存储卡上/sdcard/Android/data/com.android.mms/mms_temp_file/scrapSpace/.temp.jpg，Camera所拍摄的图片和视频都存放在这个文件之中。TempFileProvider中还有方法以操作这个文件，比如TempFileProvider.renaceScrapFile()就是把.temp.jpg文件重命名成为一个.3gp的视频。除了Composer会用到这个TempFileProvider，在SlideEditorActivity中编辑一张幻灯片的时候也会用到这个临时文件，因为编辑幻灯片的时候也是能够通过Camera来添加图片的视频的。<br>
+<br>
+</span><br>
+

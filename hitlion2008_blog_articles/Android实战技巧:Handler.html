@@ -1,0 +1,121 @@
+
+    
+<h2><span style="font-size:18px">Handler之消息循环</span></h2>
+<span style="font-size:18px">Handler是用于操作线程内部的消息队列的类。这有点绕，没关系，我们慢慢的来讲。前面Looper一篇讲到了Looper是用于给线程创建消息队列用的，也就是说Looper可以让消息队列(MessageQueue)附属在线程之内，并让消息队列循环起来，接收并处理消息。但，我们并不直接的操作消息队列，而是用Handler来操作消息队列，给消息队列发送消息，和从消息队列中取出消息并处理。这就是Handler的职责。<br>
+Handler，Looper和MessageQueue是属于一个线程内部的数据，但是它提供给外部线程访问的接口，Handler就是公开给外部线程，与线程通讯的接口。换句话说，这三个东西都是用来线程间通讯用的(ITC--Inter Thread Communication)，与进行间通讯(IPC--Inter Process Communication)的消息队列msgque的核心思想是一致的。MessageQueue是相对较底层的，较少直接使用，Looper和Handler就是专门用来操作底层MessageQueue的。<br>
+还有一个重要的数据结构是通讯的基本元素，就是消息对象(Message)，Message从来不单独使用，它都是跟随Handler来使用的。具体方法可以参考文档，但需要注意的是同一个消息对象不能发送二次，否则会有AndroidRuntimeException: { what=1000 when=-15ms obj=.. } This message is already in use.&quot;。每次发送消息前都要通过Message.obtain()来获取新的对象，或者，对于不需要传送额外数据的直接发送空消息就好Handler.sendEmptyMessage(int)。另外也需要注意消息对象是不能手动回收的，也就是说你不能调用Message.recycle()来释放一个消息对象，因为当该对象被从队列中取出处理完毕后，MessageQueue内部会自动的去做recycle()。这个理解起来也很容易，因为发送一个消息到消息队列后，消息什么时候会被处理，对于应用程序来讲是不知道的，只有MessageQueue才会知道，所以只能由MessageQueue来做回收释放的动作。<br>
+因为Handler是用于操作一个线程内部的消息队列的，所以Handler必须依附于一个线程，而且只能是一个线程。换句话说，你必须在一个线程内创建Handler，同时指定Handler的回调handlerMessage(Message msg)。<br>
+Handler主要有二个用途，一个是用于线程内部消息循环； 另外一个就是用于线程间通讯。<br>
+Handler的基本用法可以参考<a target="_blank" href="https://developer.android.com/reference/android/os/Handler.html">文档</a>，说的还是比较清楚的。<br>
+</span>
+<h2><span style="font-size:18px">用于线程内部消息循环</span></h2>
+<span style="font-size:18px">主要是用作在将来定时做某个动作，或者循环性，周期性的做某个动作。主要的接口就是<br>
+</span>
+<ul>
+<li><span style="font-size:18px">Handler.sendEmptyMessageDelayed(int msgid, long after);</span></li><li><span style="font-size:18px">Handler.sendMessageDelayed(Message msg, long after);</span></li><li><span style="font-size:18px">Handler.postDelayed(Runnable task, long after);</span></li><li><span style="font-size:18px">Handler.sendMessageAtTime(Message msg, long timeMillis);</span></li><li><span style="font-size:18px">Handler.sendEmptyMessageAtTime(int id, long timeMiilis);</span></li><li><span style="font-size:18px">Handler.postAtTime(Runnable task, long timeMillis);</span></li></ul>
+<span style="font-size:18px">这些方法的目的都是设置一个定时器，在指定的时间后，或者在指定的时间向Handler所在的MessageQueue发送消息。这样就非常方便应用程序实现定时操作，或者循环时序操作(处理消息时再延时发送消息，以达成循环时序)。<br>
+</span>
+<p><span style="font-size:18px">这个使用起来并不难，但需要注意一点的是，线程内部消息循环并不是并发处理，也就是所有的消息都是在Handler所属的线程内处理的，所以虽然你用post(Runnable r)，发给MessageQueue一个Runnable，但这并不会创建新的线程来执行，处理此消息时仅是调用r.run()。（想要另起线程执行，必须把Runnable放到一个Thread中）。</span></p>
+<h2><span style="font-size:18px">实例</span></h2>
+<p><span style="font-size:18px">这里用一个实例来展示主线程通过Handler与后台线程进行通信，并且主线程用Handler来实现循环时序。</span></p>
+<p><span style="font-size:18px"><img src="http://my.csdn.net/uploads/201205/13/1336909843_3192.png" alt=""><img src="http://my.csdn.net/uploads/201205/13/1336909855_4360.png" alt=""><br>
+</span></p>
+<p><span style="font-size:18px">播放一个视频，线程用于创建和初始化MediaPlayer，初始化好后会通过主线程的Handler告诉主线程，然后主线程可以播放视频，在播放过程中通过sendMessageDelayed()来实现播放进度的不断更新：</span></p>
+<p></p>
+<textarea readonly name="code" class="java">public class HandlerSimpleDemo extends Activity {
+    protected static final String TAG = &quot;HandlerSimpleDemo&quot;;
+    private static final int MEDIA_PLAYER_READY = 0;
+    private static final int REFRESH_PROGRESS = 1;
+    
+    private Button mStart;
+    private Button mStop;
+    private SurfaceHolder mSurfaceHolder;
+    private ProgressBar mProgressBar;
+    private SurfaceView mDisplay;
+    private MediaPlayer mMediaPlayer;
+    
+    private Handler mMainHandler = new Handler() {
+	@Override
+	public void handleMessage(Message msg) {
+	    switch (msg.what) {
+	    case MEDIA_PLAYER_READY:
+		mProgressBar.setMax(mMediaPlayer.getDuration());
+		mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+		    public void onCompletion(MediaPlayer mp) {
+			mProgressBar.setProgress(mMediaPlayer.getDuration());
+			mMainHandler.removeMessages(REFRESH_PROGRESS);
+		    }
+		});
+		mStart.setEnabled(true);
+		mStop.setEnabled(true);
+		break;
+	    case REFRESH_PROGRESS:
+		int cp = mMediaPlayer.getCurrentPosition();
+		mProgressBar.setProgress(cp);
+		int delay = 1000 - (cp % 1000);
+		mMainHandler.sendEmptyMessageDelayed(REFRESH_PROGRESS, delay);
+		break;
+	    default:
+		break;
+	    }
+	}
+    };
+    
+    @SuppressWarnings(&quot;deprecation&quot;)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.handler_simple_demo);
+	mStart = (Button) findViewById(R.id.handler_simple_start);
+	mStart.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		mMediaPlayer.start();
+		mMainHandler.sendEmptyMessage(REFRESH_PROGRESS);
+	    }
+	});
+	mStart.setEnabled(false);
+	mStop = (Button) findViewById(R.id.handler_simple_stop);
+	mStop.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		mMainHandler.removeMessages(REFRESH_PROGRESS);
+		mMediaPlayer.pause();
+	    }
+	});
+	mStop.setEnabled(false);
+	mProgressBar = (ProgressBar) findViewById(R.id.handler_simple_progress);
+	mDisplay = (SurfaceView) findViewById(R.id.handler_simple_display);
+	mSurfaceHolder = mDisplay.getHolder();
+	mSurfaceHolder.setFixedSize(mDisplay.getWidth(), mDisplay.getHeight());
+	// Do not believe the document, setType is necessary, otherwise, video won't play correctly
+	mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+	
+	new Thread(new Runnable() {
+	    public void run() {
+		try {
+		    mMediaPlayer = MediaPlayer.create(getApplication(), R.raw.flug);
+		    mMediaPlayer.setDisplay(mSurfaceHolder);
+		    mMainHandler.sendEmptyMessage(MEDIA_PLAYER_READY);
+		} catch (IllegalArgumentException e) {
+		    Log.e(TAG, &quot;caught exception e&quot;, e);
+		} catch (SecurityException e) {
+		    Log.e(TAG, &quot;caught exception e&quot;, e);
+		} catch (IllegalStateException e) {
+		    Log.e(TAG, &quot;caught exception e&quot;, e);
+		}
+	    }
+	}).start();
+    }
+
+    @Override
+    protected void onDestroy() {
+	super.onDestroy();
+	mMainHandler.removeMessages(REFRESH_PROGRESS);
+	if (mMediaPlayer != null) {
+	    mMediaPlayer.release();
+	}
+    }
+}</textarea><br>
+<br>
+<p></p>
+<br>
+

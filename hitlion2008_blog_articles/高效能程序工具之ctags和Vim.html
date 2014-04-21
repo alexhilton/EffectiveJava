@@ -1,0 +1,35 @@
+
+    
+<p><span style="font-size:18px">ctags是用于产生源码文件之间的交叉引用的一个工具，它扫描源码文件，生成一个tags文件来记录其内的引用关系。这个tags文件可以被源程序编辑器识别，进而非常方便浏览多个源程序。<br>
+命令&#26684;式<br>
+ctags [options] [files]<br>
+常用选项<br>
+-R 递归式处理子目录<br>
+因为ctags的默认选项比较多，所以很多时候不用指定其他的选项。<br>
+最常用的方式<br>
+在某个源码目录下运行ctags *，或者在项目的根目录运行ctags -R。<br>
+例子：</span><span style="font-size:18px"></span></p>
+<textarea readonly name="code"class="plain" >cd external/webkit
+ctags *(only files in current directory)
+ctags -R(all files in current directory and sub directories)</textarea>
+<h2>在Vim中使用tags</h2>
+<span style="font-size:18px"></span>
+<p>要想在Vim中tags使用，必须先让Vim能找到相应的tags，可以把tags生成在当前目录下，或者切换到tags所在的目录。如果不愿意这样做，也可以在Vim中指定tags文件：</p>
+<textarea readonly name="code"class="plain" >set tags=where_your_tags;</textarea>
+<p>或者，让Vim自己去寻找：</p>
+<textarea readonly name="code"class="plain" >set tags=tags;
+set autochdir</textarea>
+<p><span style="font-size:18px">第一句后面的分号是必须的。这告诉Vim，先在当前目录找tags，如果找不到去父目录，然后再父目录，直到找到为止。这个自动查找tags的方式是很实用，因为通常都是在项目的根目录生成tags文件，但你可以深入某个子目录去看文件，有了自动查找就方便多了。<br>
+用tag来跳转<br>
+在Vim中输入ex命令<br>
+:tag TAG<br>
+来跳转到TAG。也可以把光标放在某个标识的上面，然后按^](Ctrl&#43;])，就可以跳转，比如：<br>
+在编辑WebViewCore.cpp，把光标放在Frame上面，或:tag Frame_h就会跳到Frame.h里面。<br>
+返回上一个TAG<br>
+按^T(Ctrl&#43;t)可以返回到上一个TAG。如，接着上面，如果再按^T就会回到WebViewCore中。(其实，Vim有一个Tag Stack，每当:tag TAG或^]都会把TAG进栈，每按^T会出栈。关于栈还有许多</span></p>
+<p><span style="font-size:18px">其他操作，但是不是怎么常用，也比较难记)。<br>
+最后需要注意的是如果当前文件已经编辑了，但还没有保存，是能够跳转到其他文件的。</span></p>
+<p><span style="font-size:18px">参考：</span></p>
+<ol>
+<li><span style="font-size:18px">&lt;Learning the Vi and Vim Editors&gt;</span></li><li><a href="www.vimer.cn/2009/10/在vim中使用ctags.html">www.vimer.cn/2009/10/在vim中使用ctags.html</a></li></ol>
+

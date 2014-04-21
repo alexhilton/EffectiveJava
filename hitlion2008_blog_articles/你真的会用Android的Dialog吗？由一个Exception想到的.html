@@ -1,0 +1,30 @@
+
+    
+<h2><span style="font-size:18px">一个Bug</span></h2>
+<span style="font-size:18px">前几日出现这样一个Bug是一个RuntimeException，详细信息是这样子的：<br>
+<span style="font-size:16px">java.lang.IllegalArgumentException: View not attached to window manager<br>
+&nbsp;&nbsp;&nbsp; at android.view.WindowManagerImpl.findViewLocked(WindowManagerImpl.java:356)<br>
+&nbsp;&nbsp;&nbsp; at android.view.WindowManagerImpl.removeView(WindowManagerImpl.java:201)<br>
+&nbsp;&nbsp;&nbsp; at android.view.Window$LocalWindowManager.removeView(Window.java:400)<br>
+&nbsp;&nbsp;&nbsp; at android.app.Dialog.dismissDialog(Dialog.java:268)<br>
+&nbsp;&nbsp;&nbsp; at android.app.Dialog.access$000(Dialog.java:69)<br>
+&nbsp;&nbsp;&nbsp; at android.app.Dialog$1.run(Dialog.java:103)<br>
+&nbsp;&nbsp;&nbsp; at android.app.Dialog.dismiss(Dialog.java:252)<br>
+&nbsp;&nbsp;&nbsp; at xxx.onPostExecute(xxx$1.java:xxx)</span><br>
+首先是Google了下，发现引发这个的原因基本上都一致都是Dismiss对话框的时候，Activity已经不再存在。常发生这类Exception的情形都是，有一个费时的线程操作，需要在显示一个ProgressDialog，在任务开始的时候显示一个对话框，然后当任务完成了再Dismiss对话框，如果在此期间如果Activity因为某种原因被杀掉且又重新启动了，那么当Dismiss的时候WindowManager检查发现Dialog所属的Activity已经不存在了，所以会报IllegalArgumentException：
+ View not attached to window manager.<br>
+其实此类Exception的一重要的原因是，ProgressDialog的创建显示和取消都允许在非UI线程中进程。在Android当中非UI线程是不允许操作UI相关的事情，比如添加移除View等，但是为会么允许创建显示和取消对话框呢？而且还有可能引发此Exception导致应用Crash。<br>
+要想避免此类Exception，就要正确的使用对话框，也要正确的使用线程。<br>
+</span>
+<h2><span style="font-size:18px">正确的使用对话框</span></h2>
+<span style="font-size:18px">不要在非UI线程中使用对话框创建，显示和取消对话框。<br>
+那么对于异步操作显示对话框怎么办呢？Activity都有相应的操作对话框的回调比如onCreateDialog(),showDialog(),dimissDialog(),removeDialog()等等。这些因为都是Activity的方法，所以用起来更方便，也不用显示创建和操控Dialog对象，一切都由框架操控，相对来说比较安全。<br>
+另外就是一定要让对话框对象在Activity的可控制范围之内和生命周期之内，比如一定要是它的成员变量，并且在让对话框变量活跃在Activity的onCreate()和onDestroy()之间。<br>
+</span>
+<h2><span style="font-size:18px">正确的使用线程</span></h2>
+<span style="font-size:18px">尽量少用单独线程，除非是真正的费时操作才用线程，线程也不要直接用Java式的匿名线程，除非是那种单纯的操作，操作完成后不需要做其他事情的。<br>
+尽可能多用Android提供的类比如AsyncTask等。另外如果线程操作过程中还需要与主线程有交互，那么最好保存一个线程的对象，并且线程内部最有一定的控制，这样可以让Activity更好的操控线程。<br>
+如果说某些操作是特别费时的，且是经常性的操作，比如从网络获取数据，或是从后台读取文件，或是导入/导出，恢复/备份的事情，最好放到后台Service中去做，然后在StatusBar中给出相应进度。<br>
+<br>
+</span><br>
+

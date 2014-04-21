@@ -1,0 +1,694 @@
+
+    <p><span style="font-size: medium;">1 - Introduction<br />
+<br />
+1.1 Why Have Code Conventions<br />
+Code conventions are important to programmers for a number of reasons:<br />
+&nbsp;&nbsp;&nbsp; * 80% of the lifetime cost of a piece of software goes to maintenance.<br />
+&nbsp;&nbsp;&nbsp; * Hardly any software is maintained for its whole life by the original<br />
+author.<br />
+&nbsp;&nbsp;&nbsp; * Code conventions improve the readability of the software, allowing<br />
+engineers to understand new code more quickly and thoroughly.<br />
+&nbsp;&nbsp;&nbsp; * If you ship your source code as a product, you need to make sure it is as<br />
+well packaged and clean as any other product you create.<br />
+1.2 Coding standards are not programming Standards<br />
+The standards and conventions described here are only conerned about coding, i.e. the<br />
+layout of the program and the file organization, excluding the standards that<br />
+concern the efficiency and performance of the programs. For standards about<br />
+the quality of the programs, please check out the book like &lt;C Coding Standards&gt;,<br />
+&lt;C Programming Style&gt; and others.<br />
+1.3 Acknowledgments<br />
+This document reflects the C language coding standards presented in daily<br />
+coding, from Alex Hilton. I hope this document will give you some useful help.<br />
+When writing this, I have referenced a lot of articles which gave a lot of great<br />
+suggestions, including &lt;Elements of programming style&gt; by Brian Kernighan and Plaughter; <br />
+&lt;Recommended style and coding standards for c programming laguage&gt; by Iron Moor.<br />
+For questions concerning adaptation, modification, or redistribution of this<br />
+document, please read our copyright notice.<br />
+Comments on this document should be submitted to us in feedback form. <br />
+1.4 Copyrights<br />
+You are free to use, redistribute and modify without any warntary. This document<br />
+is licensed under GPLv2.<br />
+For further infomation about GPLv2, please refer http://www.gnu.org<br />
+<br />
+2 - File Names<br />
+This section lists commonly used file suffixes and names<br />
+2.1 File Suffixes<br />
+2.1.1 C language<br />
+C source -- *.c<br />
+object -- *.o<br />
+header file -- *.h<br />
+2.2 Common File Names<br />
+Makefile -- build our project<br />
+README -- summarizes the contents of a particular directory.<br />
+3 - File Organization<br />
+A file consists of sections that should be separated by blank lines and an<br />
+optional comments identifying each section.<br />
+Files longer than 2000 lines are cumbersome and should be avoided.<br />
+3.1 C Source Files<br />
+<br />
+C source files have the following ordering:<br />
+<br />
+Program source files have the following ordering:<br />
+&nbsp;&nbsp; * Beginning with a block of comments summarizing the file.<br />
+&nbsp;&nbsp; * Preprocessors: #ifdef, #ifndef, #if<br />
+&nbsp;&nbsp; * types: struct, enum, typedef ...<br />
+&nbsp;&nbsp; * Function prototypes: private functions, and then extern entricies<br />
+&nbsp;&nbsp; * main program<br />
+&nbsp;&nbsp; * Function definitions: extern entricies, then the private functions<br />
+3.1.1 Beginning Comments<br />
+<br />
+All source files should begin with a block comment that lists the structure<br />
+name, version information, date, and copyright notice:<br />
+<br />
+&nbsp;&nbsp;&nbsp; /*<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Filename<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * <br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Author name,&nbsp;&nbsp;&nbsp;&nbsp; date<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * <br />
+&nbsp;&nbsp;&nbsp;&nbsp; * descriptions of the program.<br />
+&nbsp;&nbsp;&nbsp;&nbsp; *<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Version information<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * <br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Copyright notice<br />
+&nbsp;&nbsp;&nbsp;&nbsp; */<br />
+Many times, it is much better to use a version control like RCS, CVS or SVN.<br />
+Then the comment should be like this:<br />
+&nbsp; /*<br />
+&nbsp;&nbsp; * $Header$<br />
+&nbsp;&nbsp; * $Author$<br />
+&nbsp;&nbsp; * $Date$<br />
+&nbsp;&nbsp; * $Id$<br />
+&nbsp;&nbsp; * descriptions<br />
+&nbsp;&nbsp; * $Revision$<br />
+&nbsp;&nbsp; * $Log$<br />
+&nbsp;&nbsp; */<br />
+3.1.2 Preprocessors and Macros<br />
+The first non-comment line of most C source should be #include statements. For<br />
+example:<br />
+&nbsp;&nbsp; #include &lt;stdio.h&gt;<br />
+&nbsp;&nbsp; #include &lt;string.h&gt;<br />
+The standard headers or other public libraries should be include with ankor<br />
+braces, lile &lt;stdio.h&gt; &lt;unistd.h&gt;.<br />
+The headers written by you or other programmer should be in quotes, like<br />
+&quot;my_debug.h&quot;, &quot;my_thread.h&quot;.<br />
+3.1.3 Function prototypes and types and structures.<br />
+3.1.3.1 Function prototypes<br />
+Private functions should be qualified with static. You should write a block<br />
+comments for each prototype. You should<br />
+also include argument variable's names. So we can guess the usage of the<br />
+arguments. For arguments like pointers and<br />
+arrays, we should qualified const if there is no necessiaty to change the<br />
+contents, to avoid unexpected changes.<br />
+All external function prototypes should be commented with documentation comments <br />
+like this:<br />
+&nbsp; /**<br />
+&nbsp;&nbsp; * Function: strcpy<br />
+&nbsp;&nbsp; * Param: src -- a string from which we copy<br />
+&nbsp;&nbsp; * Param: dst --&nbsp; a string to which we copy<br />
+&nbsp;&nbsp; * Return: -1 on error, 0 on success<br />
+&nbsp;&nbsp; * Description: strcpy takes two pointers to char as arguments, copying all<br />
+&nbsp;&nbsp; * the contents of src to dst.<br />
+&nbsp;&nbsp; * Note: This function might ignore null terminator.<br />
+&nbsp;&nbsp; */<br />
+3.1.3.2 Types<br />
+All structures and unions should be commented with documentation comments like:<br />
+&nbsp; /**<br />
+&nbsp;&nbsp; * Structure: Point<br />
+&nbsp;&nbsp; * Member: x -- x coordinate, in uite(mm, cm or m defined in actual usage)<br />
+&nbsp;&nbsp; * Member: y -- y coordinate, the same as x<br />
+&nbsp;&nbsp; * Description: Point depicts a geometric point on screen.<br />
+&nbsp;&nbsp; */<br />
+&nbsp;&nbsp; struct Point {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int x;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int y;<br />
+&nbsp;&nbsp; };<br />
+&nbsp;&nbsp; typedef struct Point Point;<br />
+4 - Indentation<br />
+<br />
+Two spaces should be used as the unit of indentation. The exact construction of<br />
+the indentation (spaces vs. tabs) is unspecified. Tabs must be set exactly every<br />
+8 spaces (not 4).<br />
+4.0 Do not make any alignment<br />
+<br />
+Except for indentation of statements, do not make any alignments such as<br />
+varaible declarations, comments, e.g.:<br />
+&nbsp;&nbsp;&nbsp; /* the following should be AVOIDED! */<br />
+&nbsp;&nbsp;&nbsp; int&nbsp;&nbsp;&nbsp;&nbsp; i;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* loop variable */<br />
+&nbsp;&nbsp;&nbsp; float&nbsp;&nbsp; max;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* max value */<br />
+You can just use a space to separate them:<br />
+&nbsp;&nbsp;&nbsp; /* the following are correct */<br />
+&nbsp;&nbsp;&nbsp; int i; /* loop variable */<br />
+&nbsp;&nbsp;&nbsp; float max; /* max value of an array */<br />
+4.1 Line Length<br />
+<br />
+Avoid lines longer than 80 characters, since they're not handled well by many<br />
+terminals and tools.<br />
+Note: Examples for use in documentation should have a shorter line<br />
+length-generally no more than 70 characters.<br />
+4.2 Wrapping Lines<br />
+When an expression will not fit on a single line, break it according to these<br />
+general principles:<br />
+&nbsp;&nbsp;&nbsp; * Break after a comma.<br />
+&nbsp;&nbsp;&nbsp; * Break before an operator.<br />
+&nbsp;&nbsp;&nbsp; * Prefer higher-level breaks to lower-level breaks.<br />
+&nbsp;&nbsp;&nbsp; * Align the new line with the beginning of the expression at the same level<br />
+on the previous line.<br />
+&nbsp;&nbsp;&nbsp; * If the above rules lead to confusing code or to code that's squished up<br />
+against the right margin, just use your indentation instead.<br />
+&nbsp;&nbsp;&nbsp; * Double the standard indentation when wrapping lines.<br />
+Here are some examples of breaking fuction calls:<br />
+&nbsp;&nbsp;&nbsp; someMethod( longExpression1, longExpression2, longExpression3, <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; longExpression4, longExpression5 );<br />
+&nbsp;<br />
+&nbsp;&nbsp;&nbsp; var = someMethod1( longExpression1,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; someMethod2(longExpression2, longExpression3) ); <br />
+Following are two examples of breaking an arithmetic expression. The first is<br />
+preferred, since the break occurs outside the parenthesized expression, which is<br />
+at a higher level.<br />
+&nbsp;&nbsp;&nbsp; longName1 = longName2 * (longName3 + longName4 - longName5)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; + 4 * longname6; /* PREFER */<br />
+&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; longName1 = longName2 * (longName3 + longName4<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - longName5) + 4 * longname6; /* AVOID */<br />
+Following are two examples of indenting function declarations. The first is the<br />
+conventional case. The second would shift the second and third lines to the far<br />
+right if it used conventional indentation, so instead it indents only 8 spaces.<br />
+&nbsp;&nbsp;&nbsp; /* CONVENTIONAL INDENTATION */<br />
+&nbsp;&nbsp;&nbsp; someMethod( int anArg, Object anotherArg, String yetAnotherArg,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Object andStillAnother ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; /* INDENT 8 SPACES TO AVOID VERY DEEP INDENTS */<br />
+&nbsp;&nbsp;&nbsp; /* This is usually used in kernel development or where efficiency is important */<br />
+&nbsp;&nbsp;&nbsp; void horkingLongMethodName(int anArg,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Object anotherArg, String yetAnotherArg,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Object andStillAnother) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; }<br />
+Line wrapping for if statements should generally use the 8-space rule, since<br />
+conventional (4 space) indentation makes seeing the body difficult. For example:<br />
+&nbsp;&nbsp;&nbsp; /* DON'T USE THIS INDENTATION */<br />
+&nbsp;&nbsp;&nbsp; if ( (condition1 &amp;&amp; condition2)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; || (condition3 &amp;&amp; condition4)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ||!(condition5 &amp;&amp; condition6) ) { /* BAD WRAPS */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doSomethingAboutIt();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* MAKE THIS LINE EASY TO MISS */<br />
+&nbsp;&nbsp;&nbsp; } <br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; /* USE THIS INDENTATION INSTEAD */<br />
+&nbsp;&nbsp;&nbsp; if ( (condition1 &amp;&amp; condition2)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; || (condition3 &amp;&amp; condition4)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ||!(condition5 &amp;&amp; condition6) ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doSomethingAboutIt();<br />
+&nbsp;&nbsp;&nbsp; } <br />
+&nbsp; <br />
+&nbsp;&nbsp;&nbsp; /* OR USE THIS */<br />
+&nbsp;&nbsp;&nbsp; if ( (condition1 &amp;&amp; condition2) || (condition3 &amp;&amp; condition4)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ||!(condition5 &amp;&amp; condition6) ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doSomethingAboutIt();<br />
+&nbsp;&nbsp;&nbsp; } <br />
+Here are three acceptable ways to format ternary expressions:<br />
+&nbsp;&nbsp;&nbsp; alpha = (aLongBooleanExpression) ? beta : gamma;&nbsp; <br />
+&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; alpha = (aLongBooleanExpression) ? beta<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : gamma;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; alpha = (aLongBooleanExpression)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ? beta <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : gamma;&nbsp; <br />
+If the assignment statement is too long, but can place in a line, write like<br />
+this:<br />
+&nbsp;&nbsp; someValue = <br />
+&nbsp;&nbsp;&nbsp;&nbsp; someExpression that fill in a line;<br />
+Put return type, function name and arguments in a line. If there are too many<br />
+arguments or names are too long, put the arguments in the next line using<br />
+standard indentation( 2 spaces );<br />
+&nbsp; Fox example:<br />
+&nbsp; double addDouble(<br />
+&nbsp;&nbsp;&nbsp; double doubleArray[], int size, double *result ) {<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp; }<br />
+<br />
+&nbsp; int add( int a, int b ) {<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp; }<br />
+5 - Comments<br />
+Implementation comments are meant for commenting out code or for comments about<br />
+the particular implementation. Doc comments are meant to describe the<br />
+specification of the code, from an implementation-free perspective. to be read<br />
+by developers who might not necessarily have the source code at hand.<br />
+<br />
+Comments should be used to give overviews of code and provide additional<br />
+information that is not readily available in the code itself. Comments should<br />
+contain only information that is relevant to reading and understanding the<br />
+program. For example, information about how the corresponding package is built<br />
+or in what directory it resides should not be included as a comment.<br />
+<br />
+Discussion of nontrivial or nonobvious design decisions is appropriate, but<br />
+avoid duplicating information that is present in (and clear from) the code. It<br />
+is too easy for redundant comments to get out of date. In general, avoid any<br />
+comments that are likely to get out of date as the code evolves.<br />
+<br />
+Each head char of a statement should be capitcalized. The comments should follow<br />
+the general English article conventions.<br />
+<br />
+Note:The frequency of comments sometimes reflects poor quality of code. When you<br />
+feel compelled to add a comment, consider rewriting the code to make it clearer.<br />
+<br />
+Comments should not be enclosed in large boxes drawn with asterisks or other<br />
+characters.<br />
+Comments should never include special characters such as form-feed and<br />
+backspace.<br />
+5.1 Implementation Comment Formats<br />
+C provides comment, /* ... */<br />
+use /* ... */ for block comment, esp the description of file, descriptions of<br />
+function, or descriptions of structure or structure etc.<br />
+use /* */ to comment a line or variables.<br />
+e.g. block comment:<br />
+&nbsp;&nbsp; /*<br />
+&nbsp;&nbsp;&nbsp; * Function: add<br />
+&nbsp;&nbsp;&nbsp; * Usage: result = add( a, b );<br />
+&nbsp;&nbsp;&nbsp; *<br />
+&nbsp;&nbsp;&nbsp; * This function takes two int as arguments and returns the addition of them.<br />
+&nbsp;&nbsp;&nbsp; * Pre-condition: ...<br />
+&nbsp;&nbsp;&nbsp; * Post-condition: ...<br />
+&nbsp;&nbsp;&nbsp; * Return value: ...<br />
+&nbsp;&nbsp;&nbsp; */<br />
+e.g. line comment:<br />
+&nbsp;&nbsp;&nbsp; ....<br />
+&nbsp;&nbsp;&nbsp; /* get a value from the user */<br />
+&nbsp;&nbsp;&nbsp; value = getValue();<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; int radius;&nbsp;&nbsp;&nbsp; /* in inches */<br />
+&nbsp;......<br />
+Note: must place a block comment ahead of the file and the function to summarize<br />
+the program or function and mention the pre- and post- conditions, and<br />
+arguments.<br />
+Note: place the line comment for excecutive statements upon the statements, not<br />
+end.<br />
+e.g.:<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; /* swap two value */<br />
+&nbsp;&nbsp;&nbsp; tmp = a;<br />
+&nbsp;&nbsp;&nbsp; a = b;<br />
+&nbsp;&nbsp;&nbsp; b = tmp;<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+5.2 Doc comments(documentation comments)<br />
+&nbsp; Apparently, doc comments are used to generated documetations which extracted later as a guide to your users.<br />
+So you should write implementation-free comments, in the standpoint of users and in the specified formats. <br />
+Specific formats should be designated by specific documentation-generation tools. In general, we recommend the<br />
+following formats:<br />
+&nbsp;&nbsp;&nbsp; /**<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * description<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Function/Class/Types<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Param:<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * returns:<br />
+&nbsp;&nbsp;&nbsp;&nbsp; * Note:<br />
+&nbsp;&nbsp;&nbsp;&nbsp; */<br />
+&nbsp; Doc comments for instance fields:<br />
+&nbsp;&nbsp;&nbsp; /** X coordinate of&nbsp; a point */<br />
+&nbsp;&nbsp;&nbsp; /** Y coordinate of a point */<br />
+6 - Declarations<br />
+6.1 Number Per Line<br />
+One declaration per line is recommended since it encourages commenting. In other<br />
+words,<br />
+&nbsp;&nbsp;&nbsp; int level; /* indentation level */<br />
+&nbsp;&nbsp;&nbsp; int size;&nbsp; /* size of table */<br />
+is preferred over<br />
+&nbsp;&nbsp;&nbsp; int level, size;<br />
+Do not put different types on the same line. Example:<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int foo,&nbsp; fooarray[]; /* WRONG! */<br />
+Note: The examples above use one space between the type and the identifier.<br />
+Another acceptable alternative is to use tabs, e.g.:<br />
+&nbsp;&nbsp;&nbsp; int level; /* indentation level */<br />
+&nbsp;&nbsp;&nbsp; int size; /* size of table */<br />
+&nbsp;&nbsp;&nbsp; Object currentEntry; /* currently selected table entry */<br />
+6.2 Initialization<br />
+Try to initialize local variables where they're declared. The only reason not to<br />
+initialize a variable where it's declared is if the initial value depends on<br />
+some computation occurring first.<br />
+The structure should be intialized like this:<br />
+&nbsp; struct Point one[] = {<br />
+&nbsp;&nbsp;&nbsp; { 1, 2 },<br />
+&nbsp;&nbsp;&nbsp; { 3, 5 },<br />
+&nbsp; };<br />
+If the members are not many, you con fold them into less lines.<br />
+The multi-dimensional array should be initialized like this:<br />
+&nbsp; const char *month_name[] = {<br />
+&nbsp;&nbsp;&nbsp; &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;, &quot;Jul&quot;,<br />
+&nbsp;&nbsp;&nbsp; &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;,<br />
+&nbsp; };<br />
+If each item is too long, you can write each item per line.<br />
+6.3 Placement<br />
+Put declarations only at the beginning of blocks. (A block is any code<br />
+surrounded by curly braces &quot;{&quot; and &quot;}&quot;.) Don't wait to declare variables until<br />
+their first use; it can confuse the unwary programmer and hamper code<br />
+portability within the scope.<br />
+&nbsp;&nbsp;&nbsp; void myMethod( ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int int1 = 0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* beginning of method block */<br />
+&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if ( condition ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int int2 = 0;&nbsp;&nbsp;&nbsp;&nbsp; /* beginning of &quot;if&quot; block */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; }<br />
+Avoid local declarations that hide declarations at higher levels. For example,<br />
+do not declare the same variable name in an inner block:<br />
+&nbsp;&nbsp;&nbsp; int count;<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; myMethod( ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if ( condition ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int count = 0;&nbsp;&nbsp;&nbsp;&nbsp; /* AVOID! */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; }<br />
+Always declare variables near where they will be used, and always initialize.<br />
+6.4 Declare as late as possible and initialize as soon as possible.<br />
+6.5 Declare variables in a minimize scope. When you can declare it as file scope, <br />
+do not make it global; when you can delcare it as functional local, <br />
+do not make it file scope; when you can make it loop local, do not make it functional loop.<br />
+7 - Statements<br />
+7.1 Simple Statements<br />
+Each line should contain at most one statement. Example:<br />
+&nbsp;&nbsp;&nbsp; argv++;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Correct */<br />
+&nbsp;&nbsp;&nbsp; argc--;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Correct&nbsp; */<br />
+&nbsp;&nbsp;&nbsp; argv++; argc--;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* AVOID! */<br />
+7.2 Compound Statements<br />
+Compound statements are statements that contain lists of statements enclosed in<br />
+braces &quot;{ statements }&quot;. See the following sections for examples.<br />
+&nbsp;&nbsp;&nbsp; * The enclosed statements should be indented one more level than the<br />
+compound statement.<br />
+&nbsp;&nbsp;&nbsp; * The opening brace should be at the end of the line that begins the<br />
+compound statement; the closing brace should begin a line and be indented to the<br />
+beginning of the compound statement.<br />
+&nbsp;&nbsp;&nbsp; * Braces are used around all statements, even single statements, when they<br />
+are part of a control structure, such as a if-else or for statement. This makes<br />
+it easier to add statements without accidentally introducing bugs due to<br />
+forgetting to add braces.<br />
+7.3 return Statements<br />
+A return statement with a value should not use parentheses unless they make the<br />
+return value more obvious in some way. Example:<br />
+&nbsp;&nbsp;&nbsp; return;<br />
+&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; return myDisk.size();<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; return ( size ? size : defaultSize );<br />
+&nbsp;&nbsp;&nbsp; <br />
+7.4 if, if-else, if else-if else Statements<br />
+&nbsp;&nbsp;&nbsp; <br />
+Note: if statements always use braces {}. Avoid the following error-prone form:<br />
+&nbsp;&nbsp;&nbsp; if ( condition ) /* AVOID! THIS OMITS THE BRACES {}! */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statement;<br />
+7.5 for Statements<br />
+A for statement should have the following form:<br />
+&nbsp;&nbsp;&nbsp; for ( initialization; condition; update ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statements;<br />
+&nbsp;&nbsp;&nbsp; }<br />
+<br />
+An empty for statement (one in which all the work is done in the initialization,<br />
+condition, and update clauses) should have the following form:<br />
+&nbsp;&nbsp;&nbsp; for (initialization; condition; update)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;<br />
+When using the comma operator in the initialization or update clause of a for<br />
+statement, avoid the complexity of using more than three variables. If needed,<br />
+use separate statements before the for loop (for the initialization clause) or<br />
+at the end of the loop (for the update clause).<br />
+7.6 while Statements<br />
+A while statement should have the following form:<br />
+&nbsp;&nbsp;&nbsp; while ( condition ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statements;<br />
+&nbsp;&nbsp;&nbsp; }<br />
+An empty while statement should have the following form:<br />
+&nbsp;&nbsp;&nbsp; while ( condition )<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;<br />
+7.7 do-while Statements<br />
+A do-while statement should have the following form:<br />
+&nbsp;&nbsp;&nbsp; do {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statements;<br />
+&nbsp;&nbsp;&nbsp; } while ( condition );<br />
+7.8 switch Statements<br />
+A switch statement should have the following form:<br />
+&nbsp;&nbsp;&nbsp; switch ( condition ) {<br />
+&nbsp;&nbsp;&nbsp; case ABC:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statements;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* falls through */ <br />
+&nbsp;&nbsp;&nbsp; case DEF:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statements;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; default:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; statements;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp; }<br />
+Every time a case falls through (doesn't include a break statement), add a<br />
+comment where the break statement would normally be. This is shown in the<br />
+preceding code example with the /* falls through */ comment.<br />
+Every switch statement should include a default case. The break in the default<br />
+case is redundant, but it prevents a fall-through error if later another case is<br />
+added.<br />
+If the falls through is obvious, you can write all of them in a line:<br />
+&nbsp;&nbsp;&nbsp; switch ( month ) {<br />
+&nbsp;&nbsp;&nbsp; case 1: case 3: case 5: case 6: case 7: case 8: case 10: case 12:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day = 31;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp; case 4: case 6: case 8: case 9: case 11:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day = 30;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp; case 2:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day = 28;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if ( leap ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; day = 29;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp; default:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp; }<br />
+Or, place each case in a line:<br />
+&nbsp;&nbsp;&nbsp; switch ( errno ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case EIVAL:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case EACESS:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case EBADFD:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; err_sys( &quot;errors&quot; );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; case NOERR:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* go on */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; default:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+Avoid too many lines of codes in each case, if you have to do so many things in a case statement, use a<br />
+function instead.<br />
+&nbsp;&nbsp;&nbsp; switch ( state ) {<br />
+&nbsp;&nbsp;&nbsp; case Error:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* deal with error */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* AVOID too many lines of codes here, use a function instead */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; handleError( );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; break;<br />
+&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp; }<br />
+7.9 Always braces<br />
+No matter how many statements in the control statements( if, do, for, while ...<br />
+), always use braces, excluding case statements. And put the semicolon of empty<br />
+for and while statements on the next line with standard indentation in order to<br />
+be detect more easily.<br />
+&nbsp; eg.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for ( tmp = header; tmp != NULL; tmp = tmp-&gt;next )<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while ( *p++ == *q++ )<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;<br />
+7.10 Gathering and dividing<br />
+Gather the similar statements to form a block, and divid each block with a space<br />
+line.<br />
+8 - White Space<br />
+8.1 Blank Lines<br />
+Blank lines improve readability by setting off sections of code that are<br />
+logically related.<br />
+Two blank lines should always be used in the following circumstances:<br />
+&nbsp;&nbsp;&nbsp; * Between sections of a source file<br />
+&nbsp;&nbsp;&nbsp; * Between structure and interface definitions<br />
+&nbsp;&nbsp;&nbsp; * Between functions.<br />
+One blank line should always be used in the following circumstances:<br />
+&nbsp;&nbsp;&nbsp; * Between the local variables in a method and its first statement<br />
+&nbsp;&nbsp;&nbsp; * Before a block (see section 5.1.1) or single-line (see section 5.1.2)<br />
+comment<br />
+&nbsp;&nbsp;&nbsp; * Between logical sections inside a method to improve readability<br />
+8.2 Blank Spaces<br />
+Blank spaces should be used in the following circumstances:<br />
+&nbsp;&nbsp;&nbsp; * A keyword followed by a parenthesis should be separated by a space.<br />
+Example:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while ( true ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; <br />
+Note that a blank space should not be used between a function name and its<br />
+opening parenthesis. This helps to distinguish keywords from function calls.<br />
+&nbsp;&nbsp;&nbsp; * A blank space should appear before and after parethesis, excluding<br />
+function and its open parethesis. e.g:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a = ( a + b ) / ( c + d );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ind add( int a, int b );<br />
+&nbsp;&nbsp;&nbsp; * A blank space should appear after commas in argument lists.<br />
+&nbsp;&nbsp;&nbsp; * All binary operators except . and -&gt; should be separated from their<br />
+operands by spaces. Blank spaces should never separate unary operators such as<br />
+unary minus, increment (&quot;++&quot;), and decrement (&quot;--&quot;) from their operands.<br />
+Example:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a += ( c + d );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a = ( a + b ) / ( c * d );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while ( d++ == s++ ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; n++;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printSize( &quot;size is %d/n&quot;, sizeof( var ) );<br />
+&nbsp; <br />
+&nbsp;&nbsp;&nbsp; * The expressions in a for statement should be separated by blank spaces.<br />
+Example:<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for ( expr1; expr2; expr3 )<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; * Casts should be followed by a blank space. Examples:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; myMethod( (byte) aNum, (Object) x );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; myMethod( (int) ( cp + 5 ), ( (int) ( i + 3 ) ) + 1);<br />
+&nbsp;&nbsp;&nbsp; * Sometimes, when there are so many things in a expression, we should<br />
+surpress white spaces to save spaces. But make them into several units by their<br />
+functionalities. E.G:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a = ( (c+b) * (e-f) * (g+h) ) / ( (c-d) * (e-f) );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if ( (cond1&amp;&amp;cond2) || (cond3||cond4) || (cond4&amp;&amp;cond5) ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; * Always give a space between empty braces, parentheses and brackets, e.g.:<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int foo( int a[ ], int size ) ...<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; rc = fire( );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int foo( ) { }<br />
+&nbsp;&nbsp;&nbsp; * Don't add spaces around type in a type cast.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int a = (int) ch; /* no spaces arount int */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; double b = (double) c;<br />
+&nbsp;&nbsp;&nbsp; * Leave a space before and after comment in a line comment.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* This is a comment */<br />
+&nbsp;&nbsp;&nbsp; * Don't give space for assignments within other expressions<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if ( (fp = open( filename )) &lt; 0 ) {<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; perror( filename );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; * Add as many spaces as you can when do not violate rules above<br />
+9 - Naming Conventions<br />
+Naming conventions make programs more understandable by making them easier to<br />
+read. They can also give information about the function of the identifier-for<br />
+example, whether it's a constant, package, or structure-which can be helpful in<br />
+understanding the code.&nbsp;&nbsp; <br />
+9.1&nbsp; Variables&nbsp; <br />
+Except for classes, structures, unions, and constants, all other variables or<br />
+function names are in mixed case with a lowercase first letter. Internal words<br />
+start with capital letters. Variable names should not start with underscore _,<br />
+even though both are allowed. We use identifiers begining with underscore _ only<br />
+in library headers and their implementations. In your programs, you should avoid<br />
+use them to prevent from naming collosions.<br />
+<br />
+Variable names should be short yet meaningful. The choice of a variable name<br />
+should be mnemonic --- that is, designed to indicate to the casual observer the<br />
+intent of its use. One-character variable names should be avoided except for<br />
+temporary &quot;throwaway&quot; variables. Common names for temporary variables are i, j,<br />
+k, m, and n for integers; c, d, and e for characters. <br />
+e.g.:<br />
+&nbsp; int i; /* control flow variables */<br />
+&nbsp; char c; /* character for inputing */<br />
+&nbsp; float myWidth; /* used for control drawing the face picture. */<br />
+9.2&nbsp; Constants<br />
+The names of variables declared constants, macros, enumeration type and of ANSI<br />
+constants should be all uppercase with words separated by underscores ('_').<br />
+(ANSI constants should be avoided, for ease of debugging.)<br />
+e.g: <br />
+&nbsp;&nbsp; const int MAX_SIZE = 256;&nbsp; /* ... */<br />
+&nbsp;&nbsp; #define MAX_WIDTH 1290&nbsp;&nbsp; /* ... */<br />
+&nbsp;&nbsp; typedef enum { BLACK, RED, ORANGE } COLOR;<br />
+&nbsp;&nbsp; #define PI 3.1415926<br />
+9.3&nbsp; Functions<br />
+Methods should be verbs, in mixed case with the first letter lowercase, with the<br />
+first letter of each internal word capitalized.<br />
+&nbsp;&nbsp;&nbsp; run();<br />
+&nbsp;&nbsp;&nbsp; runFast();<br />
+&nbsp;&nbsp;&nbsp; getBackground();<br />
+9.4&nbsp; Structure<br />
+Structure names should be nouns, in mixed case with the first letter of each<br />
+internal word capitalized. Try to keep your structure names simple and<br />
+descriptive. Use whole words-avoid acronyms and abbreviations (unless the<br />
+abbreviation is much more widely used than the long form, such as URL or HTML).<br />
+e.g.:<br />
+struct Raster;<br />
+struct ImageSprite;<br />
+<br />
+Always declare and define structure like this:<br />
+typedef struct Point Point;<br />
+struct {<br />
+&nbsp; int x;&nbsp;&nbsp; /* x co-ordination */<br />
+&nbsp; int y;&nbsp;&nbsp; /* y co-ordination */<br />
+};<br />
+9.5&nbsp; Files, interface<br />
+All files and interface names should be in lowercase, and short, effective,<br />
+descriptive. Avoid using any character other than letters.<br />
+Note: strive to make the identifiers short, effective and descriptive and<br />
+readable.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; length is 3 to 8 is best.<br />
+9.6 Naming convention of UNIX/LINUX<br />
+The conventions discussed above are for general purpos. When in special case, we<br />
+have to use special one.<br />
+The UNIX/LINUX likes all identifiers are short, usually abbreviated, all in<br />
+lowercase and conjuncted with underscores.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int fd_flag;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct stat;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int total_count;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; double cur_money; /* in US dollar */<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fcntl( ... );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int memcpy( ... );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; int memset( ... );<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void *malloc( ... );<br />
+The keywords of C and its standard libraries, the system libraries of UNIX/LINUX<br />
+and the structures of UNIX/LINUX are good example.<br />
+9.7 Constants<br />
+The constants here are not const variables, but nemeric constants like 1234,<br />
+495.57.<br />
+Generally speaking, we should not use any magic numbers in our program. We use<br />
+macros or enums instead.<br />
+And it is a good idea to specify the type of contsants when writing it. There<br />
+are some suffixes for doing this like<br />
+l, L, f, F and u, U, u or U should combined with f,F, l and L. For clarity, you<br />
+not use lowercase l, you should use<br />
+L, F, f, u and U always. I prefer f, u and L. And you should always add suffixes<br />
+for constants. And when combining,<br />
+the case should agree, not uL or Ul, but UL, ul, (ul is not recommended, of<br />
+course).<br />
+&nbsp; #define BUF_SIZE 3456778UL<br />
+&nbsp; glVertext3f( 0.f, .1f, 5.f );<br />
+9.8 Local Variables and global variables and variable lengths<br />
+The length of a name should reflect its scope. A local variable in a small<br />
+function has very limited scope. Here, max might be a suitable name although<br />
+maxTemp is probably better. A global variable has wide scope. Globally, we might<br />
+need a name like maxTempForMostRecentSAO. <br />
+9.9 About Prefix and suffix of an identifier<br />
+Generally speaking, adding prefix and suffix to a variable name or function name<br />
+is a bad idea. But There are some<br />
+exceptions. If some variables or functions are in the same class except some<br />
+trivival differences, then we and use<br />
+prefix or suffix to distinuish them. By convention, the prefix is major<br />
+classification, suffix is minor <br />
+classification. This is also one way to implement overloading which is instinct<br />
+in<br />
+some OO language like C++ and Java. Good examples are OpenGL and GTK+ functions.<br />
+We use prefix to distinguish<br />
+different libraries, classes or structures. We use suffix to distinuish<br />
+different functions working for <br />
+one purpose(implementing overloading).<br />
+&nbsp;&nbsp;&nbsp; glVertex3f( 0.f, 1.f, 2.f );<br />
+&nbsp;&nbsp;&nbsp; glVertex3d( 1, 2, 4 );<br />
+&nbsp;&nbsp;&nbsp; glVertex3ud( 2u, 4u, 5 );<br />
+&nbsp;&nbsp;&nbsp; GL_PI;<br />
+&nbsp;&nbsp;&nbsp; GTK_WINDOW_TOPLEVEL;<br />
+&nbsp;&nbsp;&nbsp; GTK_PI;<br />
+&nbsp;&nbsp;&nbsp; GTK_E;<br />
+&nbsp;&nbsp;&nbsp; g_get_home_dir();<br />
+&nbsp;&nbsp;&nbsp; g_strcmp();<br />
+&nbsp;&nbsp;&nbsp; gtk_button_new();<br />
+&nbsp;&nbsp;&nbsp; gtk_button_new_with_label( label );<br />
+&nbsp;&nbsp;&nbsp; gtk_button_new_with_mnemonic( label );</span>
+</p>
+<p>[References]</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;Java Coding Convention&gt;, 2001, Sun Microsystems Inc.</p>

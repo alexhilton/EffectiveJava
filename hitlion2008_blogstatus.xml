@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<blog>
+	<article comment_count="1" read_count="341" title="Android实战技术:类iOSTab和Header" pub_date="2013-10-21 21:17" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/12918029" />
+	<article comment_count="0" read_count="518" title="Android实战技术:理解Binder机制" pub_date="2013-08-08 21:54" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9842289" />
+	<article comment_count="0" read_count="547" title="Android实战技术：深入理解Android的RPC方式与AIDL" pub_date="2013-08-07 22:52" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9824009" />
+	<article comment_count="0" read_count="444" title="Android实战技术：IPC方式简介教程" pub_date="2013-08-05 22:06" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9773251" />
+	<article comment_count="0" read_count="634" title="老鸟的Python入门教程" pub_date="2013-07-09 22:27" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9285785" />
+	<article comment_count="0" read_count="900" title="Sed和AWK入门教程之AWK篇" pub_date="2013-07-04 23:55" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9247733" />
+	<article comment_count="0" read_count="500" title="Sed与AWK入门教程之Sed篇" pub_date="2013-07-04 22:31" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9247173" />
+	<article comment_count="0" read_count="1712" title="Android实战技术: 用Dimension解决多屏幕适配的问题" pub_date="2013-06-28 22:49" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9200135" />
+	<article comment_count="0" read_count="708" title="Android实战技巧: ListView之ContextMenu无法弹出" pub_date="2013-06-20 23:32" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9141559" />
+	<article comment_count="0" read_count="800" title="Android实战技巧: ExpandableListView滑动时会变黑" pub_date="2013-06-19 22:11" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/9132743" />
+	<article comment_count="0" read_count="892" title="Vim高级进阶之ex命令集" pub_date="2013-04-14 11:35" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8799327" />
+	<article comment_count="1" read_count="743" title="五年专业编程的14个经验" pub_date="2013-04-06 21:33" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8765231" />
+	<article comment_count="0" read_count="809" title="可评审代码之道" pub_date="2013-03-21 22:17" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8703589" />
+	<article comment_count="0" read_count="810" title="为什么仍还用C编码?" pub_date="2013-03-17 23:16" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8685284" />
+	<article comment_count="0" read_count="1042" title="如何用doxygen生成文档" pub_date="2013-03-07 21:05" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8648253" />
+	<article comment_count="0" read_count="857" title="gbs使用手册之gbs chroot" pub_date="2013-03-06 21:34" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8644151" />
+	<article comment_count="0" read_count="1378" title="gbs使用手册之gbs build" pub_date="2013-03-06 21:21" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8644013" />
+	<article comment_count="0" read_count="970" title="gbs使用手册之配置文件" pub_date="2013-03-06 20:25" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8643885" />
+	<article comment_count="1" read_count="1075" title="短信技术的几个基本概念" pub_date="2013-03-02 12:22" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8628622" />
+	<article comment_count="3" read_count="938" title="好的程序员应该第一时间去Google" pub_date="2013-03-01 23:00" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8627882" />
+	<article comment_count="0" read_count="806" title="参数声明中的静态数组索引:一个不错且鲜为人知的C语言特性" pub_date="2013-02-21 23:04" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8600713" />
+	<article comment_count="0" read_count="1137" title="常见面试题之C++" pub_date="2013-02-15 12:15" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8581390" />
+	<article comment_count="1" read_count="1655" title="C语言中编译相关的常见错误" pub_date="2013-02-14 09:56" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8580460" />
+	<article comment_count="0" read_count="1065" title="如何玩转ELF(*.so)" pub_date="2013-02-13 12:12" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8579859" />
+	<article comment_count="0" read_count="1127" title="Android开发：实践TDD的一些建议" pub_date="2013-02-12 16:25" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8579323" />
+	<article comment_count="0" read_count="1072" title="重构的几点注意事项" pub_date="2012-12-15 11:41" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8298552" />
+	<article comment_count="2" read_count="3328" title="AsyncTask的坑，Handler，Looper与MessageQueue" pub_date="2012-11-17 20:04" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8194510" />
+	<article comment_count="1" read_count="1309" title="如何更有效的进行面试" pub_date="2012-11-03 15:52" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8143741" />
+	<article comment_count="2" read_count="1827" title="Android实战技术：ListView刷新的顺序问题" pub_date="2012-10-20 00:13" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8091843" />
+	<article comment_count="2" read_count="1790" title="Android应用“今日事今日毕”发布了" pub_date="2012-10-19 10:41" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/8088754" />
+	<article comment_count="47" read_count="16912" title="Android实战技巧：深入解析AsyncTask" pub_date="2012-09-16 00:02" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7983449" />
+	<article comment_count="1" read_count="1168" title="Android Ticks: display text vertically" pub_date="2012-09-15 09:23" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7981251" />
+	<article comment_count="2" read_count="2467" title="Android实战技术：Splash的实现" pub_date="2012-09-11 21:56" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7969016" />
+	<article comment_count="0" read_count="1483" title="Vim进阶技术：搜索和替换" pub_date="2012-09-10 22:02" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7964811" />
+	<article comment_count="2" read_count="1194" title="一道面试题：餐馆模拟" pub_date="2012-09-04 20:33" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7943544" />
+	<article comment_count="0" read_count="1571" title="Android实战技术：Cursor相关的性能问题" pub_date="2012-09-01 21:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7933259" />
+	<article comment_count="3" read_count="1686" title="年中总结：一些工作和技术相关的想法" pub_date="2012-08-22 21:03" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7897321" />
+	<article comment_count="0" read_count="2012" title="WebKit技巧：如何用GDB进行调试" pub_date="2012-07-22 18:46" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7772926" />
+	<article comment_count="2" read_count="2423" title="Webkit实战技术：如何添加日志信息" pub_date="2012-07-17 22:58" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7757238" />
+	<article comment_count="3" read_count="3420" title="给大一新生的建议" pub_date="2012-06-16 17:13" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7669220" />
+	<article comment_count="2" read_count="1471" title="写给即将毕业的同学们" pub_date="2012-06-15 23:06" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7667927" />
+	<article comment_count="0" read_count="2194" title="16岁的博士----神童还是悲剧？" pub_date="2012-06-14 23:21" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7664829" />
+	<article comment_count="0" read_count="1753" title="Android线程解惑" pub_date="2012-06-12 22:23" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7657629" />
+	<article comment_count="0" read_count="2025" title="如何快速接手一个项目(内部项目或开源项目）" pub_date="2012-06-02 21:15" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7626634" />
+	<article comment_count="0" read_count="1282" title="一个合格的软件开发者所应拥有的" pub_date="2012-06-02 20:32" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7626547" />
+	<article comment_count="0" read_count="1079" title="Platform-independent is Nothing" pub_date="2012-05-26 23:30" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7605664" />
+	<article comment_count="7" read_count="2434" title="Android天下大乱，Google无法一统山河" pub_date="2012-05-18 21:35" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7581530" />
+	<article comment_count="2" read_count="1716" title="Android生存指南:解Bug策略和思路" pub_date="2012-05-17 23:00" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7578178" />
+	<article comment_count="4" read_count="1908" title="Android生存指南：一些开发注意事项" pub_date="2012-05-17 21:55" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7578007" />
+	<article comment_count="0" read_count="3032" title="Android实战技巧：Dialog" pub_date="2012-05-15 10:50" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7567549" />
+	<article comment_count="2" read_count="1870" title="Android组件间通信机制对面向对象特性的影响" pub_date="2012-05-15 09:24" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7567263" />
+	<article comment_count="0" read_count="3052" title="Android实战技巧：Handler与线程间通信ITC" pub_date="2012-05-13 22:49" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7563196" />
+	<article comment_count="1" read_count="2006" title="Android实战技巧:Handler" pub_date="2012-05-13 19:44" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7562803" />
+	<article comment_count="2" read_count="2911" title="Android实战技巧：消息循环与Looper" pub_date="2012-05-12 22:34" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7561190" />
+	<article comment_count="0" read_count="6338" title="Android实战技巧：多线程AsyncTask" pub_date="2012-05-12 19:50" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7560878" />
+	<article comment_count="0" read_count="1088" title="RTTI:获取类的详细信息" pub_date="2012-05-06 22:00" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7540480" />
+	<article comment_count="1" read_count="1827" title="Android Browser的配置管理" pub_date="2012-05-06 21:48" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7540467" />
+	<article comment_count="1" read_count="1512" title="高效能程序工具之ctags和Vim" pub_date="2012-05-05 19:34" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7538101" />
+	<article comment_count="0" read_count="1234" title="高效能程序工具之grep" pub_date="2012-05-05 19:24" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7538064" />
+	<article comment_count="0" read_count="6301" title="南京谷歌开发者社区成立了" pub_date="2012-04-22 10:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7486049" />
+	<article comment_count="1" read_count="2123" title="深入浅出Windows BATCH" pub_date="2012-04-16 20:51" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7467252" />
+	<article comment_count="2" read_count="5000" title="Android SDK弱爆了－－－在64位Linux机器上使用的同学注意了" pub_date="2012-04-12 00:26" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7451940" />
+	<article comment_count="0" read_count="3635" title="闲谈：从富士康看中国工人境况" pub_date="2012-04-07 21:16" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7436110" />
+	<article comment_count="0" read_count="1425" title="Understanding Android ContentProvider" pub_date="2012-04-02 10:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7421224" />
+	<article comment_count="0" read_count="1793" title="Unit Testing in Android" pub_date="2012-03-31 22:18" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7417330" />
+	<article comment_count="1" read_count="3901" title="Android Mms专题之：PDU介绍" pub_date="2012-03-29 20:23" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7408638" />
+	<article comment_count="1" read_count="3067" title="Android Mms专题之：Compose详解" pub_date="2012-03-28 21:33" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7404772" />
+	<article comment_count="4" read_count="1859" title="Android中的脑残设计" pub_date="2012-03-24 22:17" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7391194" />
+	<article comment_count="2" read_count="1205" title="时间管理三要点" pub_date="2012-03-23 22:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7388915" />
+	<article comment_count="0" read_count="1366" title="什么是真正的用户" pub_date="2012-03-22 23:48" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7385438" />
+	<article comment_count="3" read_count="1793" title="逆向学习法" pub_date="2012-03-22 22:42" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7385265" />
+	<article comment_count="1" read_count="4464" title="在大学真的学不到东西吗?" pub_date="2012-03-20 21:12" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7375596" />
+	<article comment_count="0" read_count="1044" title="加强Script的学习以创建DRY和Automation的工具" pub_date="2012-03-02 19:57" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7313508" />
+	<article comment_count="0" read_count="2063" title="博弈：唯冠和苹果的iPad商标案之争" pub_date="2012-02-13 23:33" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7256494" />
+	<article comment_count="2" read_count="2404" title="最高效的工具：笔和纸" pub_date="2012-02-12 23:32" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7253554" />
+	<article comment_count="4" read_count="4310" title="你真的会用Android的Dialog吗？由一个Exception想到的" pub_date="2012-02-12 22:26" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7253408" />
+	<article comment_count="11" read_count="5931" title="再论：如何解Bug" pub_date="2012-02-12 13:06" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7252339" />
+	<article comment_count="27" read_count="7980" title="杂谈：后台进程对Android性能的影响" pub_date="2012-02-05 22:53" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7235492" />
+	<article comment_count="4" read_count="2280" title="杂谈：2012年Android的发展状况" pub_date="2012-02-03 22:23" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7232538" />
+	<article comment_count="0" read_count="2127" title="Android Mms专题之：对话与联系人的关联" pub_date="2012-02-02 23:45" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7229935" />
+	<article comment_count="1" read_count="3177" title="Android Mms专题之：对话列表管理" pub_date="2012-02-02 23:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7229926" />
+	<article comment_count="1" read_count="2266" title="Android Mms专题之：联系人管理" pub_date="2012-02-02 23:36" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7229907" />
+	<article comment_count="0" read_count="3443" title="Android Mms专题之：MMS支持" pub_date="2012-01-03 22:52" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7173715" />
+	<article comment_count="8" read_count="4770" title="Android Mms专题之：草稿管理" pub_date="2012-01-03 22:31" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7173677" />
+	<article comment_count="2" read_count="7432" title="Android Mms专题之：接收信息流程" pub_date="2011-12-30 19:57" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7166075" />
+	<article comment_count="8" read_count="5043" title="Android Mms专题之:信息发送流程" pub_date="2011-12-29 22:22" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7163477" />
+	<article comment_count="4" read_count="2027" title="杂谈：Android or iOS，我们何去何从？" pub_date="2011-12-11 23:47" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7062143" />
+	<article comment_count="42" read_count="8839" title="这一年，我所感悟到的" pub_date="2011-12-10 23:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7060486" />
+	<article comment_count="1" read_count="1668" title="观点：PC还能存在多少年？" pub_date="2011-12-09 23:22" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7058669" />
+	<article comment_count="27" read_count="6975" title="Android Mms专题之：Mms源码结构" pub_date="2011-12-08 21:46" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7055025" />
+	<article comment_count="6" read_count="7638" title="Android Mms专题之：Mms概览介绍" pub_date="2011-12-06 20:57" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7047629" />
+	<article comment_count="0" read_count="2630" title="Android实战技巧：用Pull方法解析XML文件" pub_date="2011-12-01 23:07" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7032726" />
+	<article comment_count="1" read_count="1342" title="实战技巧：用Java解析XML" pub_date="2011-11-29 23:06" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/7025369" />
+	<article comment_count="0" read_count="1567" title="Android实战技巧：Android学习资源总结" pub_date="2011-11-17 23:20" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6984818" />
+	<article comment_count="3" read_count="1233" title="杂谈：Google要解决的关于Android的问题" pub_date="2011-11-13 23:18" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6966888" />
+	<article comment_count="2" read_count="2114" title="Android实战技巧：组件间通信---Intent和IntentFilter" pub_date="2011-11-13 20:47" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6966569" />
+	<article comment_count="42" read_count="5729" title="写技术博客的注意事项" pub_date="2011-11-09 00:10" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6950493" />
+	<article comment_count="7" read_count="1827" title="观点：何为经验" pub_date="2011-11-01 23:15" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6926707" />
+	<article comment_count="1" read_count="2206" title="工具：Android本地代码生成器" pub_date="2011-10-19 23:04" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6889243" />
+	<article comment_count="4" read_count="2036" title="Android 4.0发布了" pub_date="2011-10-19 15:02" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6888102" />
+	<article comment_count="0" read_count="1304" title="实战技巧：精进Vim的使用（一）" pub_date="2011-10-18 17:42" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6884694" />
+	<article comment_count="0" read_count="1135" title="请安息吧，史蒂夫 乔布斯" pub_date="2011-10-18 11:38" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6883802" />
+	<article comment_count="4" read_count="3785" title="Android实战技巧：使用原始资源文件" pub_date="2011-10-15 21:17" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6876795" />
+	<article comment_count="6" read_count="3552" title="实战技巧：用Enum(枚举类型)取代整数集" pub_date="2011-10-15 00:09" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6874970" />
+	<article comment_count="1" read_count="1423" title="正确的使用语句块" pub_date="2011-10-13 19:49" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6871226" />
+	<article comment_count="0" read_count="2243" title="Android Tricks: How to Decompile an Apk file" pub_date="2011-10-11 23:28" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6864389" />
+	<article comment_count="30" read_count="9656" title="Android实战技巧：用TextView实现Rich Text---在同一个TextView中设置不同的字体风格" pub_date="2011-10-09 19:48" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6856780" />
+	<article comment_count="0" read_count="1215" title="Be at peace, Steve Jobs" pub_date="2011-10-07 18:56" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6849299" />
+	<article comment_count="4" read_count="2272" title="实战技巧：goto语句的替代实现方式" pub_date="2011-10-05 00:12" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6844615" />
+	<article comment_count="0" read_count="1261" title="Android实战技巧：常用开发FAQ（续）" pub_date="2011-09-30 16:48" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6837964" />
+	<article comment_count="0" read_count="2073" title="评论：Android手机的功能键" pub_date="2011-09-30 16:41" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6837726" />
+	<article comment_count="1" read_count="1402" title="评论：Android的升级策略" pub_date="2011-09-30 15:37" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6837600" />
+	<article comment_count="0" read_count="1229" title="Android tricks: the ideal way to write try/catch clauses" pub_date="2011-09-30 00:32" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6835757" />
+	<article comment_count="4" read_count="1523" title="Android实战技巧：为从右向左语言定义复杂字串" pub_date="2011-09-29 23:52" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6835622" />
+	<article comment_count="2" read_count="4084" title="Android实战技巧：数据存储方式" pub_date="2011-09-23 08:59" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6802576" />
+	<article comment_count="4" read_count="1440" title="雾里看云" pub_date="2011-09-11 23:26" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6768190" />
+	<article comment_count="2" read_count="2850" title="谁动了我的流量---由Android智能手机的流量想到的" pub_date="2011-09-09 22:58" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6765017" />
+	<article comment_count="25" read_count="21730" title="Android实战技巧：ViewStub的应用" pub_date="2011-08-31 23:51" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6737537" />
+	<article comment_count="21" read_count="18621" title="Android实战技巧：如何在ScrollView中嵌套ListView" pub_date="2011-08-31 23:13" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6737459" />
+	<article comment_count="3" read_count="1640" title="浅析：为何到现在高端Android集成解决方案仍未出现" pub_date="2011-08-25 23:23" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6719944" />
+	<article comment_count="0" read_count="1456" title="Andorid Long press event handling" pub_date="2011-08-19 21:47" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6703160" />
+	<article comment_count="1" read_count="2117" title="Activity之间的数据传递" pub_date="2011-07-17 11:24" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6611858" />
+	<article comment_count="0" read_count="1202" title="Android MessageQueue Mechanism" pub_date="2011-07-15 09:43" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6607571" />
+	<article comment_count="0" read_count="1268" title="Android简介" pub_date="2011-07-15 09:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6607566" />
+	<article comment_count="0" read_count="1160" title="关于解Bug的总结" pub_date="2011-07-13 22:09" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604142" />
+	<article comment_count="2" read_count="935" title="关于写报告" pub_date="2011-07-13 21:53" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604132" />
+	<article comment_count="0" read_count="942" title="维护工作的总结" pub_date="2011-07-13 21:51" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604125" />
+	<article comment_count="0" read_count="999" title="如何解决Bug" pub_date="2011-07-13 21:46" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604110" />
+	<article comment_count="0" read_count="1355" title="如何成为一个合格的职场人" pub_date="2011-07-13 21:39" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604100" />
+	<article comment_count="0" read_count="1838" title="职场金律" pub_date="2011-07-13 21:37" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604096" />
+	<article comment_count="0" read_count="1853" title="高效能人士的七个习惯之积极主动" pub_date="2011-07-13 21:36" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604090" />
+	<article comment_count="0" read_count="984" title="What is co-operating?" pub_date="2011-07-13 21:31" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6604079" />
+	<article comment_count="0" read_count="990" title="What makes a good leader" pub_date="2011-07-13 09:02" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601933" />
+	<article comment_count="1" read_count="1524" title="谨慎公司电子邮件" pub_date="2011-07-13 08:59" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601928" />
+	<article comment_count="0" read_count="1055" title="SQL学习笔记" pub_date="2011-07-13 08:57" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601925" />
+	<article comment_count="0" read_count="1016" title="学习与整理" pub_date="2011-07-13 08:48" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601906" />
+	<article comment_count="0" read_count="1123" title="学习要利用点滴时间" pub_date="2011-07-13 08:40" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601891" />
+	<article comment_count="2" read_count="964" title="Ideas from Kungfu Panda" pub_date="2011-07-13 08:33" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601878" />
+	<article comment_count="0" read_count="980" title="Miscellaneous ideas about programming and sociaty" pub_date="2011-07-13 08:30" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601873" />
+	<article comment_count="2" read_count="1115" title="Advices to English Learner." pub_date="2011-07-13 08:25" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601862" />
+	<article comment_count="0" read_count="910" title="Graphics User Interfaces" pub_date="2011-07-13 08:22" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601857" />
+	<article comment_count="1" read_count="971" title="Some good books" pub_date="2011-07-13 08:16" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601853" />
+	<article comment_count="0" read_count="923" title="Best practices when developing" pub_date="2011-07-13 08:15" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601851" />
+	<article comment_count="0" read_count="1165" title="How to grow to be a professional developer" pub_date="2011-07-13 08:12" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601849" />
+	<article comment_count="0" read_count="922" title="How to write technical articles" pub_date="2011-07-13 08:09" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601842" />
+	<article comment_count="2" read_count="1146" title="如何做好需求分析" pub_date="2011-07-13 08:04" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601839" />
+	<article comment_count="0" read_count="903" title="C++ Revisited" pub_date="2011-07-13 07:58" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601835" />
+	<article comment_count="0" read_count="957" title="Multithreading in C and Java" pub_date="2011-07-13 07:54" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601832" />
+	<article comment_count="0" read_count="1061" title="GTK+ learning summary" pub_date="2011-07-13 07:50" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601829" />
+	<article comment_count="0" read_count="974" title="About file permission in Unix/Linux" pub_date="2011-07-13 07:39" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6601828" />
+	<article comment_count="1" read_count="2143" title="VsVim使用Visual Studio的Vim爱好者的福音" pub_date="2011-07-05 13:54" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6585545" />
+	<article comment_count="0" read_count="1025" title="Android开发FAQ" pub_date="2011-07-04 21:16" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6584360" />
+	<article comment_count="1" read_count="1543" title="Moto Defy Me525日常维护常识" pub_date="2011-07-03 22:31" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6582408" />
+	<article comment_count="0" read_count="1230" title="一次面试的感想" pub_date="2011-07-02 23:33" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6581120" />
+	<article comment_count="0" read_count="1137" title="Android WebView untold stories" pub_date="2011-06-29 08:27" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6574062" />
+	<article comment_count="0" read_count="865" title="云计算势必会有广泛的应用" pub_date="2011-06-27 08:10" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6569447" />
+	<article comment_count="0" read_count="1384" title="Android Memory Issue" pub_date="2011-05-17 22:50" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6428145" />
+	<article comment_count="0" read_count="1064" title="不能成为杯具" pub_date="2011-05-14 16:53" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6419969" />
+	<article comment_count="5" read_count="1344" title="IT人的杯具生命" pub_date="2011-05-14 12:28" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6419488" />
+	<article comment_count="0" read_count="1075" title="在招聘中如何面试" pub_date="2011-05-02 09:18" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6384070" />
+	<article comment_count="0" read_count="1332" title="Android Untold Stories --- Selector and GridView" pub_date="2011-04-30 23:10" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6377128" />
+	<article comment_count="1" read_count="505" title="开发工程师人生之路" pub_date="2011-03-24 23:08" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/6275712" />
+	<article comment_count="2" read_count="655" title="程序员的运动建议" pub_date="2011-02-18 22:32" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/6194352" />
+	<article comment_count="1" read_count="1316" title="学习某些API的方法" pub_date="2011-01-23 15:13" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6159742" />
+	<article comment_count="1" read_count="763" title="大学毕业后拉开差距的原因" pub_date="2011-01-15 13:33" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/6141830" />
+	<article comment_count="0" read_count="535" title="写给刚毕业的程序员的一点经验教训" pub_date="2011-01-15 13:30" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/6141823" />
+	<article comment_count="0" read_count="931" title="Why Blogging --- the reason to write technical blogs" pub_date="2011-01-12 02:43" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6130215" />
+	<article comment_count="0" read_count="1033" title="Be patient to grow -- Rome was not built in a day" pub_date="2011-01-12 02:42" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6130214" />
+	<article comment_count="0" read_count="918" title="How to have fun -- some ideas to encourage developer" pub_date="2011-01-12 01:19" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6130192" />
+	<article comment_count="0" read_count="2344" title="展望2011年Android发展前景" pub_date="2011-01-05 23:41" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6119128" />
+	<article comment_count="0" read_count="444" title="android tools:" pub_date="2011-01-04 23:21" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/6116733" />
+	<article comment_count="1" read_count="1022" title="构建开发者的知识体系" pub_date="2011-01-04 23:19" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6116725" />
+	<article comment_count="0" read_count="1244" title="Android Untold Stories" pub_date="2011-01-04 23:02" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/6116698" />
+	<article comment_count="0" read_count="971" title="解决Linux下Spark的乱码问题" pub_date="2010-11-04 19:57" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5988099" />
+	<article comment_count="0" read_count="448" title="解决Linux下Spark的乱码问题" pub_date="2010-11-04 19:51" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5988084" />
+	<article comment_count="0" read_count="916" title="Android简介" pub_date="2010-09-20 20:58" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5897940" />
+	<article comment_count="0" read_count="401" title="开心一笑" pub_date="2010-03-27 15:59" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5422777" />
+	<article comment_count="0" read_count="908" title="如何锻炼肌肉的10个小贴士" pub_date="2010-03-27 15:13" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5422653" />
+	<article comment_count="0" read_count="527" title="如何锻炼肌肉最完整版" pub_date="2010-03-27 15:01" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5422629" />
+	<article comment_count="0" read_count="1317" title="锻炼腹肌和胸肌的最好方法" pub_date="2010-03-27 14:49" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5422588" />
+	<article comment_count="0" read_count="531" title="脸上长有黑痣（痦子）祛除" pub_date="2010-03-27 12:17" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5422225" />
+	<article comment_count="0" read_count="1825" title="脸上长有黑痣（痦子）祛除和预防" pub_date="2010-03-27 12:03" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5422190" />
+	<article comment_count="0" read_count="624" title="“上海式贫困”与“北京式富裕”" pub_date="2010-03-26 09:25" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5418269" />
+	<article comment_count="0" read_count="1665" title="Android开发工具之DDMS" pub_date="2010-03-19 22:01" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5397873" />
+	<article comment_count="0" read_count="1436" title="如何解决Eclipse挂掉的问题" pub_date="2010-03-19 21:48" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5397826" />
+	<article comment_count="2" read_count="3807" title="将Android源码作为一个工程导入到Eclipse" pub_date="2010-03-19 21:37" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5397796" />
+	<article comment_count="0" read_count="2613" title="给JPEG添加Exif图片说明信息的简单方法" pub_date="2010-03-19 19:30" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5397505" />
+	<article comment_count="0" read_count="585" title="Gentoo Linux ALSA指南" pub_date="2010-03-18 20:56" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5394206" />
+	<article comment_count="0" read_count="1024" title="Gentoo: 英文界面中文输入法与汉字的正常显示" pub_date="2010-03-18 20:49" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5394183" />
+	<article comment_count="0" read_count="737" title="关于gentoo升级内核后报EAPI问题" pub_date="2010-03-18 19:48" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5394000" />
+	<article comment_count="0" read_count="913" title="About interface and inner class" pub_date="2010-03-12 18:44" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5374964" />
+	<article comment_count="0" read_count="834" title="About OOP: object-oriented programming" pub_date="2010-03-12 18:42" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5374961" />
+	<article comment_count="0" read_count="837" title="工具免费服务收费将是IT产业的总体趋势" pub_date="2010-03-12 18:27" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5374939" />
+	<article comment_count="0" read_count="848" title="What is a good computer science book?" pub_date="2010-03-12 18:25" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5374934" />
+	<article comment_count="0" read_count="919" title="什么才是真正的程序员" pub_date="2010-03-12 18:22" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5374928" />
+	<article comment_count="0" read_count="328" title="11种脸色反映出你的健康" pub_date="2010-03-12 12:54" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5373526" />
+	<article comment_count="2" read_count="508" title="中国武侠片的50条爆笑定律" pub_date="2010-03-11 12:55" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5368654" />
+	<article comment_count="0" read_count="949" title="Visual Studio2005的简介" pub_date="2010-03-11 12:36" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5368571" />
+	<article comment_count="2" read_count="1558" title="JNI简介" pub_date="2010-03-11 12:26" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5368541" />
+	<article comment_count="0" read_count="1048" title="Coding Convention for C" pub_date="2010-03-10 20:32" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5366297" />
+	<article comment_count="0" read_count="321" title="想要健康的十大习惯" pub_date="2010-03-01 17:50" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5336538" />
+	<article comment_count="0" read_count="3302" title="南京梅花节游记" pub_date="2010-03-01 17:41" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5336512" />
+	<article comment_count="0" read_count="1018" title="2010年春节记事" pub_date="2010-03-01 17:39" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5336506" />
+	<article comment_count="0" read_count="283" title="男人必读" pub_date="2010-02-04 13:04" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5287958" />
+	<article comment_count="0" read_count="2323" title="评论2月1日凯尔特人与湖人之战" pub_date="2010-02-03 09:37" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5283747" />
+	<article comment_count="0" read_count="511" title="对大学生的七个建议-----学生必读" pub_date="2010-01-28 20:24" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5266791" />
+	<article comment_count="0" read_count="315" title="80后记" pub_date="2010-01-26 18:42" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5258926" />
+	<article comment_count="1" read_count="331" title="七个真理" pub_date="2010-01-26 18:42" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5258928" />
+	<article comment_count="0" read_count="968" title="‘太阳’陨落了" pub_date="2010-01-22 12:00" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5223805" />
+	<article comment_count="0" read_count="950" title="问谁又能做到？" pub_date="2010-01-20 19:52" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5218307" />
+	<article comment_count="0" read_count="842" title="幸福到底是什么？" pub_date="2010-01-20 19:51" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5218303" />
+	<article comment_count="0" read_count="299" title="沁园春 票" pub_date="2010-01-19 13:06" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5212586" />
+	<article comment_count="1" read_count="980" title="程序语言无好坏之分" pub_date="2010-01-19 13:05" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5212583" />
+	<article comment_count="0" read_count="867" title="从程序语言之争谈起" pub_date="2009-12-24 13:10" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5068600" />
+	<article comment_count="0" read_count="854" title="别再责怪80&amp;90后" pub_date="2009-12-24 12:36" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/5068445" />
+	<article comment_count="0" read_count="510" title="关于爱情的几个寓言故事" pub_date="2009-12-21 20:53" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/5050535" />
+	<article comment_count="0" read_count="849" title="不看国产影视的几大原因" pub_date="2009-12-04 12:38" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/4939344" />
+	<article comment_count="1" read_count="896" title="About Error handling in C" pub_date="2009-12-03 19:58" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/4935108" />
+	<article comment_count="5" read_count="1050" title="What is an excellent programmer?" pub_date="2009-12-03 19:54" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/4935093" />
+	<article comment_count="1" read_count="907" title="how to get internal items from a dialog created from wizard of VC2005" pub_date="2009-12-03 19:46" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/4935052" />
+	<article comment_count="0" read_count="712" title="大学的定律" pub_date="2009-11-26 19:38" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4880692" />
+	<article comment_count="0" read_count="2865" title="男人女人经典语录！" pub_date="2009-11-26 19:33" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4880676" />
+	<article comment_count="0" read_count="387" title="剩女的原因！" pub_date="2009-11-26 19:29" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4880652" />
+	<article comment_count="1" read_count="642" title="雷人的英语句子" pub_date="2009-11-26 19:14" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4880585" />
+	<article comment_count="0" read_count="331" title="2009年度百佳语录！" pub_date="2009-11-26 19:06" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4880563" />
+	<article comment_count="0" read_count="351" title="菜鸟的十大标志" pub_date="2009-11-24 20:04" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4866200" />
+	<article comment_count="0" read_count="397" title="The GNU Project" pub_date="2009-05-29 00:49" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4223251" />
+	<article comment_count="0" read_count="406" title="Richard Stallman" pub_date="2009-05-29 00:44" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4223243" />
+	<article comment_count="0" read_count="367" title="Eric Raymond" pub_date="2009-05-29 00:40" type="reposted" url="http://blog.csdn.net/hitlion2008/article/details/4223236" />
+	<article comment_count="2" read_count="1032" title="四年时光双空空!" pub_date="2008-09-13 20:31" type="originated" url="http://blog.csdn.net/hitlion2008/article/details/2924460" />
+</blog>

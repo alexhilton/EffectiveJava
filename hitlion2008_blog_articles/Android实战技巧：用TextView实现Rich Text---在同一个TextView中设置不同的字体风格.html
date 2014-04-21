@@ -1,0 +1,352 @@
+
+    
+<h2><span style="font-size:18px">背景介绍<br>
+</span></h2>
+<p><span style="font-size:18px">在开发应用过程中经常会遇到显示一些不同的字体风&#26684;的信息犹如默认的LockScreen上面的时间和充电信息。对于类&#20284;的情况，可能第一反应就是用不同的多个TextView来实现，对于每个TextView设置不同的字体风&#26684;以满足需求。<img src="http://hi.csdn.net/attachment/201110/9/0_1318161117ZMDD.gif" alt="" align="middle" height="480" width="320"></span></p>
+<p><span style="font-size:18px">这里推荐的做法是使用android.text.*;和android.text.style.*;下面的组件来实现RichText：也即在同一个TextView中设置不同的字体风&#26684;。对于某些应用，比如文本编辑，记事本，彩信，短信等地方，还必须使用这些组件才能达到想到的显示效果。</span></p>
+<p><span style="font-size:18px">主要的基本工具类有android.text.Spanned; android.text.SpannableString; android.text.SpannableStringBuilder;使用这些类来代替常规String。SpannableString和SpannableStringBuilder可以用来设置不同的Span，这些Span便是用于实现Rich Text，比如粗体，斜体，前景色，背景色，字体大小，字体风&#26684;等等，<span style="font-size:18px">android.text.style.*</span>中定义了很多的Span类型可供使用。</span></p>
+<p><span style="font-size:18px">这是相关的API的Class General Hierarchy：<img src="http://hi.csdn.net/attachment/201110/9/0_1318172127k25S.gif" alt=""></span></p>
+<p><span style="font-size:18px">因为Spannable等最终都实现了CharSequence接口，所以可以直接把SpannableString和SpannableStringBuilder通过TextView.setText()设置给TextView。</span><br>
+<span style="font-size:18px"></span></p>
+<h2><span style="font-size:18px">使用方法</span></h2>
+<p><span style="font-size:18px">当要显示Rich Text信息的时候，可以使用创建一个SpannableString或SpannableStringBuilder，它们的区别在于SpannableString像一个String一样，构造对象的时候传入一个String，之后再无法更改String的内容，也无法拼接多个SpannableString；而SpannableStringBuilder则更像是StringBuilder，它可以通过其append()方法来拼接多个String：</span></p>
+<textarea readonly name="code" class="java">SpannableString word = new SpannableString(&quot;The quick fox jumps over the lazy dog&quot;);
+
+SpannableStringBuilder multiWord = new SpannableStringBuilder();
+multiWord.append(&quot;The Quick Fox&quot;);
+multiWord.append(&quot;jumps over&quot;);
+multiWord.append(&quot;the lazy dog&quot;);</textarea><span style="font-size:18px">创建完Spannable对象后，就可以为它们设置Span来实现想要的Rich Text了，常见的Span有：</span>
+<ul>
+<li><span style="font-size:18px">AbsoluteSizeSpan(int size) ---- 设置字体大小，参数是绝对数&#20540;，相当于Word中的字体大小</span></li><li><span style="font-size:18px">RelativeSizeSpan(float proportion) ---- 设置字体大小，参数是相对于默认字体大小的倍数，比如默认字体大小是x, 那么设置后的字体大小就是x*proportion，这个用起来比较灵活，proportion&gt;1就是放大(zoom in), proportion&lt;1就是缩小(zoom out)<br>
+</span></li><li><span style="font-size:18px">ScaleXSpan(float proportion) ---- 缩放字体，与上面的类&#20284;，默认为1,设置后就是原来的乘以<span style="font-size:18px">proportion</span>，大于1时放大(zoon in)，小于时缩小(zoom out)</span></li><li><span style="font-size:18px">BackgroundColorSpan(int color) ----背景着色，参数是颜色数&#20540;，可以直接使用android.graphics.Color里面定义的常量，或是用Color.rgb(int, int, int)</span></li><li><span style="font-size:18px">ForegroundColorSpan(int color) ----前景着色，也就是字的着色，参数与背景着色一致</span></li><li><span style="font-size:18px">TypefaceSpan(String family) ----字体，参数是字体的名字比如“sans&quot;, &quot;sans-serif&quot;等</span></li><li><span style="font-size:18px">StyleSpan(Typeface style) -----字体风&#26684;，比如粗体，斜体，参数是android.graphics.Typeface里面定义的常量，如Typeface.BOLD，Typeface.ITALIC等等。</span></li><li><span style="font-size:18px">StrikethroughSpan----如果设置了此风&#26684;，会有一条线从中间穿过所有的字，就像被划掉一样</span></li></ul>
+<span style="font-size:18px">对于这些Sytle span在使用的时候通常只传上面所说明的构造参数即可，不需要设置其他的属性，如果需要的话，也可以对它们设置其他的属性，详情可以参见<a target="_blank" href="http://developer.android.com/reference/android/text/style/package-summary.html">文档</a>。</span><br>
+<span style="font-size:18px">SpannableString和SpannableStringBuilder都有一个设置上述Span的方法：</span><textarea readonly name="code" class="java">/**
+ * Set the style span to Spannable, such as SpannableString or SpannableStringBuilder
+ * @param what --- the style span, such as StyleSpan
+ * @param start --- the starting index of characters to which the style span to apply
+ * @param end --- the ending index of characters to which the style span to apply
+ * @param flags --- the flag specified to control
+ */
+setSpan(Object what, int start, int end, int flags);</textarea>
+<p><span style="font-size:18px">其中参数what是要设置的Style span，start和end则是标识String中Span的起始位置，而 flags是用于控制行为的，通常设置为0或Spanned中定义的常量，常用的有：</span></p>
+<ul>
+<li><span style="font-size:18px">Spanned.SPAN_EXCLUSIVE_EXCLUSIVE --- 不包含两端start和end所在的端点<br>
+</span></li><li><span style="font-size:18px">Spanned.SPAN_EXCLUSIVE_INCLUSIVE <span style="font-size:18px">
+--- 不包含端start，但包含end所在的端点</span></span></li><li><span style="font-size:18px">Spanned.SPAN_INCLUSIVE_EXCLUSIVE <span style="font-size:18px">
+--- 包含两端start，但不包含end所在的端点</span></span></li><li><span style="font-size:18px"><span style="font-size:18px">Spanned.SPAN_INCLUSIVE_INCLUSIVE<span style="font-size:18px">--- 包含两端start和end所在的端点</span></span></span></li></ul>
+<p><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">这里理解起来就好像数学中定义区间，开区间还是闭区间一样的。还有许多其他的Flag，可以参考<a target="_blank" href="http://developer.android.com/reference/android/text/Spanned.html">这里</a>。这里要重点说明下关于参数0,有很多时候，如果设置了上述的参数，那么Span会从start应用到Text结尾，而不是在start和end二者之间，这个时候就需要使用Flag
+ 0。</span></span></span></p>
+<h2><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Linkify<br>
+</span></span></span></h2>
+<p><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"></span></span></span></p>
+<p><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">另外，也可以对通过TextView.setAutoLink(int)设置其Linkify属性，其用处在于，TextView会自动检查其内容，会识别出phone
+ number, web address or email address</span></span></span></span>，并标识为超链接，可点击，点击后便跳转到相应的应用，如Dialer，Browser或Email。Linkify有几个常用选项，更多的请参考<a target="_blank" href="http://developer.android.com/reference/android/text/util/Linkify.html">文档</a>：</span></span></span></p>
+<ul>
+<li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Linkify.EMAIL_ADDRESS -- 仅识别出TextView中的Email在址，标识为超链接，点击后会跳到Email，发送邮件给此地址<br>
+</span></span></span></li><li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Linkify.PHONE_NUMBERS<span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"> -- 仅识别出TextView中的电话号码，标识为超链接，点击后会跳到Dialer，Call这个号码</span></span></span></span></span></span></li><li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Linkify.WEB_URLS<span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">--
+ 仅识别出TextView中的网址，标识为超链接，点击后会跳到Browser打开此URL</span></span></span></span></span></span></span></span></span></li><li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">Linkify.ALL -- 这个选项是识别出所有系统所支持的特殊Uri，然后做相应的操作</span></span></span></li></ul>
+<h2><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">权衡选择</span></span></span></span></h2>
+<p><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">个人认为软件开发中最常见的问题不是某个技巧怎么使用的问题，而是何时该使用何技巧的问题，因为实现同一个目标可能有N种不同的方法，就要权衡利弊，选择最合适的一个，正如常言所云，没有最好的，只有最适合的。如前面所讨论的，要想用不同的字体展现不同的信息可能的解法，除了用Style Span外还可以用多个TextView。那么就需要总结下什么时候该使用StyleSpan，什么时候该使用多个TextView：</span></span></span></span></p>
+<ol>
+<li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">如果显示的是多个不同类别的信息，就应该使用多个TextView，这样也方便控制和改变各自的信息，例子就是默认LockScreen上面的日期和充电信息，因为它们所承载不同的信息，所以应该使用多个TextView来分别呈现。</span></span></span></span></li><li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">如果显示的是同一类信息，或者同一个信息，那么应该使用StyleSpan。比如，短信息中，要把联系人的相关信息突出显示；或是想要Highlight某些信息等。</span></span></span></span></li><li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">如果要实现Rich text，没办法，只能使用Style span。</span></span></span></span></li><li><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">如果要实现某些特效，也可以考虑使用StyleSpan。设置不同的字体风&#26684;只是Style span的初级应用，如果深入研究，可以发现很多奇妙的功效。</span></span></span></span></li></ol>
+<h2><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px">实例</span></span></span></h2>
+<p><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"></span></span></span></span></p>
+<textarea readonly name="code" class="html">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;LinearLayout
+  xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+  android:layout_width=&quot;wrap_content&quot;
+  android:layout_height=&quot;wrap_content&quot;
+  android:orientation=&quot;vertical&quot;&gt;
+  &lt;ScrollView
+    android:layout_width=&quot;fill_parent&quot;
+    android:layout_height=&quot;wrap_content&quot;&gt;
+        &lt;LinearLayout
+            android:layout_width=&quot;fill_parent&quot;
+            android:layout_height=&quot;wrap_content&quot;
+            android:orientation=&quot;vertical&quot;&gt;
+			  &lt;TextView
+			    android:id=&quot;@+id/text_view_font_1&quot;
+			    android:layout_width=&quot;fill_parent&quot;
+			    android:layout_height=&quot;wrap_content&quot;
+			    /&gt;
+			  &lt;TextView
+			    android:id=&quot;@+id/text_view_font_2&quot;
+			    android:layout_width=&quot;fill_parent&quot;
+			    android:layout_height=&quot;wrap_content&quot;
+			    /&gt;
+			  &lt;TextView
+			    android:id=&quot;@+id/text_view_font_3&quot;
+			    android:layout_width=&quot;fill_parent&quot;
+			    android:layout_height=&quot;wrap_content&quot;
+			    /&gt;
+			  &lt;TextView
+			    android:id=&quot;@+id/text_view_font_4&quot;
+			    android:layout_width=&quot;fill_parent&quot;
+			    android:layout_height=&quot;wrap_content&quot;
+			    /&gt;
+			  &lt;TextView
+			    android:id=&quot;@+id/text_view_font_5&quot;
+			    android:layout_width=&quot;fill_parent&quot;
+			    android:layout_height=&quot;wrap_content&quot;
+			    /&gt;
+	   &lt;/LinearLayout&gt;
+    &lt;/ScrollView&gt;
+&lt;/LinearLayout&gt;</textarea><span style="font-size:18px">Source code:</span><textarea readonly name="code" class="java">package com.android.effective;
+
+
+
+import java.util.regex.Matcher;
+
+import java.util.regex.Pattern;
+
+
+
+import android.app.Activity;
+
+import android.graphics.Color;
+
+import android.graphics.Typeface;
+
+import android.os.Bundle;
+
+import android.text.Spannable;
+
+import android.text.SpannableString;
+
+import android.text.SpannableStringBuilder;
+
+import android.text.style.AbsoluteSizeSpan;
+
+import android.text.style.BackgroundColorSpan;
+
+import android.text.style.ForegroundColorSpan;
+
+import android.text.style.QuoteSpan;
+
+import android.text.style.RelativeSizeSpan;
+
+import android.text.style.ScaleXSpan;
+
+import android.text.style.StrikethroughSpan;
+
+import android.text.style.StyleSpan;
+
+import android.text.style.TypefaceSpan;
+
+import android.text.style.URLSpan;
+
+import android.text.util.Linkify;
+
+import android.widget.TextView;
+
+
+
+public class TextViewFontActivity extends Activity {
+
+    @Override
+
+    public void onCreate(Bundle bundle) {
+
+        super.onCreate(bundle);
+
+        setContentView(R.layout.textview_font_1);
+
+        
+
+        // Demonstration of basic SpannableString and spans usage
+
+        final TextView textWithString = (TextView) findViewById(R.id.text_view_font_1);
+
+        String w = &quot;The quick fox jumps over the lazy dog&quot;;
+
+        int start = w.indexOf('q');
+
+        int end = w.indexOf('k') + 1;
+
+        Spannable word = new SpannableString(w);
+
+        word.setSpan(new AbsoluteSizeSpan(22), start, end, 
+
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word.setSpan(new StyleSpan(Typeface.BOLD), start, end, 
+
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word.setSpan(new BackgroundColorSpan(Color.RED), start, end, 
+
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        textWithString.setText(word);
+
+        
+
+        // Demonstration of basic SpannableStringBuilder and spans usage
+
+        final TextView textWithBuilder = (TextView) findViewById(R.id.text_view_font_2);
+
+        SpannableStringBuilder word2 = new SpannableStringBuilder();
+
+        final String one = &quot;Freedom is nothing but a chance to be better!&quot;;
+
+        final String two = &quot;The quick fox jumps over the lazy dog!&quot;;
+
+        final String three = &quot;The tree of liberty must be refreshed from time to time with &quot; +
+
+                &quot;the blood of patroits and tyrants!&quot;;
+
+        word2.append(one);
+
+        start = 0;
+
+        end = one.length();
+
+        word2.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+
+
+        word2.append(two);
+
+        start = end;
+
+        end += two.length();
+
+        word2.setSpan(new ForegroundColorSpan(Color.CYAN), start, end, 
+
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        word2.append(three);
+
+        start = end;
+
+        end += three.length();
+
+        word2.setSpan(new URLSpan(three), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textWithBuilder.setText(word2);
+
+        
+
+        // Troubleshooting when using SpannableStringBuilder
+
+        final TextView textTroubles = (TextView) findViewById(R.id.text_view_font_3);
+
+        SpannableStringBuilder word3 = new SpannableStringBuilder();
+
+        start = 0;
+
+        end = one.length();
+
+        // Caution: must first append or set text to SpannableStringBuilder or SpannableString
+
+        // then set the spans to them, otherwise, IndexOutOfBoundException is thrown when setting spans
+
+        word3.append(one);
+
+        // For AbsoluteSizeSpan, the flag must be set to 0, otherwise, it will apply this span to until end of text
+
+        word3.setSpan(new AbsoluteSizeSpan(22), start, end, 0);//Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        // For BackgroundColorSpanSpan, the flag must be set to 0, otherwise, it will apply this span to end of text
+
+        word3.setSpan(new BackgroundColorSpan(Color.DKGRAY), start, end, 0); //Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.append(two);
+
+        start = end;
+
+        end += two.length();
+
+        word3.setSpan(new TypefaceSpan(&quot;sans-serif&quot;), start, end, 
+
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        // TODO: sometimes, flag must be set to 0, otherwise it will apply the span to until end of text
+
+        // which MIGHT has nothing to do with specific span type.
+
+        word3.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), start, end, 0);//Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.setSpan(new ScaleXSpan(0.618f), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.setSpan(new StrikethroughSpan(), start, end, 0);//Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.setSpan(new ForegroundColorSpan(Color.CYAN), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.setSpan(new QuoteSpan(), start, end, 0); //Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.append(three);
+
+        start = end;
+
+        end += three.length();
+
+        word3.setSpan(new RelativeSizeSpan((float) Math.E), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        word3.setSpan(new ForegroundColorSpan(Color.BLUE), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        textTroubles.setText(word3);
+
+        
+
+        // Highlight some patterns
+
+        final String four = &quot;The gap between the best software engineering &quot; +
+
+                &quot;practice and the average practice is very wide¡ªperhaps wider &quot; +
+
+                &quot; than in any other engineering discipline. A tool that disseminates &quot; +
+
+                &quot;good practice would be important.¡ªFred Brooks&quot;;
+
+        final Pattern highlight = Pattern.compile(&quot;the&quot;);
+
+        final TextView textHighlight = (TextView) findViewById(R.id.text_view_font_4);
+
+        SpannableString word4 = new SpannableString(four);
+
+        Matcher m = highlight.matcher(word4.toString());
+
+        while (m.find()) {
+
+            word4.setSpan(new StyleSpan(Typeface.BOLD_ITALIC), m.start(), m.end(), 
+
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+            word4.setSpan(new ForegroundColorSpan(Color.RED), m.start(), m.end(), 
+
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+            word4.setSpan(new StrikethroughSpan(), m.start(), m.end(), 
+
+                    Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+        }
+
+        textHighlight.setText(word4);
+
+        
+
+        // Set numbers, URLs and E-mail address to be clickable with TextView#setAutoLinkMask
+
+        final TextView textClickable = (TextView) findViewById(R.id.text_view_font_5);  
+
+        final String contact = &quot;Email: mvp@microsoft.com\n&quot; +
+
+                &quot;Phone: +47-24885883\n&quot; +
+
+                &quot;Fax: +47-24885883\n&quot; +
+
+                &quot;HTTP: www.microsoft.com/mvp.asp&quot;;
+
+        // Set the attribute first, then set the text. Otherwise, it won't work
+
+        textClickable.setAutoLinkMask(Linkify.ALL); // or set 'android:autoLink' in layout xml
+
+        textClickable.setText(contact);
+    }
+}</textarea><span style="font-size:18px">The results:</span>
+<p></p>
+<p><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201110/9/0_13181681241zyh.gif" alt=""><img src="http://hi.csdn.net/attachment/201110/9/0_1318168144aism.gif" alt=""><br>
+</span></span></span></span></p>
+

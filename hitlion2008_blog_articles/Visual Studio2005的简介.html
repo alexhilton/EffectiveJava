@@ -1,0 +1,94 @@
+
+    <p class="MsoNormal" style="margin-left: 18pt; text-indent: -18pt;"><!--   [if !supportLists]--><!--   [endif]--><span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">Visual
+studio 2005</span>
+<span style="font-family: 宋体;">的一些总结</span>
+
+</p>
+<p class="MsoNormal" style="margin-left: 42pt; text-indent: -21pt;"><!--   [if !supportLists]--><span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">a)<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>
+</span>
+<!--   [endif]--><span style="font-family: 宋体;">对于</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">Visual studio</span>
+<span style="font-family: 宋体;">的每一个工程都有二个版本，一个是调试版本，另一个是发布版本。其中最主要的区别在于调试版本定义了很多用于调试信息的宏，如：</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">_DEBUG,DEBUG</span>
+<span style="font-family: 宋体;">等。调试版本主要用于调试，可以很方便的打印</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">LOG</span>
+<span style="font-family: 宋体;">信息，查看堆栈信息等等。发布版本则只包含代码所编译生成的二进制文件。通常来讲，调试版本要比发布版本要大的多！</span>
+
+</p>
+<p class="MsoNormal" style="margin-left: 42pt; text-indent: -21pt;"><!--   [if !supportLists]--><span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">b)<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>
+</span>
+<!--   [endif]--><span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">Windows
+API</span>
+<span style="font-family: 宋体;">和</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">MFC</span>
+<span style="font-family: 宋体;">的函数，对于同一函数都有二个版本，一个是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">的版本，另一个则是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">的版本，二者的区别在于：</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">版本的函数支持</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">编码，也就是对非英语支持的很好，其所需的参数和返回值都是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">形式的；而</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">版本的函数，则只支持</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">编码，其参数全都是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">编码格式。因此，如果你的程序要支持多语言则就用</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">版本，否则应该用</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">版本，因为</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">用起来很方便，而且标准</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">C/C++</span>
+<span style="font-family: 宋体;">都用的是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">。默认的是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">的版本，而</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">版本的函数名字后面会多一个</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">A</span>
+<span style="font-family: 宋体;">，也可以在后面用</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">U</span>
+<span style="font-family: 宋体;">，代表</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">版本。例如：获取当前路径的函数：</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectory,</span>
+<span style="font-family: 宋体;">有三个函数：</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectoryA,
+GetCurrentDirectoryU</span>
+<span style="font-family: 宋体;">和</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectory,</span>
+<span style="font-family: 宋体;">其中</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectoryA</span>
+<span style="font-family: 宋体;">是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">ASCII</span>
+<span style="font-family: 宋体;">版本。而</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectoryU</span>
+<span style="font-family: 宋体;">和</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectory</span>
+<span style="font-family: 宋体;">则是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">UNICODE</span>
+<span style="font-family: 宋体;">版本，但是</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectoryU</span>
+<span style="font-family: 宋体;">已经慢慢的被忘记，所以通常只能见到</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectoryA</span>
+<span style="font-family: 宋体;">和</span>
+<span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">GetCurrentDirectory</span>
+<span style="font-family: 宋体;">。</span>
+
+</p>
+<p class="MsoNormal" style="margin-left: 42pt; text-indent: -21pt;"><!--   [if !supportLists]--><span style="font-family: &quot;Comic Sans MS&quot;;" lang="EN-US">c)<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>
+</span>
+<!--   [endif]--><span style="font-family: 宋体;">对于工程的配置，对于每一个项目都有一个选项卡片来控制工程的所有配置，可以根据需要进行相应的配置。</span>
+
+</p>
+<p>&nbsp;</p>

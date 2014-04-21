@@ -1,0 +1,28 @@
+
+    
+<span style="font-size:18px">平日里有很多的事情都可以用Script来完成，学习必要的脚本并写出Script以代替手工。<br>
+我们的目标是DRY和Automation。<br>
+需要的工具：<br>
+Shell<br>
+Perl<br>
+Linux tools:&nbsp;&nbsp; sed, replace, find, xargs等等。<br>
+如，替换文件中的某些内容就可以用replace命令来完成：<br>
+</span><textarea readonly name="code" class="plain">#replace audio image Audio Image -- file
+</textarea><span style="font-size:18px">或者，对当前目录下所有的都如此处理：</span><br>
+<textarea readonly name="code" class="plain">#find . -type f -exec replace audio image Audio Image -- {} ';'</textarea><span style="font-size:18px">自己用sed来写replace脚本：</span><br>
+<textarea readonly name="code" class="plain">#!/bin/sh
+
+TMP_FILE=temp_temp.tmp
+if [ ! $# -eq 3 ]
+then
+    echo &quot;Usage: replace.sh match pattern file&quot;;
+    exit;
+fi
+sed -e &quot;s/$1/$2/g&quot; $3 &gt; $TMP_FILE
+mv $TMP_FILE $3
+</textarea><span style="font-size:18px">之后这样应用：</span><br>
+<textarea readonly name="code" class="plain">#replace.sh audio image file1
+</textarea><span style="font-size:18px">或者</span><br>
+<textarea readonly name="code" class="plain"># find . -type f -exec ./replace.sh audio image {} ';'</textarea><br>
+<span style="font-size:18px">正所谓磨刀不误砍柴功，花点时间学习一下这些脚本语言并写写脚本来替代手工操作，将会使工作效率大幅提升。有关DRY和Automation可以看看《Pragmatic Programmer》和《The Productive Programmer》这二本书，其中都有比较详细和深入的讨论。</span><br>
+

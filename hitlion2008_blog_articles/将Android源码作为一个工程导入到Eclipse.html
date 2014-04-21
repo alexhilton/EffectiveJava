@@ -1,0 +1,28 @@
+
+    <p><span style="font-size: medium;">1. 获取源代码</span>
+</p>
+<p><span style="font-size: medium;">2. 编译</span>
+</p>
+<p><span style="font-size: medium;">3. 将工程配置信息拷到源码的根目录下面：</span>
+</p>
+<p><span style="font-size: medium;">#cp development/ide/eclipse/.classpath .</span>
+</p>
+<p><span style="font-size: medium;">4. 修改Eclipse启动参数，将内存改大些， 因为Android的源非常多，如不扩大内存在编译的时候可能会报</span>
+</p>
+<p><span style="font-size: medium;">out of memory </span>
+</p>
+<p><span id="ctl00_MainContentPlaceholder_ctl01_ctl00_lblEntry"> <span style="font-size: medium;">-XX:MaxPermSize=256m<br />
+-Xms128m<br />
+-Xmx512m</span>
+</span>
+</p>
+<p><span style="font-size: medium;">5. 新建一个Java工程(不是ANDROID工程），然后选择&ldquo;</span>
+<span id="ctl00_MainContentPlaceholder_ctl01_ctl00_lblEntry"><span style="font-size: medium;">Create Project from existing source&quot;, 剩下就是等待了。</span>
+</span>
+</p>
+<p><span><span style="font-size: medium;">注：在导入过程中可能会出现错误。把工作空间内的其他工程先关掉， 查看具体的错误信息。多数情况下都是某些包没有找到。对于这类错误，你只需在.classpath文件中把相关的条目删掉即可。如遇到缺少某些包， 可能是没有导入进来， 在</span>
+</span>
+<span><span style="font-size: medium;">.classpath中加入相应的条目， 然后Refresh工程即可。<br />
+</span>
+</span>
+</p>

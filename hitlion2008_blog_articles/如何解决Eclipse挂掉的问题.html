@@ -1,0 +1,25 @@
+
+    
+<p><span style="font-size:16px">近日，Eclipse经常挂掉，都是由于JVM崩溃的原因。每次都有以下错误日志：</span></p>
+<p><span style="font-size:16px">#<br>
+# A fatal error has been detected by the Java Runtime Environment:<br>
+#<br>
+#&nbsp; SIGSEGV (0xb) at pc=0x7bab036c, pid=12169, tid=3072990096<br>
+#<br>
+# JRE version: 6.0_17-b04<br>
+# Java VM: Java HotSpot(TM) Server VM (14.3-b01 mixed mode linux-x86 )<br>
+# Problematic frame:<br>
+# C&nbsp; [libxul.so&#43;0xc8236c]<br>
+#<br>
+# If you would like to submit a bug report, please visit:<br>
+#&nbsp;&nbsp; http://java.sun.com/webapps/bugreport/crash.jsp<br>
+# The crash happened outside the Java Virtual Machine in native code.<br>
+# See problematic frame for where to report the bug.<br>
+#<br>
+非常的郁闷， 后来Google了一痛，发现如下方法可以解决：</span></p>
+<p><span style="font-size:16px">在Eclipse的启动参数中加入：</span></p>
+<p><span style="font-size:16px"><code class="plain plain">-Dorg.eclipse.swt.browser.XULRunnerPath=/usr/lib/xulrunner-1.9/</code></span></p>
+<p><span style="font-size:16px">然后问题就解决了。</span></p>
+<p><span style="font-size:16px">参考：<a target="_blank" href="http://blog.flib.me/tag/libxul/"><em>http://blog.flib.me/tag/libxul/</em></a><br>
+</span></p>
+

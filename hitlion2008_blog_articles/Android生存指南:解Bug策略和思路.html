@@ -1,0 +1,43 @@
+
+    
+<span style="font-size:18px">现在维护和定制Android的需求越来越多，做的人也越来越多，而Google直接Release出来的源码中又有很多Bug和不合理的地方，特别是原生的应用，如Mms，Browser, Email, Contacts等。定制或做Android解决方案第一步就是要修复原生的Bug以得到一个稳定的系统。<br>
+</span>
+<h2><span style="font-size:18px">1. 仔细观察Bug的特性</span></h2>
+<span style="font-size:18px">了解Bug所涉及的流程和模块有哪些，以及是什么样的Bug，Exception？功能上的？还是UI/UE设计问题。针对不同的问题，可能要采取不同的手段，对于Exception就要先分析Log文件，以确定产生Exception的原因；对于功能上的问题，可能要先尝试复现； 对于UI/UE的问题可能有要先找UI设计师确认是否需要修改。<br>
+</span>
+<h2><span style="font-size:18px">2. 找出决定因素，排除次要和无关因素</span></h2>
+<span style="font-size:18px">分析，推敲和尝试复现以排除次要的，无关的因素和操作步骤。如果跟某些特定的数据有关，就要把数据进行拆解，以把无影响的部分去掉，直到找到引起问题的特殊数据。<br>
+</span>
+<h2><span style="font-size:18px">3. 对比</span></h2>
+<span style="font-size:18px">跟正常的流程进行对比，跟没有问题的版本进行对比，跟同一系列的产品进行对比，看有哪些异常和不一致的地方。<br>
+</span>
+<h2><span style="font-size:18px">4. 单一变量原则</span></h2>
+<span style="font-size:18px">每次改动一个变化的东西，这样你才能清楚是因为什么产生了问题或是解决了问题。如果同时的改动有二个就很难分的清是哪一个产生了作用。<br>
+</span>
+<h2><span style="font-size:18px">5. 分而治之</span></h2>
+<span style="font-size:18px">通过分治的方法逐步缩小范围，先在一个模块分析，确定有问题或没问题，然后再转到其模块，先在其中一个逻辑或文件中分析，然后再到其他的，以避免盲目的乱找。<br>
+</span>
+<h2><span style="font-size:18px">6. 模拟场景</span></h2>
+<span style="font-size:18px">用特殊的数据，或者修改代码来模拟Bug发生时的场景。这对复现非必现Bug时特别有用，对线程问题也很有用。<br>
+</span>
+<h2><span style="font-size:18px">7. 定位问题的方法：经验＋Log＋Debugging工具</span></h2>
+<span style="font-size:18px">经验是要靠积累才能得来的，通常情况下对代码和流程熟悉的人定位起来就快速的多； Log是指日志文件和打印这种简单粗暴的方式；调试工具是指像Eclipse和GDB等断点单步工具。通常用经验和Log来进行大范围的定位，当对流程有了一定的了解后，且已经定位到稍小的范围，如一个函数内或一个文件内时就可以用工具进行断点和单步调试以精确定位。当范围很大时，如用调试工具会很慢，很难找到有效的断点，单步的话又太烦琐，很容易让人混乱和丢失思路。<br>
+</span>
+<h2><span style="font-size:18px">8. 逆向推理和洞察力</span></h2>
+<span style="font-size:18px">在调试解Bug过程中逆向推理力十分的重要，因为你得到的是一个结果（Bug），而要去找到它的原因，就需要推理和猜测问题可能是出在哪里。另外一个非常重要的能力就是洞察力，观察Log，操作等，注意一些细微的差异，发现一些隐藏的线索等。当然，这与经验不同，不是那么容易就能培养出来的！<br>
+</span>
+<h2><span style="font-size:18px">9. 具体的方法和工具</span></h2>
+<span style="font-size:18px">a. 编译<br>
+很显然，要想用日志等方法，就要修改源码，添加日志，就要编译。整体编译Android可以用make，整体编译过一次后就可以局部编译，进入到某个带有Android.mk文件的目录运行mm就可以把此目录重新编译成apk, jar或so<br>
+b. 运行<br>
+编译好后，就要把新编译出来的Apk或jar或so运行起来以看到不同。可以直接把apk,jar和so通过adb push 到手机中（apk到/system/app, jar到/system/framework, so到/system/lib)。或者用mm snod命令重新生成system.img，然后再使用（模拟器可以这样做）。<br>
+c. 调试工具<br>
+</span>
+<ul>
+<li><span style="font-size:18px">Apk用Eclipse就可以直接调，前提要能编译过</span></li></ul>
+<ul>
+<li><span style="font-size:18px">jar也要用Eclipse来调试</span></li></ul>
+<ul>
+<li><span style="font-size:18px">so因为都是Native C/C&#43;&#43;代码，所以要用GDB来调试。手机中运行gdbserver，PC上用gdb调试编译出来的symbols/下面的库，gdb和gdbserver用过手机中指定的端口来通信。</span></li></ul>
+<br>
+

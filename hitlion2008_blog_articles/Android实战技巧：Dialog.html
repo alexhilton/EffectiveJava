@@ -1,0 +1,177 @@
+
+    
+<p><span style="font-size:18px">Dialog是任何系统都必须有的一个控件，作为辅助窗口，用于显示一些消息，或请求用户采取一引起操作等。</span></p>
+<p><span style="font-size:18px">在Android中也不例外，基本使用可能参看文档。<br>
+</span></p>
+<h2><span style="font-size:18px">使用时的注意事项</span></h2>
+<p><span style="font-size:18px">1. BACK键能取消掉对话框(dismiss)，但是却不会触发其onOkey和onCancel回调接口，所以如果你的对话框会改某些状态，一定要注意还有第三种方式取消对话框。</span></p>
+<p><span style="font-size:18px">2. 尽量少用模态对话框(Model dialog)，如果Dialog.setCancellable(false)，就变成了一个模态对话框，除了程序内部把其Dismiss，否则按什么键都无法将其取消。这是极差的用户体验，对话框本身就是一种干扰，再无法取消会把用户搞疯的。所以除非特别有必要，也即当执行某个操作时不希望被打破，才可以使用模态对话框。</span></p>
+<p><span style="font-size:18px">3. 尽量少用对话框，它对用户是一种干扰，除非需要用户做操作，或者做出选择。通常的一般性的通知用Toast或者Notification就足够了。</span></p>
+<p><span style="font-size:18px">4. 不要使用对话框风&#26684;的Activity，也即把Activity变成一个对话框。因为这样是自已定义的布局，与系统Dialog的风&#26684;可能会不一致。最严重的是当系统风&#26684;发生变化，Dialog的子类会变化，但Activity式的对话框就不会变化。可以在ICS中找一找Activity对话框，你会发现其OK是在左边，而ICS中系统Dialog的OK都是在右边的。</span></p>
+<p><span style="font-size:18px">5. 尽量保证Dialog对象活在Activity的生命周期之内，也即至多是在onCreate()和onDestroy()之间。</span></p>
+<p><span style="font-size:18px">6. 要想到和测试到Activity在其Dialog.dismiss()之前死掉的情况。因为Activity必须依附于某个正在显示的Activity实例，当显示和取消的时候其Activity实例必须存在，否则就会有&quot;IllegalArgumentException: View not attached to window manager&quot;。</span></p>
+<p><span style="font-size:18px"></span><textarea readonly name="code" class="plain">05-15 02:45:26.320: E/AndroidRuntime(1161): java.lang.IllegalArgumentException: View not attached to window manager
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.view.WindowManagerImpl.findViewLocked(WindowManagerImpl.java:355)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.view.WindowManagerImpl.removeView(WindowManagerImpl.java:200)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.view.Window$LocalWindowManager.removeView(Window.java:432)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.app.Dialog.dismissDialog(Dialog.java:278)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.app.Dialog.access$000(Dialog.java:71)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.app.Dialog$1.run(Dialog.java:111)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.app.Dialog.dismiss(Dialog.java:268)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at com.hilton.effectiveandroid.app.DialogDemo$1.handleMessage(DialogDemo.java:26)
+05-15 02:45:26.320: E/AndroidRuntime(1161):     at android.os.Handler.dispatchMessage(Handler.java:99)</textarea><br>
+</p>
+<p><span style="font-size:18px">7. Dialog.show()必须在主线程里调用，但Dialog.dismiss()却可以在任何线程中调用。</span></p>
+<h2><span style="font-size:18px">三种使用方式比较</span></h2>
+<p><span style="font-size:18px">1. 直接创建一个局部的Dialog对象</span></p>
+<p><span style="font-size:18px">优点是变量是局部的容易理解和维护。缺点是Dialog对象难以控制，容易引发RuntimeException。</span></p>
+<p><span style="font-size:18px">2. 把Dialog对象变成Activity的域</span></p>
+<p><span style="font-size:18px">优点是Dialog对象可以重复利用，且Activity可以控制以保证Dialog不会在Activity生命周期外显示。是推荐的使用方式。</span></p>
+<p><span style="font-size:18px">3. 用Activity的方法onCreateDialog(), showDialog()和dismissDialog()</span></p>
+<p><span style="font-size:18px">优点是Frameworks会帮忙照看Dialog，在大多数情况下这是推荐的做法。但是对于Activity提前死掉的情况，此方法必有RuntimeException，且无法回避。</span></p>
+<h2><span style="font-size:18px">实例</span></h2>
+<p><span style="font-size:18px"></span><textarea readonly name="code" class="java">public class DialogDemo extends Activity {
+    private static final int DISMISS_DIALOG = 1;
+    
+    private ProgressDialog mBetterDialog;
+
+    private Handler mMainHandler = new Handler() {
+	@Override
+	public void handleMessage(Message msg) {
+	    switch (msg.what) {
+	    case DISMISS_DIALOG:
+		Dialog dialog = (Dialog) msg.obj;
+		dialog.dismiss();
+		break;
+	    default:
+		break;
+	    }
+	}
+    };
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.dialog_demo);
+	
+	final Button sucking = (Button) findViewById(R.id.sucking);
+	sucking.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		final Activity activity = DialogDemo.this;
+		final ProgressDialog dialog = new ProgressDialog(activity);
+		dialog.setTitle(&quot;Worst dialogging&quot;);
+		dialog.setMessage(&quot;This is the worst dialogging scheme, NEVER use it. This dialog is easy to &quot; +
+			&quot;run out of its attached activity, yielding WindowManager#BadTokenException if the activity is gone when dismissing&quot;);
+		dialog.setIndeterminate(true);
+		dialog.setCancelable(true);
+		// You MUST do the show in main thread anyway
+		dialog.show();
+		new Thread(new Runnable() {
+		    public void run() {
+			SystemClock.sleep(10000);
+			/*
+			 * IllegalArgumentException: View not attached to window manager
+			 * If the activity showing the dialog was killed before dismiss() out of rotation or locale changed,
+			 * the dialog will gone with activity, but when dismiss() yields &quot;IllegalArgumentException: View not attached to 
+			 * window manager&quot;.
+			 * Checking isShowing() won't help.
+			 * Checking activity.isFinishing() won't help, either.
+			 * Dismiss it in main thread also won't give any help.
+			 */
+			// THIS WON't WORK
+//			if (dialog.isShowing()) {
+//			    dialog.dismiss();
+//			}
+//			if (!activity.isFinishing()) {
+//			    dialog.dismiss();
+//			}
+			Message msg = Message.obtain();
+			msg.what = DISMISS_DIALOG;
+			msg.obj = dialog;
+			mMainHandler.sendMessage(msg);
+		    }
+		}).start();
+	    }
+	});
+	
+	final Button better = (Button) findViewById(R.id.better);
+	better.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		mBetterDialog = new ProgressDialog(DialogDemo.this);
+		mBetterDialog.setTitle(&quot;Better dialogging&quot;);
+		mBetterDialog.setMessage(&quot;This dialogging can be used. The dialog object is a field of its activity, so activity can&quot; +
+				&quot; control it to make sure dialog only lives within activity lifecircle&quot;);
+		mBetterDialog.setIndeterminate(true);
+		mBetterDialog.setCancelable(true);
+		// You MUST do the show in main thread anyway
+		mBetterDialog.show();
+		new Thread(new Runnable() {
+		    public void run() {
+			SystemClock.sleep(10000);
+			/*
+			 * This is much better, mBetterDialog is a field of its activity, so activity can take care of it in order
+			 * to make sure dialog only live within activity's life circle, to avoid any unexpected exceptions.
+			 */
+			// THIS really works
+    			if (mBetterDialog != null &amp;&amp; mBetterDialog.isShowing()) {
+    			    mBetterDialog.dismiss();
+    			}
+		    }
+		}).start();
+	    }
+	});
+	
+	final Button optional = (Button) findViewById(R.id.optional);
+	optional.setOnClickListener(new View.OnClickListener() {
+	    @SuppressWarnings(&quot;deprecation&quot;)
+	    public void onClick(View v) {
+		showDialog(0);
+		new Thread(new Runnable() {
+		    public void run() {
+			SystemClock.sleep(10000);
+			/*
+			 * This way works best for most of time, except if activity died before dismissing, exception must be
+			 * thrown: &quot;IllegalArgumentException: View not attached to window manager&quot;.
+			 * Although activity takes care of its belonging dialog, there is no way to operate it manually any more.
+			 * First you do not have reference to dialog object and second, any manual operation only interferences
+			 * and breaks state maintained by frameworks.
+			 */
+			dismissDialog(0);
+		    }
+		}).start();
+	    }
+	});
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+	ProgressDialog d = new ProgressDialog(this);
+	d.setTitle(&quot;Optional dialogging&quot;);
+	d.setMessage(&quot;This dialogging scheme works best for most times, the dialogs are all taken care of by activitys and frameworks&quot; +
+			&quot;. Except for activity being killed during dialog showing&quot;);
+	d.setIndeterminate(true);
+	d.setCancelable(true);
+	return d;
+    }
+
+    @Override
+    protected void onDestroy() {
+	super.onDestroy();
+	// Activity is dying, all its belonging dialogs should be dismissed, of course.
+	if (mBetterDialog != null &amp;&amp; mBetterDialog.isShowing()) {
+	    mBetterDialog.dismiss();
+	    mBetterDialog = null;
+	}
+	// For dialogs showed via showDialog(int), no way to stop it in onDestroy()
+//	dismissDialog(0); // cause &quot;IllegalArgumentException: no dialog with id 0 was ever shown via Activity#showDialog&quot;
+			    // This is because Activity has to manage its dialog during onPause() and onResume() to restore
+	                  // dialogs' state. So if you manually dismiss it in onDestroy(), it will cause JE.
+	
+//	removeDialog(0);// cause &quot;IllegalArgumentException: no dialog with id 0 was ever shown via Activity#showDialog&quot;, when
+			// dismissing in thread. 
+	              // This is because Activity has to manage its dialog during onPause() and onResume() to restore
+                     // dialogs' state. So if you manually dismiss it in onDestroy(), it will cause JE.
+    }
+}</textarea><br>
+<br>
+</p>
+

@@ -1,0 +1,13 @@
+
+    
+<span style="font-size:18px">Contact联系人对Mms来说是十分重要的，因为每一个对话的收信人都是一个联系人，新建信息时可以输入联系人的任何信息，比如号码或名字，Mms都可以把信息发给相应的人。Mms中的类Contact就是用来代表一个联系人，它含有联系人的信息，如名字，号码，联系人Id，是否存在于联系人数据库等等，同时Contact也提供了一些方法来获取Contact对象,Contact.get()方法来获取Contact对象。Contact会保持数据与联系人数据库的同步，有一个接口updateContact()用于通知联系人信息已经发生了改变。<br>
+<br>
+Contact内部也有一个Cache，用于保存最近用到的联系人。因为外部在用Contact.get()方法来获取Contact时通常都只传给一个号码，并期望获取Contact。<br>
+<br>
+Contact内部的Cache是由ContactCache类来创建和管理的。它内部还有一个TaskStack用于管理一些Runnable。因为每个从数据库中加载Contact都是一个单独的线程，这个TaskStack就是专门用于管理Runnable和，以Stack的方式来管理，也即FILO顺序的方式来运行Runnable任务。<br>
+<br>
+ContactCache中有很多重载的get()方法用于获取Contact对象，其中都有一个布尔参数canBlock，这个是说是以阻塞调用者的方式来加载Contact还是以异步的方式来加载，另外一个参数就是联系人的号码。get()方法会先调用internalGet()方法，internalGet()会先试图从内部的CachemContactHash中获取Contact，如果不存在就用传入的号码新建一个Contact，总之它一定会返回一个联系人的。之后会进行updateContact()的动作，updateContact()就是放在一个Runnable线程中，如果调用者是可阻塞的，马上就运行这个Runnable来updateContact，如果是异步方式就把这个Runnable放到TaskStack中稍后运行。UpdateContact会调用getContactInfo来获取联系人的信息，getContactInfo会调用getContactInfoForSelf(),getContactInfoForPhoneNumber,getContactInfoForEmailAddress()来获取具体的联系人信息。其中如果这个号码是手机联系人自己本身，就获取本机的相关信息；如果号码是一个Email地址或者一个短号码，或者字符号码，那么就把号码作为一个Email地址来查询，也就是说把它作为联系人的Email字段匹配来查询；其他情况，也就是号码就是一个电话号码，把它与联系人的电话号码字段匹配查询。updateContact在查询完成后，会调用接口UpdateListener.onUpdate()，以告诉监听者，联系人已更新。因为联系人的获取过程中都是异步的，所以才会在更新完成后调用接口来通知。<br>
+<br>
+内部的Cache的数据结构是一个HashMap&lt;String,ArrayList&lt;Contact&gt;&gt;，Key是以Contact内部的数据来生成的。InvalidateCache时并不会移除mContactsHash内部的数据，而是把其标识为Stale，当下次Get这个Contact时就会调用updateContact()来更新这个Contact。<br>
+</span>
+

@@ -1,0 +1,97 @@
+
+    
+<span style="font-size:18px">从软件的功能角度来讲，Mms分为对话列表，消息列表，短信编辑，彩信编辑，短信显示，彩信显示和配置。<br>
+从实现的角度来看，它分为GUI展示层，发送/接收，彩信解析，彩信附件，信息数据等，这些分类对应着源码中的各种包。<br>
+</span>
+<h2><span style="font-size:18px">源码导航</span></h2>
+<span style="font-size:18px">Mms的源码的位置在于android/packages/apps/Mms<br>
+其中Mms/src/com/android/mms里面都是Mms相关的代码，而Mms/src/org/w3c/dom里面是一个类库，主要用于彩信&#26684;式的解析和显示。这里主要讲一下Mms/src/com/android/mms下面的一些包和类的主要用途。<br>
+<span style="color:#000099"><strong>ui</strong></span>---GUI展示层，用于展示对话列表，消息列表，消息编辑页，彩信附件编辑，彩信展示，播放幻灯片。负责直接与用户交互。<br>
+</span>
+<ul>
+<li><span style="font-size:18px">ConversationListAdapter.java---对话列表的Adapter用于给显示层ConversationList绑定数据。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">ConversationListItemData.java---代表对话列表中的每一项的数据结构，里面含有要在对话列表中展示的信息。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">ConversationList.java------这是对话列表的显示窗口Activity，它是一个ListActivity，这几个类都是对话列表的相关类，用于显示，编辑和管理所有的对话。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">ComposeMessageActivity.java----这个是核心的窗口Activity，编辑信息，显示一条对话Thread中的所有往来信息。MessageListView会加在其上面，另外，AttachmentEditor也会加在其上面。这个Activity也负责响应外部应用程序，发送SENDTO或SEND等请求Intent，比如外部应用想要发送信息，等就由这个Activity来响应。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">MessageItem.java---代表一个信息的抽象数据，它包含了信息相关的所有内容，比如信息的主题，消息内容，来信地址，附件内容等等。它的所有数据都是公共的内部成员，都可以直接访问。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">MessageListAdapter.java---用于给消息列表显示层（由ComposeMessageActivity创建，绑定到MessageListView上）绑定数据。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">MessageListView.java---用于显示消息列表，继承自ListView，其生命周期由ComposeMessageActivity来控制，显示与否也由它来控制。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">MessageListItem.java---是一个布局，用于显示和控制消息列表中的每一个消息的显示。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">AttachmentTypeSelectorAdapter.java---用于添加附件件时的一个支持的附件列表，它就是一个菜单。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">AttachmentEditor.java---用于在编辑MMS彩信信息时，显示已添加的附件，它的生命周期由ComposeMessageActivity来控制，显示与否也是由ComposeMessageActivity来控制，当有彩信附件时，它就会显示，否则就被Hide。它是一个布局管理器，管理着下面四个布局，根据附件的类型动态的显示下面四个View中的某一个。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">AudioAttachmentView.java---在编辑信息器中用于显示音频附件，它是继承自线性布局。并不在代码中直接使用，而是在布局文件中来当成布局管理器使用。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">ImageAttachmentView.java---在编辑信息器中用于显示图片附件，它是继承自线性布局。并不在代码中直接使用，而是在布局文件中来当成布局管理器使用。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideshowAttachmentView.java---在编辑信息器中用于显示幻灯片附件，它是继承自线性布局。并不在代码中直接使用，而是在布局文件中来当成布局管理器使用。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">VideoAttachmentView.java---在编辑信息器中用于显示视频附件，它是继承自线性布局。并不在代码中直接使用，而是在布局文件中来当成布局管理器使用。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideshowActivity.java—用来全屏播放幻灯片，也即幻灯片的展示，因为彩信的创建和播放都是以幻灯片的方式进行的，也即一张一张的，每张上面可以文字，图片，视频和音频，每一张有浏览时长。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideshowEditActivity.java---以列表方式管理幻灯片，也即是把所有的幻灯片用列表显示出来，用户可添加一页幻灯片，也可以点击进入编辑某页幻灯片，用于创建和编辑幻灯片。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideshowEditor.java---用于编辑某页幻灯片，比如添加元素，删除元素和替换元素，这里的元素可以是图片，视频，音频和文字。也可以用于编辑整页幻灯片，比如删除某页幻灯片，调整这页幻灯片在所有幻灯片中的位置等。它是一个具体操作幻灯片的封装，SlideEditorActivity创建它并使用它来完成纪灯片的编辑。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideshowPresenter.java---用于展示所有的幻灯片，也就是播放所有的幻灯片。由SlideshowActivity来创建和使用。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideViewInterface.java---定义了一些用于显示一页幻灯片中的内容的接口，如设置图像，设置视频，设置音频，播放视频，播放音频，暂停，随机定位等等。附件显示的View：AudioAttachmentView，ImageAttachmentView，SlideshowAttachmentView和VideoAttachmentView均实现了此接口，这样AttachmentEditor就可以用统一的接口来控制内容的播放，而不用关心具体的内容是什么。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideEditorActivity.java---用于编辑某页幻灯片，比如添加音频，添加视频，添加图像，添加文字等。它只是提供用户界面，让用户来操作各种按扭以达到添加元素，替换元素或是删除元素。而对具体的幻灯片的操作是通过SlideshowEditor来完成的，它主要负责与用户交互。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SlideListItemView.java--- SlideshowEditActivity中列表的每一项的布局管理，继承自LinearLayout。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">MmsThumbnailPresenter.java---用于在消息列表中，显示彩信的缩略图，因为彩信的内容不固定，可能是图片，可能是音频，可能是视频也可能是幻灯片，所以用这个类来处理并显示彩信的缩略图。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">MessagingPreferenceActivity.java---Mms的配置信息编辑器，用来编辑和更改配置信息，继承息PreferenceActivity。它负责与用户交互，显示和更改配置。在Mms启动时，MmsConfig会从SharedPreference中读出配置信息，在运行时其他的类的配置信息都是从MmsConfig中获取的，MmsConfig提供了很多Get方法以获取配置信息。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">Presenter.java---用来展示附件的一个抽象类。</span></li><li><span style="font-size:18px">PresenterFactory.java---工厂方法。</span></li><li><span style="font-size:18px">RecipientsAdapter.java</span></li><li><span style="font-size:18px">RecipientsEditor.java---用于显示信息编辑页面上面的收信人的编辑框，它可以有自动补全的功能，补全的数据由RecipientsAdapter来提供。</span></li><li><span style="font-size:18px">ViewInterface.java---代表一个View的基类，用于Slideshow显示内容或是取缩略图。可以取View的长宽高等。</span></li><li><span style="font-size:18px">BasicSlideEditorView.java---编辑某一页幻灯片时所用的布局，也就是在SlideEditorActivity.java中使用。</span></li><li><span style="font-size:18px">EditSlideDurationActivity.java---顾名思义，用于编辑某一页幻灯片的浏览时长。</span></li><li><span style="font-size:18px">ManageSimMessages.java---这个是在设置中使用的，用来管理SIM里的消息。在设置中有一项是管理SIM卡上面的消息。在Mms的设置Settings中有一个选项可以设置是把信息存储在SIM卡，还是存储在手机里。在收信时SmsReceiverService会查看这个设置然后把收到的信息写到相应的地址。ManageSimMessages也是以列表方式显示SIM里面的信息，提供了二个菜单：把信息存入手机和删除。</span></li><li><span style="font-size:18px">NumberPickerButton.java---用于显示选择数字的按扭，在配置里面用。</span></li><li><span style="font-size:18px">NumberPickerDialog.java---用于显示选择数字的对话框，在配置里面用。</span></li><li><span style="font-size:18px">NumberPicker.java---用于在配置的时候选择数字。这几个NumerPicker主要是用于Settings中的。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">DeliveryReportActivity.java---信息发送情况报告。以列表的方式来显示</span></li><li><span style="font-size:18px">DeliveryReportAdapter.java---相应的Adapter</span></li><li><span style="font-size:18px">DeliveryReportItem.java---相应的数据，每一项的数据</span></li><li><span style="font-size:18px">DeliveryReportListItem.java---相应每一项的布局。</span></li></ul>
+<span style="font-size:18px"><span style="color:#000099"><strong>data</strong></span>---用于操作当前正在编辑的信息的相关数据，比如联系人列表，比如当前对话，比如当前消息。负责管理当前正在编辑的信息和当前所处的对话以及当前信息用到的联系人。这些类都是在编辑信息的时候使用，由于这些多半都是用来管理数据的，而又无法直接做为对象传递给编辑器。所以它们的很多方法都是静态的，也就是这些类都近&#20284;单键。<br>
+</span>
+<ul>
+<li><span style="font-size:18px">WorkingMessage.java---用来管理当前正在编辑的消息，它从创建，草稿到发送完成后一直存在，只要打开了编辑信息的页面就会创建一个WorkingMessage，直到退出编辑页面。</span></li><li><span style="font-size:18px">Conversation.java---用来管理对话Threads，通常用来管理当前的对话，也就是进入的对话和正在进行操作的对话，它也用来管理对话列表，比如查询对话列表。</span></li><li><span style="font-size:18px">Contact.java---用来代表一个联系人的信息，和管理联系人，加载联系人信息，其中还有相应的Cache。因为一个联系人的数据是比较多的包含名字，名，姓，各种电话号码，各种地址等等。因为Mms中直接使用Contact来作为联系人，所有信息都是直接从其中获取。另外，由于信息交互中也会涉及到联系人，因为收发信时可以直接使用一串电话号码，这时就需要有如添加联系人的功能。Contact中有很多异步的操作，比如加载联系人信息的时候或者更新Cache的时候都需要异步操作以不阻塞调用者。</span></li><li><span style="font-size:18px">ContactList.java---是一个Contact的List列表它继承自ArrayList&lt;Contact&gt;。用来管理一个Contact列表，或管理多个Contact。因为每个信息可以发送给多个联系人，这时就需要用到ContactList来管理这些收信人。也提供了一些方便存储和传递Contact的方法，比如把多个Contact转成String，或者转成String数组等。</span></li><li><span style="font-size:18px">RecipientIdCache.java---用于保存所用到的Contact的Id和地址（电话）。每次WorkingMessage会更新这个Cache，然后ContactList会优先从这个Cache中查询联络人。</span></li></ul>
+<span style="font-size:18px"><span style="color:#000099"><strong>dom</strong></span>---用于解析彩信内容smil的工具包<br>
+<span style="color:#000099"><strong>drm</strong></span>---用于处理DRM的媒体文件的工具包<br>
+<span style="color:#000099"><strong>layout</strong></span>---为了满足特殊需要而改写的布局元素<br>
+<span style="color:#000099"><strong>model</strong></span>---这里面定义了彩信支持的附件数据结构和附件的组织方式。彩信可包含的内容有图片，视频，音频和文字。这些内容可以单独存在，也可以组合在一起。如果组合在一起就变成了幻灯片。用户可以用幻灯片的方式来创建含有多个媒体的附件，图文并茂的展示。每张幻灯片上面可以加视频，音频，图片和文字，但通常一张幻灯片上面只允许加一个图片或视频，文字是都可以添加的，音频在没有视频的情况下只可以添加的。播放的时候可以设置每张幻灯片的播放时长，以及文字的滚动速度等等。<br>
+</span>
+<ul>
+<li><span style="font-size:18px">CarrierContentRestriction.java---是具体的彩信附件检查站，对于不支持的附件，或者附件大小超出限制，或者图像分辨率不对，或者图像超出尺寸，会抛出异常：UnsupportedContentTypeException，ResolutionException，ExceedMessageSizeException，ContentRestrictionException。</span></li><li><span style="font-size:18px">ContentRestriction.java是用于检查附件的接口，外部直接使用这相接口，而具体实现是CarrierContentRestriction</span></li><li><span style="font-size:18px">ContentRestrictionFactory.java是创建附件检查的工厂方法。外部通过这个工厂来创建一个ContentRestriction对象，然后使用其中定义的检查方法来进行附件内部检查。</span></li><li><span style="font-size:18px">SmilHelper.java用于解析和处理附件中的Smil的工具类。</span></li><li><span style="font-size:18px">IModelChangedObserver.java接口，用于监听附件内容有变化。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">Model.java---彩信附件的数据组织方式和管理方式是每一个附件都是一个Model的子类，它不但用于管理附件的具体数据，比如Uri，大小，文件名，位置等，也可以用于在GUI显示附件和查看附件。</span></li><li><span style="font-size:18px">LayoutModel.java---继承自Model用于管理可视的附件的布局的类。它用来管理RegionModel等的基本元素。它就好比ViewGroup或LinearLayout，RelativeLayout等一些布局管理器，用来组织并管理布局基本元素也就是RegionModel的子类ImageModel，TextModel和VideoModel。</span></li><li><span style="font-size:18px">RegionModel.java---继承自Model用于管理可视附件和布局，比如图像，视频和文字。特别是在显示可视附件的时候，用于控制可视附件在屏幕中的位置。一个RegionModel代表着一张幻灯片上的一块区域，它是幻灯片上的布局基本元素。好比UI元素中的View，但多在使用时都是使用它的子类，也就是ImageModel，TextModel和VideoModel。</span></li><li><span style="font-size:18px">RegionMediaModel.java---继承自MediaModel，是用于多媒体附件中的可视部分的布局控制，主要用在附件的显示和播放幻灯片时的控制。它的子类是ImageModel，TextModel和VideoModel。</span></li><li><span style="font-size:18px">MediaModel.java---继承自Model，代表媒体的数据结构，管理具体的附件数据，同时也用于管理附件的显示控制，比如图像的显示，音频和视频的播放控制等。</span></li><li><span style="font-size:18px">MediaModelFactory.java---用于从一个Pdu附件中解析出来MediaModel，也就是把Pdu转化为Mms内部的附件数据。</span></li><li><span style="font-size:18px">ImageModel.java—继承自RegionMediaModel用于管理图像附件和控制图像附件的显示。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">VideoModel.java---继承自RegionMediaModel用于管理视频附件和控制视频附件的播放。</span></li><li><span style="font-size:18px">AudioModel.java----继承自MediaModel用于管理音频附件和控制音频附件的播放</span></li><li><span style="font-size:18px">SlideModel.java----继承自Model用于管理一组附件，这些附件同一次显示给用户。就好像幻灯片的一片一样，每一个SlideModel里面有一个可以存储Model的列表，可以包含文字，音频，图像或视频，其上面的附件同时显示出来。</span></li><li><span style="font-size:18px">SlideshowModel.java---继承自Model，用于管理一个彩信中的所有附件。其内含有一个存储SlideModel的列表，用于保存和控制一条彩信中的所有附件。另外它也负责显示这些附件，把一个个SlideModel组织起来，播放。它也负责着把这些Mms形式的附件（各种Model）转化为Android的附件Pdu，和从Pdu提出各自Model，因为Slideshow是应用程序层的彩信处理方式，而能发送和接收的彩信数据是Pdu。</span></li><li><span style="font-size:18px">TextModel.java---继承自RegionMediaModel用于管理文字附件和控制文字附件的显示，比如按时间来滚动</span></li></ul>
+<span style="font-size:18px"><span style="color:#000099"><strong>util</strong></span>---这里面是整个Mms共享的工具类，其中全部都是单键或是直接使用类，不可以创建对象和以对象方式来使用<br>
+</span>
+<ul>
+<li><span style="font-size:18px">AddressUtils.java---关于地址的工具类，目前只有一个getFrom()方法，用于获取发信人地址。</span></li><li><span style="font-size:18px">DraftCache.java---用于标识哪些对话Thread有Draft，哪些没有，也就是用于管理和查询对话的草稿状态，有草稿还是没有。它里面维护了一个HashSet，里面包含了所有含有草稿的Thread Id。它里面也有一个HashSet用于存储OnDraftChangedListener，即当Thread的Draft状态有变化时，DraftCache会调用相应的Listener以告知相应模块，这个对话的草稿状态有所变化。可以通过DraftCache.setDraftState(threadId,
+ state)来设置某个对话的草稿状态; 可以通过DraftCache.hasDraft(threadId)来查询某个对话是否含有草稿。</span></li><li><span style="font-size:18px">Recycler.java---是一个抽象的工具类，里面定义了SmsRecycler和MmsRecycler，用于删除陈旧的消息，或者删除超过信息数量限制的信息。使用方法都是Recycler.getSmsRecycler.deleteOldMessages(context) 或者Recycler.getMmsRecycler.deleteOldMessages(context)</span></li><li><span style="font-size:18px">SmileyParser.java---把标点式的表情符号转化为图形的表情，比如把&#61514;用图标笑脸来代替。</span></li><li><span style="font-size:18px">DownloadManager.java---不要被名字骗到，它并不是真正意义上的下载管理器，因为它并不负责任何与下载文件过程或下载文件的管理。它是用于管理与下载相关的配置信息，比如是否是自动下载，以及下载过程的各种通知，比如Notification Bar和Toast提示等。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">RateController.java</span></li><li><span style="font-size:18px">SendingProgressTokenManager.java</span></li></ul>
+<span style="font-size:18px"><span style="color:#000099"><strong>transaction</strong></span>---对于Mms来讲是最底层的一个包，用户不可见，它负责发信息的最后处理和收信息的最初处理。主要是负责发送信息和接收信息。它并不是真正的发送和接收信息。是由系统Frameworks里面来负责接收和发送信息。这个包只是对于Mms应用层来讲是发送和接收。<br>
+</span>
+<ul>
+<li><span style="font-size:18px">AbstractRetryScheme.java</span></li><li><span style="font-size:18px">DefaultRetryScheme.java—这二个类是实现一种Retry机制，因为信息的发送与接收会受到环境的限制，比如现在手机没信号，或是网络连接不成功，那么就会把信息放到Pending队列里面，等一段时间再重新尝试发送与接收。这里的二个类就是为了实现此Retry机制。</span></li><li><span style="font-size:18px">HttpUtils.java—彩信发送与接收的最底层实现者，它负责用HTTP协议接收和发送彩信到MMSC彩信服务中心。</span></li><li><span style="font-size:18px">MessageSender.java—像其名字所预示的那样，它是为了发送信息而封装的一个接口，它里面只有一个方法sendMessage()，UI层只需要调用实现了这个接口的类即可发送信息。</span></li><li><span style="font-size:18px">MessagingNotification.java—专门负责在Status Bar上面做Notification，比如新接收到了信息，或是信息发送失败，或是接收失败等。它被UI层，和底逻辑层共用着。</span></li><li><span style="font-size:18px">MmsMessageSender.java—继承自MessageSender，专门用于发送彩信。它并不是做发送的事情，而是做一些错误检查和前期准备工作，然后启动TransactionService来做发送相关的事情。</span></li><li><span style="font-size:18px">NotificationTransaction.java—继承自Transaction，负责接收彩信和更新通知(Notification)。当有一个新彩信时，Frameworks会先发出一个短信，称作彩信通知(NotificationIndication)，其内含有彩信相关的信息(MMSC, 彩信的ContentLocation(URL)等)，之后是由应用程序自己去MMSC用ContentLocation取彩信。这个NotificationTransaction就是专门用于处理彩信通知的，它会从MMSC上取出彩信数据（Pdu），把它写入数据库中，然后更新Notification。需要注意的是，只有彩信的设置是自动获取(“auto
+ retrieve”)时，它才会去下载彩信，否则，它只处理彩信通知(Notification Indication)，而不去下载彩信。</span></li><li><span style="font-size:18px">Observable.java—里面定义了观察对象，Transaction是它的一个子类，其他的实体Transaction都是观察对象，里面有一个列表保存着观察者的引用，当一个Transaction完成时，或是有异常时就会调用notifyObservers()方法来把状态通知给观察者。</span></li><li><span style="font-size:18px">Observer.java—观察者，TransactionService实现了这个接口。它是所有Transaction的观察者，以监听他们的状态和处理结果，因为所有的Transaction都 是异步的，所以才用观察模式来通知Transaction的处理结果。</span></li><li><span style="font-size:18px">PrivilegedSmsReceiver.java—继承自SmsReceiver短信收信的事件监听者，负责监听新短信事件android.provider.Telephony.Intents.SMS_RECEIVED_ACTION(“android.provider.Telephony.SMS_RECEIVED”);当接收到这个Intent时表明有一个新短信。它会唤起SmsReceiverServier来处理短信。</span></li><li><span style="font-size:18px">ProgressCallbackEntity.java</span></li></ul>
+<ul>
+<li><span style="font-size:18px">PushReceiver.java—一个BroadcastReceiver专门用于接收彩信事件android.provider.Telephony.WAP_PUSH_RECEIVED_ACTION(“android.provider.Telephony.WAP_PUSH_RECEIVED”)，它会先做一些预处理，然后启动TransactionService，TransactionService又会创建NotificationTransaction来处理这个彩信通知。</span></li><li><span style="font-size:18px">ReadRecTransaction.java</span></li><li><span style="font-size:18px">RetrieveTransaction.java—继承自Transaction，用于主动获取彩信数据。当彩信设置为非自动获取时，需要用户触发获取，TransactionService会创建一个RetrieveTransaction来获取彩信数据(Pdu)，存入数据库，更新Notification等。</span></li><li><span style="font-size:18px">RetryScheduler.java</span></li><li><span style="font-size:18px">SendTransaction.java—继承自Transaction，用于发送彩信数据。</span></li><li><span style="font-size:18px">SimFullReceiver.java</span></li><li><span style="font-size:18px">SmsMessageSender.java—发送短信的封装，继承自MessageSender。它会启动SmsReceiverService来发送。</span></li><li><span style="font-size:18px">SmsReceiver.java—是一个BroadcastReceiver，不要被其名字唬到，它并不负责接收新短信通知，相反，它用于发送信息，接收发送信息请求，并唤起SmsReceiverService来处理发送。这里可能是Android命名规则的原因，Android里的四大组件都喜欢把其组件的名字加上，比如ComposeMessageActivity，是一个Activity，TransactionService是一个Service，而这里SmsReceiver是一个BroadcastReceiver，它与接收短信(receiving
+ Sms)没有关系。当然了，这完全是一个糟糕的命名。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">SmsReceiverService.java—它是一个Service，专门用于处理短信的发送与接收。它是由SmsReceiver和PrivilegedSmsReceiver监听事件，然后启动它的，自己并不会监听Intent事件。</span></li><li><span style="font-size:18px">SmsRejectedReceiver.java</span></li><li><span style="font-size:18px">SmsSingleRecipientSender.java—继承自SmsMessageSender，它针对一个收信人，调用Frameworks层接口发送信息，对于Mms应用来说，这是发送短信的最后一站，对就是说对于应用来说，它会把短信发送出去。</span></li><li><span style="font-size:18px">TransactionBundle.java—Transaction所用的一个数据结构，用于给Transaction传送数据。</span></li><li><span style="font-size:18px">Transaction.java—各种Transaction的基类，它里面定义了二个方法getPdu()，sendPdu()这二个方法是从MMSC取彩信数据，和向MMSC发送数据。它是对HttpUtils的一层包装。</span></li><li><span style="font-size:18px">TransactionService.java—是一个Service，接收各种Transaction请求，然后处理Transaction。每个Transaction都 会开启新的线程异步的处理，所以当处理完成时又会通过Observer来通知TransactionService。</span></li><li><span style="font-size:18px">TransactionSettings.java—彩信相关配置信息的数据结构，比如MMSC，Proxy，Port等。请求方可能会提供这些数据，如果提供就使用；否则就会从Telephony数据库加载默认的数据，这些数据与运营商和APN的设置有关。</span></li><li><span style="font-size:18px">TransactionState.java—标识每一个Transaction处理情况的数据结构，很简单，只是标明处理成功还是失败，用于Transaction回调Observer(TransactionService)时用。</span></li></ul>
+<span style="font-size:18px">还有com/android/mms根目录下面的一些文件，其中绝大多数是定义的基类异常和一些公共的类。</span><br>
+<ul>
+<li><span style="font-size:18px">MmsApp.java---Mms Application会在应用进程启动的时候做一些必要的初始化工作，比如配置，下载，联系人，对话，Smiley解析器和通知等。</span></li><li><span style="font-size:18px">MmsConfig.java---管理Mms的一些常用配置，比如彩信大小上限，彩信图片尺寸上限，收信人的个数上限等等。这些配置信息是保存在在res/xml/mms_config.xml里面。MmsApp在初始化时会调用MmsConfig.init()，在这里面会调用loadMmsSettings来解析mms_config.xml从而得到所需要的配置信息。其他的模块只通过MmsConfig来访问这些配置信息。</span></li><li><span style="font-size:18px">LogTag.java---有关日志跟踪信息的控制。它可以方便的控制日志输出级别。但是实际上整个Mms代码中使用这个LogTag的地方并不多。</span></li></ul>
+<br>
+

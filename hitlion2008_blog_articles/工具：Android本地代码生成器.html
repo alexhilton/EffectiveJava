@@ -1,0 +1,117 @@
+
+    <html>
+<head>
+<style type="text/css">
+<!--
+@page
+	{margin:0.79in}
+p
+	{margin-bottom:0.08in}
+pre.cjk
+	{font-family:"WenQuanYi Zen Hei",monospace}
+-->
+</style>
+</head>
+<body>
+<p style="margin-bottom:0.2in"><span style="font-family:DejaVu Sans"><span style="font-size:18px">在使用</span></span><span style="font-size:18px">AndroidNDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开发的时候有个事情是很烦人的，那就是创建本地代码文件夹，生成本地代码文件和创建本地代码的编译文件。特别是实现本地方法的时候，也是比较烦人的，因为本地方法的名字实在是太长了。它的命名规范是：</span></span><span style="font-size:18px">Java_<em>package-name</em>_<em>class-name</em>_<em>method-name</em>(arguments)</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，稍一不留神就会有拼写错误，而导致长时间的调试。由于不勘忍受这样的折磨，也为了不重复同样的事情</span></span><span style="font-size:18px">(DRY-Don't
+ Repeat Yourself)</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，于是就写了一个</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">程序来做这件事。</span></span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">这个小工具可以逐个检查</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">文件，并创建含有本地方法文件，也即本地代码文件，生成</span></span><span style="font-size:18px">Android.mk</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">编译文件并更新</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">文件，添加</span></span><span style="font-size:18px">System.loadLibrary</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">。</span></span></p>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px">具体的原则是这样：</span></span></p>
+<ul>
+<li>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px">每个含有本地代码的</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">文件，生成一个本地文件，其内含有该文件中的所有本地方法</span></span></p>
+</li></ul>
+<ul>
+<li>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px">所生成的本地方法是符合标准的</span></span><span style="font-size:18px">JNI</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，具体的形式是：</span></span></p>
+</li></ul>
+<p>&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="font-size:18px"><em>return-type</em></span><span style="font-size:18px"> Java_</span><span style="font-size:18px"><em>package-name</em></span><span style="font-size:18px">_</span><span style="font-size:18px"><em>class-name</em></span><span style="font-size:18px">_</span><span style="font-size:18px"><em>method-name</em></span><span style="font-size:18px">(arguments){<br>
+&nbsp; &nbsp; &nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">也就是说，所需要做的只是实现这个方法。</span></span></p>
+<ul>
+<li>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px">默认本地代码共享库的名字是</span></span><span style="font-size:18px">Android</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">项目的名字</span></span></p>
+</li></ul>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px">有了这个小工具，就可以只在</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">中声明本地方法，运行下这个工具，然后实现本地方法，再编译就可以了。</span></span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">可以从<a target="_blank" href="http://download.csdn.net/detail/hitlion2008/3699289">这里下载</a>这个小工具。解压后有三个文件一个是</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">源码，一个是</span></span><span style="font-size:18px">Jar</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">包（</span></span><span style="font-size:18px">genjni.jar)</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，一个是</span></span><span style="font-size:18px">Shell</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">脚本</span></span><span style="font-size:18px">(genjni.sh)</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">。放上源码的原因是，如果有兴趣的朋友可以进行改进，但是改进后请</span></span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">发我一份。下载后，最好修改下</span></span><span style="font-size:18px">Shell</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">脚本，把</span></span><span style="font-size:18px">Jar</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">文件的路径改成具体的存放路径，否则会报出找不到</span></span><span style="font-size:18px">Jar</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">文件的错误。最后把</span></span><span style="font-size:18px">genjni.sh</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">放到</span></span><span style="font-size:18px">~/bin</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">下面，为了使用时方便。使用的时候要在</span></span><span style="font-size:18px">Android</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">项目的根目录下面运行</span></span><span style="font-size:18px">genjni.sh</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">就可以了。</span></span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">下面以一个实例方式演示下这个小工具的使用方法：</span></span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">创建一个项目叫</span></span><span style="font-size:18px">HelloJni</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，并创建一个</span></span><span style="font-size:18px">HelloJniActivity</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，在其内声明一个本地方法</span></span><span style="font-size:18px">getStringFromJni();</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">并用有一个</span></span><span style="font-size:18px">TextView</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">用来显示</span></span><span style="font-size:18px">getStringFromJni()</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">返回的信息。另一个本地方法</span></span><span style="font-size:18px">getStatusFromJni(int)</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">是为了显示用的，没有使用。这是</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">代码：</span></span></p>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px"></span></span></p>
+<textarea readonly name="code" class="java">package com.hilton.hellojni;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+public class HelloJniActivity extends Activity {
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        TextView text = (TextView) findViewById(R.id.text);
+        text.setText(getStringFromJni());
+    }
+    
+    private native String getStringFromJni();
+
+    private native int getStatusFromJni(int type);
+}</textarea><span style="font-size:18px">写好</span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">代码后，从终端进入到项目的根目录下</span></span>
+<p></p>
+<p><span style="font-family:DejaVu Sans"><span style="font-size:18px"></span></span></p>
+<textarea readonly name="code" class="plain">$cd HelloJni
+$ls
+AndroidManifest.xml  assets  bin  default.properties  gen  proguard.cfg  res  src
+$genjni.sh
+appplication HelloJni
+package name: com.hilton.hellojni
+class name: HelloJniActivity
+$ls
+AndroidManifest.xml  assets  bin  default.properties  gen  jni  proguard.cfg  res  src
+$ls jni
+Android.mk  HelloJniActivity.c</textarea><br>
+<span style="font-size:18px">打开查看</span><span style="font-size:18px">Android.mk</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">和</span></span><span style="font-size:18px">HelloJniActivity.c</span>
+<p></p>
+<textarea readonly name="code" class="plain">LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
+LOCAL_MODULE    := HelloJni
+LOCAL_SRC_FILES := HelloJniActivity.c
+include $(BUILD_SHARED_LIBRARY)</textarea><br>
+<textarea readonly name="code" class="cpp">#include &lt;jni.h&gt;
+
+jstring Java_com_hilton_hellojni_HelloJniActivity_getStringFromJni(JNIEnv* env, jobject thiz) {
+}
+
+jint Java_com_hilton_hellojni_HelloJniActivity_getStatusFromJni(JNIEnv* env, jobject thiz, jint type) {
+}</textarea><span style="font-family:DejaVu Sans"><span style="font-size:18px">再查看</span></span><span style="font-size:18px">HelloJniActivity.java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">也被更新了，里面多了加载共享库的语句：</span></span>
+<p></p>
+<textarea readonly name="code" class="java">package com.hilton.hellojni;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+public class HelloJniActivity extends Activity {
+    static {
+        System.loadLibrary(&quot;HelloJni&quot;);
+    }
+
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+        TextView text = (TextView) findViewById(R.id.text);
+        text.setText(getStringFromJni());
+    }
+    
+    private native String getStringFromJni();
+
+    private native int getStatusFromJni(int type);
+}</textarea><br>
+<span style="font-size:18px">剩下的工作就是实现本地方法了。</span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">当然这个工具还是有很多问题，欢迎各位反馈，或给出改进意见。</span></span><span style="font-size:18px"><br>
+</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">另外，这个工具是用</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">写的，更好的选择应该是用脚本来写，如</span></span><span style="font-size:18px">Perl</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">或</span></span><span style="font-size:18px">Python</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">。还有就是，如果能把这个工具集成到</span></span><span style="font-size:18px">ADT</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">中，或是创造一个完全用于</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开发的集成工具</span></span><span style="font-size:18px">ANDT</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，能够像产生</span></span><span style="font-size:18px">R.java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">那样的自动生成本地文件。比如做一个</span></span><span style="font-size:18px">ANDT</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">工具，集成到</span></span><span style="font-size:18px">Eclipse</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">中，能够自动当</span></span><span style="font-size:18px">Java</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">中有本地方法声明后就自动生成本地文件和编译文件。这将是多么美好的事情啊，将对</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">的开发有重大的帮助。我想，</span></span><span style="font-size:18px">Google</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">应该会做一专门用于</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开发的</span></span><span style="font-size:18px">Eclipse</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">插件，或是在</span></span><span style="font-size:18px">ADT</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">中加入对</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">的支持，因为</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开放的接口越来越多，使用</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开发者也将越来越多，基于</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开发的应用也将越来越多（</span></span><span style="font-size:18px">2.3</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">及以后的版本，完全可以只用</span></span><span style="font-size:18px">NDK</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">开发出一个</span></span><span style="font-size:18px">Apk</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">，也就是说用纯</span></span><span style="font-size:18px">C/C&#43;&#43;</span><span style="font-family:DejaVu Sans"><span style="font-size:18px">来开发应用）。希望这一天早些到来。</span></span><br>
+<p></p>
+

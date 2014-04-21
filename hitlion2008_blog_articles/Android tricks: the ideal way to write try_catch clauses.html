@@ -1,0 +1,91 @@
+
+    
+<p><span style="font-size:18px">Exceptions and exception handling are an important part in most applications. And modern programming languages support exceptions very well. Most of them provide try/catch/finally clauses for developers to handle exceptions.
+ Here we talk about how to write try/catch/finally clauses in a more elegant way.</span></p>
+<p><span style="font-size:18px">Here, we take I/O operations as our illustrated example, because I/O conerns three important steps when using: initialization, exception handing and cleanup.&nbsp;</span></p>
+<p><span style="font-size:18px">Generally, some programmer might write like this:</span></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="java">// Declaration of objects
+InputStream input = null;
+OutputStream output = null;
+try {
+     // Initialization input and output
+     input = new FileInputStream(&quot;readme.txt&quot;);
+     output = new FileOutputStream(&quot;ic_card.txt&quot;);
+     
+     // Operations
+     int seg = 0;
+     byte[] buf = new byte[4096];
+     while ((seg = input.read(buf)) != -1) {
+          output.write(buf, 0, seg);
+     }
+} catch (FileNotFoundException e) {
+     // handling exception
+} catch (IOException e) {
+     // handling exception
+} finally {
+     // cleanup
+     try {
+          if (input != null) {
+             input.close();
+          }
+          if (output != null) {
+             output.close();
+          }
+      } catch (IOException e) { 
+          // handling exception
+      }
+}</textarea><span style="font-size:18px">Such style has the following problems:</span>
+<ol>
+<li><span style="font-size:18px">There are extra try/catch inside outer try/catch to catch the same exception, which is might be redundant</span></li><li><span style="font-size:18px">The variable input/output are declared beyond where they are needed, which have unnecessary life circle</span></li><li><span style="font-size:18px">Two try/catch and try/catch in finally, which might be not elegant enough</span></li></ol>
+<span style="font-size:18px">The suggested way is like this:</span>
+<p></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="java">try {
+     // Declarations
+     InputStream input = null;
+     OutputStream output = null;
+     try {
+           // Initialization input and output
+           input = new FileInputStream(&quot;readme.txt&quot;);
+           output = new FileOutputStream(&quot;ic_card.txt&quot;);
+           // Operations
+           int seg = 0;
+           byte[] buf = new byte[4096];
+           while ((seg = input.read(buf)) != -1) {
+               output.write(buf, 0, seg);
+           }
+      } finally {
+           // cleanup codes
+           if (input != null) {
+               input.close();
+           }
+           if (output != null) {
+               output.close();
+           }
+      }
+} catch (FileNotFoundException e) {
+     // handling exception
+} catch (IOException e) {
+     // handling exception
+}</textarea>
+<p><span style="font-size:18px">This try/finally try/catch style is superior to previous version is because, it finishes all the tasks: declaration, initialization, operations and cleanup. All blocks are inside big try/catch so that all exceptions are get caught;
+ Cleanup is inside try/finally so that we ensure to release taken resources. It also looks elegant.</span></p>
+<p><span style="font-size:18px">Such try/finally try/catch clauses, however, have a fatal defect that exceptions could be ignored and lost. In try/finally, finally block gets executed even if when exceptions are thrown in try block. If finally block also throws
+ exceptions, ones thrown in try blocks are ignored and lost. Outer catch clauses will never catch them. In all, this style might not catch all exceptions thrown in try blocks.</span></p>
+<p><span style="font-size:18px">You can apply this try/finally try/catch style when:</span></p>
+<p></p>
+<ol>
+<li><span style="font-size:18px">cleanup codes are not much and quite simple, like closing IO streams, shutdown connection.etc.</span></li><li><span style="font-size:18px">cleanup codes are not likely to throw exceptions, or much less than initializations and operations.</span></li><li><span style="font-size:18px">you do not care what exceptions are, but whether there are exceptions thrown</span></li></ol>
+<span style="font-size:18px">Besides these, you should use try/catch/finally, when specific exceptions are important in particular.</span><textarea readonly name="code" class="java">// Delcarations
+try {
+     // Initializations
+     
+     // Operations
+} catch {
+     // handling exceptions
+} finally {
+     // cleanup
+}</textarea><br>
+<p></p>
+

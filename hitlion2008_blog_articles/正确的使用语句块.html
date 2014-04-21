@@ -1,0 +1,44 @@
+
+    
+<span style="font-size:18px">犹记得在初看C，C&#43;&#43;和Java的编程书籍时，上面就有介绍语句块，但当时甚是不理解什么是语句块。《代码大全》中也有讲说要把相&#20284;功能的语句组织到一起形成语句块，然后与其他语句块用空行分隔。但这只是在人的理解上的语句块，并非是真的程序语言意义上的语句块。<br>
+程序上的定义，在我的理解来看应该是有着相同的变量作用域的相关一组语句的集合，看起来就是应该用{}括起来的，比如控制结构中的逻辑。我认为最关键的一点就是变量作用域，也就是说，如果能用同一个局部变量，那么就是程序意义上的语句块。来看个例子：</span><br>
+<textarea readonly name="code" class="java">    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_GOTO_FILEANT:
+            Intent i = new Intent();
+            i.setClass(this, FileAntActivity.class);
+            startActivity(i);
+            break;
+        case MENU_TEST_LINEARLAYOUT:
+            i.setClass(this, LinearLayoutTest.class);
+            startActivity(i);
+            break;
+        default:
+            break;
+        }
+        return true;
+    }</textarea><span style="font-size:18px">对于第二个case语句，仍可以使用前面case所定义的变量，所以整个switch() {}内都是一个语句块。<br>
+但如果给每个case语句加上语句块标志，就不一样了：</span><br>
+<textarea readonly name="code" class="java">    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case MENU_GOTO_FILEANT: {
+            Intent i = new Intent();
+            i.setClass(this, FileAntActivity.class);
+            startActivity(i);
+            break;
+        }
+        case MENU_TEST_LINEARLAYOUT: {
+            Intent i = new Intent();
+            i.setClass(this, LinearLayoutTest.class);
+            startActivity(i);
+            break;
+        }
+        default:
+            break;
+        }
+        return true;
+    }</textarea><span style="font-size:18px">加上了{}就把二个case语句分隔了开来，形成了二个语句块，它们有各自的变量作用域，互不影响，即使用名字相同，或再次定义也无妨。<br>
+说明这些的目的就在于，要尽可能多的使用{}以形成真正的语句块，最大的好处在于它能形成变量作用域，避免变量的作用域过大，即提高了可读性，也减少了出错的可能。</span><br>
+

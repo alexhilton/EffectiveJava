@@ -1,0 +1,114 @@
+
+    
+<h2><span style="font-size:18px">组件的特点</span></h2>
+<span style="font-size:18px">对于Android的四大组件Activity, Service, ContentProvider和Service，不能有Setter和Getter，也不能给组件添加接口。原因是组件都是给系统框架调用的，开发者只能实现其规定的回调接口，组件的创建与销毁都是由系统框架控制的，开发者不能强行干预，更没有办法获取组件的对象。比如Activity，Service，BroadcastReceiver，你没有办法去创建一个Activity，Service或BroadcastReceiver，然后像使用其他类那样的调用其上的接口与其通信，用Setters和Getters改变属性等等。这也决定了，组件之间通信只能用系统支持的Intent。而Intent只能传递基本数据类型和Uri等一些常见的数据类型。Intent只支持传递内置类型和一些限制类型，这就导致了组件之间的数据传递必须都是基本类型，所以枚举类型无法使用。<br>
+</span>
+<h2><span style="font-size:18px">多态无法实现</span></h2>
+<span style="font-size:18px">比如你有一个Service用于在后台执行UI中发来的请求，这些请求有些是做数据请求，有些是做数据分析，等等。这里可以用多态，定义一个统一的Transaction类，然后再为每种特定的Transaction类型，Transaction中统一接口process()用于实际的处理，理想的情况是，Service接收一个Transaction对象，然后调用其process()，没有必要知道具体的类型，UI创建具体的一个类型对象然后交由Service来处理。但是这在Android当中是无法实现的，因为Intent通信机制所限，因为它不能直接传递Transaction对象。所以，Service必须要知道具体的类型。原生应用Mms中就有如此的现象，在transaction包中TransactionService是处理服务，UI发送到Service的只是区别不同Transaction的Id（一个整数），Service查看不同的Id创建不同的Transaction对象，然后调用process()对其处理。<br>
+建议：自己实现一个类&#20284;Service的服务类，在其内用Handler，Thread和Looper让其长时间运行。这样就没有组件间通信的限制，你可以像正常使用Java对象那样来使用这个服务类，向其传递自定义的处理请求:<br>
+</span><textarea readonly name="code" class="java">public class TransactionServer extends HandlerThread {
+    public TransactionServer() {
+        start();
+    }
+    public void onLooperPrepared() {
+        mHandler = new Handler(getLooper(), new Handler.Callback() {
+             @Override
+              public void handleMessage(Message msg) {
+                    Transaction request = (Transaction) msg.obj;
+                     request.process();
+               }
+         }
+    }
+    
+   public void execute(Transaction request) {
+       if (mHandler == null) {
+            return;
+        }
+       Message msg = Message.obtain();
+       msg.obj = request;
+       mHandler.sendMessage(msg);
+   }
+}</textarea><br>
+<br>
+<span style="font-size:18px">在Activity中就可以创建此Server的对象，然后使用它</span>：<br>
+<textarea readonly name="code" class="java">TransactionServer server = new TransactionServer();
+Transaction updateRequest = new UpdateTransaction();
+server.execute(updateRequest);</textarea><br>
+<br>
+<span style="font-size:18px">另外，用AIDL与Service通信，虽可以获取Service的对象引用，可以直接调用Service的方法，但这个也有限制，对于AIDL的接口，所有的参数和返回类型都必须是基本数据<br>
+据类型，不能有对象。原因也好理解，因为AIDL也是要通过IPC的，即便Service与Activity在同一个进程内，所以本质上它与Intent通信机制无区别。</span><br>
+<h2><span style="font-size:18px">封装性被破坏</span></h2>
+<span style="font-size:18px">组件间的通信机制决定了Android的封装性，先来看一些实例：<br>
+<br>
+</span><textarea readonly name="code" class="java">Intent i = new Intent(Intent.ACTION_VIEW);
+i.setDataAndType(uri, &quot;text/html&quot;);
+startActivity(i);
+</textarea><br>
+<p><span style="font-size:18px">这在Android当中是再常见不过的了。</span></p>
+<span style="font-size:18px">Intent和IntentFilter的使用让封装性受到大大的破坏，因为你必须把字串，参数等直接写入到Intent或IntentFilter当中。例如：<br>
+</span><textarea readonly name="code" class="java">Intent i = new Intent(&quot;android.contacts.action.MULTIPLECONTACTSLISTS&quot;);
+i.setExtra(&quot;request_type&quot;, 3);
+
+&lt;intent-filter&gt;
+     &lt;action android:name=&quot;android.contacts.action.MULTIPLECONTACTSLISTS&quot; /&gt;
+&lt;/intent-filter&gt;</textarea><br>
+<br>
+<span style="font-size:18px">当然，可以再好一点，就是：<br>
+Intent i = new Intent(Contacts.ACTION_GET_CONTACTS);<br>
+但是在AndroidManifest中的IntentFilter还是要写字串常量（Literal Strings），这样就有一个问题，就是即使你写错了，编译器不会提醒你，直到你运行的时候才会发现程序不正常工作，你调试啊，调试，最终发现是字串写错了。或者，activity的name写错了，编译器同样不会提醒你，但你运行时却因找不到类而报出RuntimeException。<br>
+建议：尽可能在所有作用域内定义常量，以让组件间接口保持一致性，特别是对于字串常量，一定要在二个组件都可见的作用域内定义常量，否则将会有维护的麻烦。<br>
+例子：intent.putExtra(&quot;request_type&quot;, 3); --&gt; intent.putExtra(TargetActivity.REQUEST_TYPE, TargetActivity.NO_BACKGROUND);否则，特别是当目标组件不在同一个包内，或距离很远时，如果另一方改了，编译时不会有错，但程序不会正常工作，从而引发难以发觉的Bug</span>。<br>
+<h2><span style="font-size:18px">无法在组件间传递自定义的数据结构</span></h2>
+<span style="font-size:18px">如前面所述，因为无法获取组件的对象的引用，所以你无法向其设置数据，当然，可以用静态方法，但是不优雅且难以维护（对于Service倒是可以通过AIDL方式获取Service对象的引用，然后调用其方法来添加数据）。又因为Intent只能携带基本的数据类型，所以对于自定义的数据结构想要在组件间传递就特别的麻烦。当然你可以以让数据结构实现Parcleable接口，但是用起来也相当的麻烦。<br>
+建议：<br>
+</span>
+<blockquote><span style="font-size:18px">1. 尽可能的避免使用自定义数据结构，特别是除了Setters和Getters以外不具有其他行为的数据结构</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">对于结构化的数据，为其定义ContentProvider，把数据写入SQLite数据库，这样数据库表中的每行数据都相当于是一个数据对象，每一列都是其属性。因为Android的组件与SQLite数据库的粘性很大，每个组件都可以很方便的从数据库中获取数据，再通过Cursor等工具来操作数据。最最重要的是这很方便在组件间传递数据，因数ContentProvider的访问都是通过Uri来实现的，而Uri又可以与Intent无缝接合，Uri可以方便的放入和从Intent中取出，每个组件又都可以直接访问ContentProvider用Uri读取数据，从而就可以实现组件间的无缝数据传递。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">2. 尽可能的不要在组件之间传递数据</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">不要用太多的Activity，Service也能免则免，Activity＋线程可能解决大部分问题，当然了，线程也不是那么好用的，特别是在Android里面。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">3. 避免在组件之间传递自定义数据结构</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">如前所述，组件之间最好直接传递基本数据和Intent支持的数据类型。对于自定义的数据结构，要么不定义数据结构，要么不要在组件间传递，否则会很麻烦，虽然可能以实现Parcelable接口，但是效率和操作的方便性上都会大打折扣。</span><br>
+</blockquote>
+<h2><span style="font-size:18px">关于枚举和整数集</span></h2>
+<span style="font-size:18px">先前一篇<a target="_blank" href="http://blog.csdn.net/hitlion2008/article/details/6874970">博客</a>曾说要尽量使用枚举(enum)代替整数集(ints)，而且很多编程书籍(Effective Java)也建议用枚举代替整数集，这其中的好处就是降低出错率，把运行时的检查可以放到编译时，因为整数的范围较大，你可传递任意的整数，直到运行时才会检测或产生问题，但是枚举会在编译时检查类型，如果不是合法的枚举，编译器会报怨。<br>
+但是我们可以看到，在Android中的情况却很差，Android中大量的使用了整数集，系统定义了大量的整数集，很多参数也都是整数，虽然正确的方法都是向这些API传递其所定义的整数常量，但是你如果传个Integer.MAX_VALUE或Integer.MIN_VALUE，起码在编译时不会出问题。<br>
+既然这不是一个好的编程规范，为什么Android中还要大量的使用整数集呢？原因就在于组件间通信，组件之间要传递参数，但是Intent又只能放入基本数据类型，也就是说如果使用枚举，那么将无法用Intent传递给其他的组件，因为枚举转为整数很容易，但反过来整数转成枚举就不是那么容易了。<br>
+所以，如果你的常量不需要在组件间来回的传递，那么最好定义成为枚举，否则，只能用整数集了。<br>
+</span>
+<h2><span style="font-size:18px">关于组件一般的设计原则</span></h2>
+<span style="font-size:18px">1. 不要用组件实现某些接口，比如点击接口，等等<br>
+因为组件是一个开销非常巨大的对象，组件的继承层次也非常的深，用组件实现接口，传递给调用者，就相当于用一个火车去运送一个小老鼠一样，给了别人一个相当大的对象，但是仅有一个或二个方法是别人需要的。特别是对于Activity，不要去实现一些公共的接口比如View.OnClickListener，除了前面的原因以外，另外一个就是你的onClick必须用条件来区分点击的是哪个UI元素，这很难维护，还有一个原因就是Activity的对象不是很稳定，因为系统的某些事件如转屏，语言切换等等会把Activity杀死并重新创建一个实例，所以有可能会引发问题，虽然看起来Activity还在，但是并不同一个实例，如果某些东西与具体实例相关，就会引发问题，要么程序不正常工作，要么有RuntimeException。还有可能引发内存泄漏，因为送给使用者的接口对象都是Activity的实例引用，一旦某个引用超过Activity的生命周期，就会造成内存泄漏。<br>
+推荐的做法是用匿名内部类来实现接口，如果其他地方需要对此接口对象的操作，可以声明一个成员变量或者一个内部类，这样也方便Activity来控制，以保证所有东西都生存在Activity的生存周期之内。<br>
+2. 少用Service<br>
+组件Service并没有传说中的好用，而且它还会让你的程序退出页面后仍然在后台跑，占系统资源不说，还会被骂（看看这些<a target="_blank" href="http://blog.csdn.net/hitlion2008/article/details/7235492">文章</a>吧），因为Service的生命周期是由系统来控制，我们无法干预，即使你确切的知道某些时候你已经完全不用它了。用Activity和线程就可以完成绝大多数操作，而且你还能做到让所有线程都在Activity的控制之内，让它们都活在Activity的生命周期之内。另外的原因就是，因为线程都属于自建的类，或者普通的Java类，可以应用面向对象，因为没有了组件通信的限制。<br>
+3. 利用ContentProvider来做复杂数据结构的通信工具<br>
+ContentProvider和SQLiteDatabase存储的就是结构化数据，相当于一个数据结构，它的引用就是它的Uri，任何组件通过Uri就可获得此数据结构。它有如下优点：<br>
+</span>
+<blockquote><span style="font-size:18px">1. 可以方便的在组件间传递</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">因为数据实际是在数据库中，你在组件间仅传递其地址Uri即可，任何组件或任何持有Context的类都可以方便的获取它，无论从实用性还是从效率上讲，这比用Intent传，或者实际传送数据结构对象来得快。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">2. ContentProvider组件有自己的进程和线程，不会有线程同步问题</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">外部都是通过ContentResolver来访问ContentProvider，因此ContentProvider对外界来讲是一样的，访问方式相同，自然就不会有线程同步之类的问题。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">3. ContentProvider可以进行封装，从而使数据操作更加方便</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">因为ContentProvier提供统一的接口，你可以利用数据自身的特点，在实现这些接口时进行一些封装，比如添加默认&#20540;等等。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">4. ContentProvider可以用作队列或堆栈</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">因为每一行都是一个结构化数据，每一行的数据插入的顺序又是按先后顺序，所以这完全可以当做一个队列，或一个堆栈。</span><br>
+</blockquote>
+<span style="font-size:18px">可以参考原生Mms中信息的发送流程，信息从用户点击发送就写入数据库，然后一路把其Uri在各个组件间中传递，每个组件更新信息的状态，直到最后发送。还有DownloadProvider，Android中默认的下载，应用程序通过DownloadManager提交一个Request，但实际做下载的是DownloadService，而DownloadServer是在packages/provider/DownloadProvider中，是一个完全独立的进程。DownloadManager仅是把一个Request写入DownloadProvider中，这个Request包含下载一个东西的相关信息如URL等。DownloadService仅是监听DownloadProvider的变化，一旦有新数据插入，就创建线程读出此Request，然后开始下载。下载的同时，也是把数据直接更新到DownloadProvider中，这样UI就可以显示进度等信息。这一过程涉及二个进程，至少三个组件：提交Request的用户进程和DownloadProvider进程，DownloadManager（是一个公共API），DownloadService（单独进程，私有的package）和DownloadList(在DownloadProvider包内部，用于显示下载进度的UI），这些组件之间没有直接的通信，它们都是围绕着ContentProvider。同时这里的ContentProvider也被用做下载请求的队列，DownloadManager可以不断的向其中加入请求，DownloadService会监听其变化从其中取出数据然后做下载。<br>
+</span>
+<h2><span style="font-size:18px">别说Android开发很简单</span></h2>
+<span style="font-size:18px">虽然Android上手很容易，但是要想写出优质的代码并不简单，分裂现象，<a target="_blank" href="http://www.iteye.com/news/25060">碎片化</a>，系统架构等等都给很多事情加大了难度。可以看一下原生应用中的主要的Activity代码量都在5000行以上，它们的界面比较复杂，是主要核心业务逻辑所在，这些Activity控制的东西比较多，所以很臃肿。当然这里的主要原因，还是未能进行良好的设计和重构。比如ICS中的Browser就做的好一些，它的BrowserActivity只有几百行的代码，但以前的代码却是6000多行，现在它把各种业务逻辑分别拆开，Activity只负责接收Frameworks层的回调，所有的业务逻辑控制交由Controller来完成，而Controller只负责Tab的管理，菜单等的管理。具体的菜单和布局分辨率相关的东西又交由PhoneUi来处理。下载的处理由DownloadHandler来处理，等等。原来这些所有的事情都放在了BrowserActivity中的，可以想像原来它里面的逻辑会是多么的乱，维护起来会是多么的痛苦。当然，现在的设计也还有待提高，因为类之间的耦合依然很大，比如Controller中持有PhoneUi对象，但是PhoneUi对象又持有Controller，等等现象。很多时候会出现相互调用的情况，这是相当难以维护的，也破坏了相当多的设计原则。<br>
+<br>
+总之，凡是程序，如果要想写的好，都需要投稿额外的精力，平台虽然有优劣但更重要的是对代码投入的精力。但现在可悲的是，Android平台赢利不理想，加之碎片化和浮躁的心理，使得很多应用都在一二个月内做出来，所以整个Android生态系统中的应用质量都不高，更为严重的是反编译和克隆，很多人都是把应用抓下来，反编译然后改了改就是一个新的应用，越是如此不关注质量，用户就越不买帐，开发者无法赢利，就越难投入精力做好应用，如此进入了一个恶性循环。</span><br>
+

@@ -1,0 +1,226 @@
+
+    
+<p><span style="font-size:18px">通过RTTI，Class类和Reflection可以获取某个类的详细信息，包括其没有Public出来的信息，先看一个实例：</span></p>
+<p><textarea readonly name="code" class="java">public class ClassExtractor {
+    /** to discard qualifiers */
+    private static final Pattern pattern = Pattern.compile(&quot;\\w+\\.&quot;);
+    
+    private static String removeQualifiers(String name) {
+        return pattern.matcher(name).replaceAll(&quot;&quot;);
+    }
+    
+    public void inheritedMethod() {
+        
+    }
+    /**
+     * @param className -- must be full qualified, i.e. with package name, like: java.lang.String, otherwise you get
+     * {@link ClassNotFoundException}
+     * @throws ClassNotFoundException 
+     */
+    public static void dumpClassInfo(String className) throws ClassNotFoundException {
+        final StringBuilder sb = new StringBuilder();
+        final Class&lt;?&gt; clazz = Class.forName(className);
+        sb.append(clazz.toString() + &quot; {\n&quot;);
+        // Fields
+        // 'Declared' in the Class methods means all the stuff(fields, methods) declared by this class
+        // Class#getDeclaredMethods(), returns all methods declared by this class, including private, public, protected and
+        // package, but excluding inherited methods
+        // while, Class#getMethods(), returns all the public methods, including inherited ones
+        Field[] declaredFields = clazz.getDeclaredFields();
+        if (declaredFields != null) {
+            sb.append(&quot;declared fields:\n&quot;);
+            for (Field f : declaredFields) {
+                sb.append(&quot;\t&quot; + removeQualifiers(f.toString()) + &quot;\n&quot;);
+            }
+        }
+        Field[] fields = clazz.getFields();
+        if (fields != null) {
+            sb.append(&quot;feids:\n&quot;);
+            for (Field f : fields) {
+                sb.append(&quot;\t&quot; + removeQualifiers(f.toString()) + &quot;\n&quot;);
+            }
+        }
+        // Methods
+        Method[] declaredMethods = clazz.getDeclaredMethods();
+        if (declaredMethods != null) {
+            sb.append(&quot;declared methods:\n&quot;);
+            for (Method m : declaredMethods) {
+                sb.append(&quot;\t&quot; + removeQualifiers(m.toString()) + &quot;\n&quot;);
+            }
+        }
+        Method[] methods = clazz.getMethods();
+        if (methods != null) {
+            sb.append(&quot;methods:\n&quot;);
+            for (Method m : methods) {
+                sb.append(&quot;\t&quot; + removeQualifiers(m.toString()) + &quot;\n&quot;);
+            }
+        }
+        // Constructors
+        Constructor&lt;?&gt;[] declaredConstructor = clazz.getDeclaredConstructors();
+        if (declaredConstructor != null) {
+            sb.append(&quot;declared constructors:\n&quot;);
+            for (Constructor&lt;?&gt; c : declaredConstructor) {
+                sb.append(&quot;\t&quot; + removeQualifiers(c.toString()) + &quot;\n&quot;);
+            }
+        }
+        Constructor&lt;?&gt;[] cons = clazz.getConstructors();
+        if (cons != null) {
+            sb.append(&quot;constructors:\n&quot;);
+            for (Constructor&lt;?&gt; c : cons) {
+                sb.append(&quot;\t&quot; + removeQualifiers(c.toString()) + &quot;\n&quot;);
+            }
+        }
+        // Enums
+        Object[] enums = clazz.getEnumConstants();
+        if (enums != null) {
+            sb.append(&quot;enums:\n&quot;);
+            for (Object o : enums) {
+                sb.append(&quot;\t&quot; + removeQualifiers(o.toString()) + &quot;\n&quot;);
+            }
+        }
+        // Inner classes
+        Class&lt;?&gt;[] declaredInnerClasses = clazz.getDeclaredClasses();
+        if (declaredInnerClasses != null) {
+            sb.append(&quot;declared inner classes:\n&quot;);
+            for (Class&lt;?&gt; c : declaredInnerClasses) {
+                sb.append(&quot;\t&quot; + removeQualifiers(c.toString()) + &quot;\n&quot;);
+            }
+        }
+        Class&lt;?&gt;[] innerClasses = clazz.getDeclaredClasses();
+        if (innerClasses != null) {
+            sb.append(&quot;inner classes:\n&quot;);
+            for (Class&lt;?&gt; c : innerClasses) {
+                sb.append(&quot;\t&quot; + removeQualifiers(c.toString()) + &quot;\n&quot;);
+            }
+        }
+        // Super/Base classes
+        Class&lt;?&gt; supers = clazz.getSuperclass();
+        if (supers != null) {
+            sb.append(&quot;super classes:\n&quot;);
+            sb.append(&quot;\t&quot; + removeQualifiers(supers.toString()) + &quot;\n&quot;);
+        }
+        // Interfaces
+        Class&lt;?&gt;[] interfaces = clazz.getInterfaces();
+        if (interfaces != null) {
+            sb.append(&quot;interfaces:\n&quot;);
+            for (Class&lt;?&gt; i : interfaces) {
+                sb.append(&quot;\t&quot; + removeQualifiers(i.toString()) + &quot;\n&quot;);
+            }
+        }
+        sb.append(&quot;}&quot;);
+        System.out.println(sb.toString());
+    }
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        try {
+            dumpClassInfo(&quot;java.lang.String&quot;);
+            dumpClassInfo(&quot;com.effectivejava.rtti.ClassExtractor&quot;);
+            dumpClassInfo(&quot;com.effectivejava.rtti.ClassExtractorTest&quot;);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+}</textarea><span style="font-size:18px">这里有另外一个供测试的类：</span></p>
+<p><textarea readonly name="code" class="java">public class ClassExtractorTest extends ClassExtractor implements Runnable,
+        Serializable, Cloneable {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5054007892592227440L;
+
+    private String name;
+    private static long uid;
+    
+    public ClassExtractorTest() {
+        // TODO Auto-generated constructor stub
+    }
+
+    public void run() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+
+    }
+    
+    public void goToSomewhere() {
+        
+    }
+    
+    public static void die() {
+        
+    }
+    
+    private void cannotSeeThis() {
+        
+    }
+    enum Direction {
+        North,
+        West,
+    };
+    private class InnerClass {
+        
+    }
+    
+    private static class StaticInnerClass {
+        
+    }
+}</textarea><span style="font-size:18px">运行结果：</span></p>
+<p><textarea readonly name="code" class="plain">class com.effectivejava.rtti.ClassExtractorTest {
+declared fields:
+	private static final long serialVersionUID
+	private String name
+	private static long uid
+feids:
+declared methods:
+	public static void main(String[])
+	public void run()
+	public void goToSomewhere()
+	public static void die()
+	private void cannotSeeThis()
+methods:
+	public static void main(String[])
+	public void run()
+	public void goToSomewhere()
+	public static void die()
+	public void inheritedMethod()
+	public static void dumpClassInfo(String) throws ClassNotFoundException
+	public final native void wait(long) throws InterruptedException
+	public final void wait(long,int) throws InterruptedException
+	public final void wait() throws InterruptedException
+	public boolean equals(Object)
+	public String toString()
+	public native int hashCode()
+	public final native Class getClass()
+	public final native void notify()
+	public final native void notifyAll()
+declared constructors:
+	public ClassExtractorTest()
+constructors:
+	public ClassExtractorTest()
+declared inner classes:
+	class ClassExtractorTest$Direction
+	class ClassExtractorTest$InnerClass
+	class ClassExtractorTest$StaticInnerClass
+inner classes:
+	class ClassExtractorTest$Direction
+	class ClassExtractorTest$InnerClass
+	class ClassExtractorTest$StaticInnerClass
+super classes:
+	class ClassExtractor
+interfaces:
+	interface Runnable
+	interface Serializable
+	interface Cloneable
+}</textarea><span style="font-size:18px">其实，没有任何技术含量，主要就是用到java.lang.Class里面的一些接口，但这里面最难理解的就是带有Delcared的方法和其他方法的区别，比如getDeclaredMethods()与getMethods()的区别，通过查文档和实际测试可以发现：</span></p>
+<ul>
+<li><span style="font-size:18px">带有Declared的方法是返回该类所声明的方法或域，也就是你写这个类时所声明的东西，它包括任何类里面声明的私有的，共有的等等。但是不包括类所继承或实现的方法或域</span></li><li><span style="font-size:18px">而其他的方法是返回该类所公开出来的所有接口，包括其声明的公开接口，以及继承来的，所实现的接口</span><br>
+</li></ul>
+

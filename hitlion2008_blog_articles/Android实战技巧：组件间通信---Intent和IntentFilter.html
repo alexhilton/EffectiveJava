@@ -1,0 +1,231 @@
+
+    
+<h2><span style="font-size:18px">Understanding Intent and IntentFilter--理解Intent和IntentFilter</span></h2>
+<span style="font-size:18px">Intent(意图)在Android中是一个十分重要的组件，它是连接不同应用的桥梁和纽带，也是让组件级复用(Activity和 Service)成为可能的一个重要原因。Intent的使用分为二个方面一个是发出Intent，另一个则是接收Intent用官方的说法就是Intent Resolving。本主将对Intent和IntentFilter进行一些介绍。<br>
+Intent和IntentFilter是Android和一种消息通信机制，可以让系统的组件之间进行通信。信息的载体就是Intent，它可以是一个要完成的动作请求，也可以一般性的消息广播，它可以由任意一个组件发出。消息，也就是Intent，最终也是要被组件来进行处理和消化。消息由组件发出，通常在消息的里面也会有会标记有目标组件的相关信息，另外目标组件也需要告诉系统，哪些消息是它所感兴趣的，它需要设置一些过滤器，以过滤掉无关的消息。<br>
+其实这里就好比学校里的广播，广播有时会播放通知，但有时也会播放要执行的动作，比如打扫卫生。消息中通常都会说明消息的目标对象，可能是计算机学院，可能是老师，也可能是英语系的人才需要关注。而每个人，或是学院组织，也只关心与他们有关的消息，当然这里就要他们自己去判断哪些是与他们有关的消息了。在Android当中消息就是Intent，过滤器就是IntentFilter。发出消息的组件可以在消息中设置目标组件的相关信息，目标组件也可以设置过滤器，然后系统会进行过滤，只把组件所感兴趣的消息，传递给组件。这里假设读者已经了解Intent和IntentFilter的基本使用方法，且并不会进行全面的介绍，如果不了解，可以先读读<a target="_blank" href="http://developer.android.com/guide/topics/intents/intents-filters.html">官方文档</a>，这里重点讲讲IntentFilter在使用时的一些注意事项。<br>
+Intent消息机制通常有二种，一个是显式Intent（Explicit Intent），另一个是隐式Intent（Implicit Intent）。<br>
+</span>
+<ul>
+<li><span style="font-size:18px">显式Intent--需要在Intent中明确指定目标组件，也就是在Intent中明确写明目标组件的名称（Component name），需要指定完整的包名和类名。因为对于本程序以外的其他应用程序，你很难知道它的组件名字，所以显式的Intent通常用于应用程序内部通信，更确切的说，显示Intent是用于应用程序内部启动组件，通常又是Activity或Service。还没有见用显式Intent来给BroadcastReceiver发送广播的。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">隐式Intent--也就是不在Intent中指定目标组件，在Intent中不能含有目标的名字。系统是根据其他的信息，比如Data，Type和Category去寻找目标组件。</span></li></ul>
+<span style="font-size:18px">隐式Intent通常用于与应用程序外部的组件进行通信。应用程序级别的组件复用也主要是靠隐式Intent来完成的。而IntentFilter也是只有隐式Intent才用的着，显式Intent都是直接把Intent传递给目标组件，根本不会理会组件的IntentFilter。<br>
+</span>
+<h2><span style="font-size:18px">显式Intent（Explicit Intent)</span></h2>
+<span style="font-size:18px">显示Intent使用起来比较简单，只需要在Intent中指定目标组件的名字即可，也就是通过Intent的方法设置Component属性。如前所述，显式Intent通常用于应用程序内部启动Activity或Service。事实上，并不完全局限在应用程序内部，对于外部应用的Activity和Service，也可以用显式Intent来启动，但你必须知道它们的名字。<br>
+设置组件的名字的方法有：<br>
+</span><textarea readonly name="code" class="java">public Intent setComponent(ComponentName component)；
+public Intent setClass(Context packageContext, Class&lt;?&gt; cls)；
+public Intent setClassName (Context packageContext, String className)；
+public Intent setClassName (String packageName, String className)；</textarea>事实上虽然设置的方法有这么多，但Intent内部标识目标组件的属性只有一个Component，所以这么设置方法的目的也只是设置目标组件的Component，事实上有这么多的方法原因在于ComponentName的构造是多重载了的。在解析Intent时，系统也是取得这个Component属性，然后去启动它。<br>
+ComponentName Intent.getComponent();<br>
+对于应用程序内部启动Activity通常是这样子设置Intent：<br>
+<textarea readonly name="code" class="java">       Intent i = new Intent();
+       // Select one of them
+       i.setComponent(new ComponentName(getApplication(), ViewStubDemoActivity.class));
+       i.setComponent(new ComponentName(getApplication(), ViewStubDemoActivity.class.getName()));
+       i.setComponent(new ComponentName(getApplication().getPackageName(), ViewStubDemoActivity.class.getName()));
+       i.setClass(getApplication(), ViewStubDemoActivity.class);
+       i.setClassName(getApplication(), ViewStubDemoActivity.class.getName());
+       i.setClassName(getApplication().getPackageName(), ViewStubDemoActivity.class.getName());
+       startActivity(i);</textarea>因为应用程序内部的组件类，都是可以访问到的，所以要尽可能少写字串常量，以减少拼写错误，如果一定要使用包名和类名，也要注意，类名必须是全称，也就是从包名开始，如“com.hilton.networks.WifiManagerActivity&quot;。<br>
+但是对于外部应用程序的Activity，通常只能通过以下方法：<br>
+<textarea readonly name="code" class="java">       Intent i = new Intent();
+       // select one of them
+       i.setComponent(new ComponentName(&quot;com.hilton.networks&quot;, &quot;com.hilton.networks.WifiManagerActivity&quot;));
+       i.setClassName(&quot;com.hilton.networks&quot;, &quot;com.hilton.networks.WifiManagerActivity&quot;);
+       startActivity(i);</textarea>首先，带有Context为参数的是不能够用的，因为通常你无法拿到其他应用程序的Context，你只能拿到你所在应用程序的Context，所以用你所在的应用程序的Context去启动外部的Activity肯定会报错的。其次，不参再像上面那样通过Class.getName()去指定类名，你为你无法导入外部的类，会有编译错误的。另外，千万要注意不要拼错，否则会有RuntimeException抛出的。<br>
+对于Service组件，也是一样，Intent的写法与Activity组件一致，但是对于BroadcastReceiver组件通常都用显式Intent。<br>
+<h2><span style="font-size:18px">隐式Intent的消息过滤器--IntentFilter</span></h2>
+<span style="font-size:18px">IntentFilter是用来解析隐式Intent(Implicit Intent)的，也就是说告诉系统你的组件(Activity, Service, BroadcastReceiver)能够处理哪些隐式的Intent。在使用的时候我们通常是这样子的：<br>
+</span><textarea readonly name="code" class="html">&lt;manifest ...&gt;
+    &lt;receiver ...&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.appwidget.action.APPWIDGET_UPDATE&quot; /&gt;
+              &lt;action android:name=&quot;android.appwidget.action.APPWIDGET_ENABLED&quot; /&gt;
+              &lt;action android:name=&quot;android.appwidget.action.APPWIDGET_DISABLED&quot; /&gt;
+              &lt;action android:name=&quot;android.appwidget.action.APPWIDGET_DELETED&quot; /&gt;
+           &lt;/intent-filter&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_MOUNTED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_UNMOUNTED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_SHARED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_REMOVED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_EJECT&quot;/&gt;
+              &lt;data android:scheme=&quot;file&quot; /&gt;
+           &lt;/intent-filter&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_ADDED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_REMOVED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_DATA_CLEARED&quot;/&gt;
+              &lt;data android:scheme=&quot;package&quot; /&gt;
+           &lt;/intent-filter&gt;
+   &lt;/receiver&gt;
+&lt;/manifest&gt;</textarea>在Manifest中使用IntentFilter时要注意以下三点：<br>
+1. 千万注意拼写错误<br>
+这里有一个需要十分小心和注意的地方那就是对于IntentFilter里面的Action和Data字串常量不要写错，因为这个在编译时是不会被检查，在运行时又不会抛出异常，如果你拼写错了，比如大小写拼错了，在编译时和运行时都不会有错误，但是你的程序却不能正常工作，你的程序无法收到相应的Intent。曾有一个同事在IntentFilter中写了一些Action，但把其中一个的大小写拼错了，结果花了他一个下午的时间来调试，最后还是另外一个同事到他那聊天才发现了是大小写的拼写错误。<br>
+这里也可以发现Android在Manifest文件中的IntentFilter这块的封装性很差。如果，仅仅是如果，这些Action常量也可以通过引用的方式来写，就可以在编译时做些检查和匹配，可以大大的减少出错的机率，同时也加强了封装和信息隐藏。比如，对于上面的可以写成这样：<br>
+<textarea readonly name="code" class="html">&lt;manifest ...&gt;
+    &lt;receiver ...&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;@android:action/AppWidgetManager.APPWIDGET_UPDATE&quot; /&gt;
+              &lt;action android:name=&quot;@android:action/AppWidgetManager.APPWIDGET_ENABLED&quot; /&gt;
+              &lt;action android:name=&quot;@android:action/AppWidgetManager.APPWIDGET_DISABLED&quot; /&gt;
+              &lt;action android:name=&quot;@android:action/AppWidgetManager.APPWIDGET_DELETED&quot; /&gt;
+           &lt;/intent-filter&gt;
+   &lt;/receiver&gt;
+&lt;/manifest&gt;</textarea>虽然这种拼写错误很低级，但是因为它低级所以当程序不能正常工作时没有人会想到是因为拼写错误，所以这种拼写错误通常会耗费不少的调试时间。另外一种避免此种错误的方法就是在代码中通过Context.registerReceiver(BroadcastReceiver,IntentFilter)来注册BroadcastReceiver，就可以直接写入常量，而非具体字串。但这只能是接收Broadcast的时候，对于那些想作为公开接口的组件，还是需要在Manifest里面声明，比如Email，它要能处理Intent.ACTION_SEND_TO，就需要在Manifest中声明。2.
+ 要注意Data字段除了上面讨论的之外，对于IntentFilter还有另外的一点需要注意，就是对于某些Action是需要加上Data字段信息，否则有可能接收不到。比如：<br>
+<textarea readonly name="code" class="html">&lt;manifest ...&gt;
+    &lt;receiver ...&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_MOUNTED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_UNMOUNTED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_SHARED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_REMOVED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.MEDIA_EJECT&quot;/&gt;
+              &lt;data android:scheme=&quot;file&quot; /&gt;
+           &lt;/intent-filter&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_ADDED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_REMOVED&quot;/&gt;
+              &lt;action android:name=&quot;android.intent.action.PACKAGE_DATA_CLEARED&quot;/&gt;
+              &lt;data android:scheme=&quot;package&quot; /&gt;
+           &lt;/intent-filter&gt;
+   &lt;/receiver&gt;
+&lt;/manifest&gt;</textarea>对于手机外部存储卡的状态变化的Broadcast，在注册监听器的时候就需要加上DataScheme，否则就会接收不到。这个也花费了我几个小时的调试时间，改在代码中用Context.registerReceiver(BroadcastReceiver,IntentFilter)注册也不行，最后参考了Music中的做法，加上了DataScheme才能在onReceive()中接收到Intent。同样对于后面的Package相关的Broadcast，也是要加上DataScheme否则也是接收不到Broadcast。可悲的是对于像这样的系统公共的Broadcast<br>
+Intent，在Intent的文档中并没有说明如何使用，如果没有参考事例，相信需要一定的时间才能够找出为什么接收不到Intent。<br>
+除了DataScheme还有一个是MimeType，这个对于系统公共接口是必须加上的，比如Email要处理Intent.ACTION_SENTTO，就需要这样声明：<br>
+<textarea readonly name="code" class="html">&lt;manifest ...&gt;
+    &lt;activity android:name=&quot;EmailComposer&quot;&gt;
+           &lt;intent-filter&gt;
+              &lt;action android:name=&quot;android.intent.action.SEND&quot;/&gt;
+              &lt;data android:mimeType=&quot;image/*&quot; /&gt;
+           &lt;/intent-filter&gt;
+   &lt;/activity&gt;
+&lt;/manifest&gt;</textarea>3. 同时也要注意Category字段<br>
+如果没有对IntentFilter写正确的Category字段，也是收不到Intent。比如：<br>
+<textarea readonly name="code" class="html">&lt;manifest ...&gt;
+    &lt;receiver ...&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;com.hilton.controlpanel.action.BUTTON_ACTION&quot; /&gt;
+                &lt;category android:name=&quot;com.hilton.controlpanel.category.SELF_MAINTAIN&quot; /&gt;
+            &lt;/intent-filter&gt;
+   &lt;/receiver&gt;
+&lt;/manifest&gt;</textarea>如果把Category去掉，死活也接收不到Intent，当然这要取决于Intent是如何发出的，如果Intent发出时没有加Category，那就没有必须在IntentFilter加上Category。<br>
+总之，对于Intent，要保证发出和接收完全一致，否则系统就无法找到相应的匹配，程序也就无法接收Intent。<br>
+有关于 DEFAULT category，也要注意，如果是针对Activity的Implicit Intent隐式Intent，如果在没有其他Category的情况下，一定要加上DEFAULT Category。因为系统会在Context.startActivity(Intent)和Context.startActivityForResult(<br>
+Intent)时给Intent加上DEFAULT category。而对于Context.sendBroadcast(Intent)，Context.sendOrderedBroadcast(Intent)，Contxt.sendStickyBroadcast(Intent)和Context.bindService(Intent)Context.startService(Intent)就不会加DEFAULT Category。<br>
+另外要注意，尽量把Action进行合并写进一个IntentFilter中。因为对于每个IntentFilter标签都会创建一个IntentFilter对象，所以如果写几个就会有几个对象在那，不但耗费资源而且在匹配的时候也会耗费更多的时间，因为在查询匹配的时候是要一个IntentFilter对象接着一个IntentFilter对象进行检查的。直到找到最佳匹配或是到所有的IntentFilter都检查完为止。<br>
+<h2><span style="font-size:18px">IntentFilter的匹配规则</span></h2>
+<p><span style="font-size:18px">1. 通过Action字段来匹配这个是Intent中比较基本的一个字段，也比较简单，就是一个字串，如果相等就匹配成功，否则证明还没找到目标。但要注意，如果IntentFilter没有指定Action，那么它不会匹配到任何的隐式Intent，它只能被显式的Intent匹配上。反过来，如果Intent自己没有指定Action，那么它能匹配上含有任何Action的IntentFilter，但不能匹配上没有指定Action的IntentFilter。对于Action，平时要注意拼写错误，因为在AndroidManifest文件中声明Action都是字串，并且在编译时不会做检查，运行时，如果Action拼错了导致匹配不上，要么是程序不能正常工作，要么会有异常抛出。</span></p>
+<p><span style="font-size:18px">2. 通过Category字段来匹配对于Activity来讲，如果想处理隐式Intent，并且除了Intent.ACTION_MAIN以外，必须指定Category为DEFAULT，否则不会被匹配到。因为Context.startActivity()和Context.startActivityForResult()会自动加上DEFAULT Category。其他情况，Service和BroadcastReceiver则不会，对于Service和BroadcastReceiver，如果Intent中没有指定Category，那么在其IntentFilter中也不必指定。</span></p>
+<p><span style="font-size:18px">3. 通过Data字段来匹配这个相对来讲比较复杂，通常Data包含uri, scheme(content, file, http)和type(mimeType)对于Intent来讲有二个方法：</span></p>
+<span style="font-size:18px"></span><textarea readonly name="code" class="java">Intent.setData(Uri); //一个Uri，Scheme包含在其中
+Intent.setType(String); //指定MimeType，比如'image/jpeg', 'audio/mpeg'等
+Intent.setDataAndType(Uri, String); //上面二个方法的简便调用方式，一起搞进去</textarea>对于IntentFilter来讲，需要设置的是Scheme和Type，Scheme是对Uri的限制，目标需要限制Scheme是因为Scheme能告诉目录能从哪里拿到Uri所指向的文件，Type是MimeType对类型的限制。<br>
+<textarea readonly name="code" class="html">      &lt;intent-filter&gt;
+           &lt;action android:name=&quot;android.intent.action.SEND&quot; /&gt;
+           &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+           &lt;data android:scheme=&quot;content&quot; android:mimeType=&quot;image/*&quot; /&gt;
+      &lt;/intent-filter&gt;</textarea>Data匹配时的规则一共有四条：<br>
+<blockquote><span style="font-size:18px">a.如果Intent没有指定Data相关的字段，只能匹配上没有指定Data的IntentFilter。也就是说如果一个Intent没有指定任何的Data（Uri和Type），它只能匹配到没有指定任何Data（Scheme和Type）的IntentFilter。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">b.如果一个Intent只指定了Uri但是没有Type（并且Type也不能够从Uri中分析出）只能匹配到仅指定了相应Scheme且没有指定Type的IntentFilter。实际的例子有如果一个Intent是想要发邮件，或是打电话，它们的Intent是类&#20284;这样的：&quot;mailto:someone@sb.com&quot;和&quot;tel:1234567&quot;。换句话说，这些Uri本身就是数据，而不再是一个指向数据的地址。比如：Phone中的Dialer就有如下的IntentFilter：</span><br>
+</blockquote>
+<blockquote><br>
+<textarea readonly name="code" class="html">&lt;intent-filter&gt;
+    &lt;action android:name=&quot;android.intent.action.CALL&quot; /&gt;
+    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+    &lt;data android:scheme=&quot;tel&quot; /&gt;
+&lt;/intent-filter&gt;</textarea><br>
+</blockquote>
+<blockquote><span style="font-size:18px">再如，要处理SD状态变化的IntentFilter：</span><br>
+</blockquote>
+<blockquote><br>
+<textarea readonly name="code" class="html">&lt;intent-filter&gt;
+      &lt;action android:name=&quot;android.intent.action.MEDIA_MOUNTED&quot;/&gt;
+      &lt;action android:name=&quot;android.intent.action.MEDIA_UNMOUNTED&quot;/&gt;
+      &lt;action android:name=&quot;android.intent.action.MEDIA_SHARED&quot;/&gt;
+      &lt;action android:name=&quot;android.intent.action.MEDIA_REMOVED&quot;/&gt;
+      &lt;action android:name=&quot;android.intent.action.MEDIA_EJECT&quot;/&gt;
+      &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;       
+      &lt;data android:scheme=&quot;file&quot; /&gt;
+&lt;/intent-filter&gt;</textarea><br>
+</blockquote>
+<blockquote><span style="font-size:18px">再如，要处理Package状态变化的IntentFilter：</span><br>
+</blockquote>
+<blockquote><br>
+<textarea readonly name="code" class="html">&lt;intent-filter&gt;
+      &lt;action android:name=&quot;android.intent.action.PACKAGE_ADDED&quot;/&gt;
+      &lt;action android:name=&quot;android.intent.action.PACKAGE_REMOVED&quot;/&gt;
+      &lt;action android:name=&quot;android.intent.action.PACKAGE_DATA_CLEARED&quot;/&gt;
+      &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+      &lt;data android:scheme=&quot;package&quot; /&gt;
+&lt;intent-filter&gt;</textarea><br>
+</blockquote>
+<blockquote><span style="font-size:18px">但是注意，对于想对数据进行操作的Intent，最好不要只指定Uri，而不指定类型。因为如果这样做通常会匹配到一大堆</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">c. 如果一个Intent只指定了Type，但是没有指定Uri，它只能匹配到只指定了相应Type且没有指定Scheme的IntentFitler</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">d. 如果一个Intent即有Uri又有Type，那么它会匹配上：1).Uri和Type都匹配的IntentFilter；2).首先Type要匹配，另外如果Intent的Uri是content:或file:，且IntentFilter没有指定Scheme的IntentFilter。因为对于Android来讲content和file这二种Scheme是系统最常见也是用的最多的，所以就当成缺省&#20540;来对待。</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">另外需要注意，Type，因为是MimeType，所以是允许使用通配符的，比如'image/*'，能匹配上所有以'image'为开头的类型，也说是说能匹配上所有的图像。</span><br>
+</blockquote>
+<span style="font-size:18px"></span>
+<h2><span style="font-size:18px">根据Data匹配的例子</span></h2>
+<span style="font-size:18px">假如系统中有四个Activity，A的IntentFilter是这样子的：<br>
+</span><textarea readonly name="code" class="html">    &lt;activity ...&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.intent.action.SEND&quot; /&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+                &lt;data android:scheme=&quot;content&quot; android:mimeType=&quot;image/*&quot; /&gt;
+            &lt;/intent-filter&gt;
+   &lt;/activity&gt;</textarea>这表明A可以发送一切图片类型，并且内容必须是由ContentProvider提供的，也就是Uri必须是以&quot;content://&quot;开头的<br>
+而另外一个Activity B是这样子声明的：<br>
+<textarea readonly name="code" class="html">    &lt;activity ...&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.intent.action.SEND&quot; /&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+                &lt;data android:scheme=&quot;file&quot; android:mimeType=&quot;image/*&quot; /&gt;
+            &lt;/intent-filter&gt;
+   &lt;/activity&gt;</textarea>这表明B可以发送一切图片，但内容必须是单独的一个文件，也就是Uri必须是由&quot;file://&quot;开头的<br>
+还有一个C是这样子声明的：<br>
+<textarea readonly name="code" class="html">    &lt;activity ...&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.intent.action.SEND&quot; /&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+            &lt;/intent-filter&gt;
+   &lt;/activity&gt;</textarea>这表明C只能接收那些没有指定任何Uri和Type的Action是SEND的Intent。<br>
+而D是这样子声明的：<br>
+<textarea readonly name="code" class="html">    &lt;activity ...&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.intent.action.SEND&quot; /&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+                &lt;data android:mimeType=&quot;image/*&quot; /&gt;
+            &lt;/intent-filter&gt;
+   &lt;/activity&gt;</textarea>这表明D可以发送一切图片，无论是数据库内的(content)，还是单独的文件(file)。<br>
+如果一个Intent是这样写的：<br>
+<textarea readonly name="code" class="java">Intent share = new Intent(Intent.ACTION_SEND);
+startActivity(share);</textarea>那么它只能匹配C，因为C没有指定数据和类型，Action是SEND，根据规则a，它只能匹配Activity A。但如果给Intent加上额外的条件<br>
+<textarea readonly name="code" class="java">share.setDataAndType(uri,&quot;image/jpeg&quot;);</textarea>那么如果uri是数据库内容，它会匹配到A，如果它是一个文件，会匹配到B。但无论是content还是file都会匹配到D，因为它能处理以任何形式存储的图片。但始终不会匹配到C，因为C没有声明Data字段，所以不会匹配上。<br>
+所以，通常想把组件作为系统公用接口时都是这样子来写：<br>
+<textarea readonly name="code" class="html">    &lt;activity ...&gt;
+            &lt;intent-filter&gt;
+                &lt;!-- implement public actions such as View, Edit, Pick or Send --&gt;
+                &lt;action android:name=&quot;android.intent.action.SEND&quot; /&gt;
+                &lt;!-- never forget default category, otherwise your activity never receives intents --&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+                &lt;!-- specify mimeType to constrain data type, receive data from both content provider and file --&gt;
+                &lt;data android:mimeType=&quot;image/*&quot; /&gt;
+                &lt;!-- specify scheme to constrain data source, if necessary --&gt;
+                &lt;data android:shceme=&quot;http&quot; /&gt;
+            &lt;/intent-filter&gt;
+   &lt;/activity&gt;</textarea>Intent和IntentFilter对于组件Activity来讲注意事项比较多，但是对于Service和BroadcastReceiver来说就没有那么多的注意事项了，因为对于Service和BroadcastReceiver通常都不用设置Category和Data。但也有例外，比如前面所讲到的SD相关广播和应用程序安装相关广播。<br>
+另外要注意，如果使用Context.startActivity()或Context.startActivityForResult()，Context.bindService()和Context.startService()，如果系统没有为Intent匹配到目标Activity和Service那么会有RuntimeException(ActivityNotFoundException)抛出;如果有多个目标同时匹配，会以列表的方式来让用户选择使用哪个。<br>
+<h2><span style="font-size:18px">使用IntentFilter匹配来进行查询可用的组件</span></h2>
+<span style="font-size:18px">Intent和IntentFilter不但可以用来进行组件复用，还可以用于查询系统内都有哪里组件能做哪些事情。比如Launcher上面会列出很多的应用，其实这种说法不准确，应该是上面列出了所有的能启动一个应用的组件（比如，Dialer和Contacts同属于一个应用程序Contacts中，但是在Launcher里面却有二个，一个是Dialer一个是Contacts。那么Launcher是如何做到的呢？它不可能是去检查系统文件，看看哪些应用程序文件存在，然后再列出来。它是通过查询Intent的方式，把所有含有&quot;android.intent.action.MAIN&quot;和&quot;android.intent.category.
+ LAUNCHER&quot;的Activity的相关信息都取出来，然后列出它们的名称和Icon。同样，我们也可这样来获得具体相应特征的组件，具体的请参考SDK中的一篇<a target="_blank" href="http://developer.android.com/resources/articles/can-i-use-this-intent.html">文章</a>(Resources-&gt;Articles-&gt;Can I Use this Intent?)，讲的很详细，且有Sample Code。<br>
+</span><br>
+

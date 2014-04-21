@@ -1,0 +1,182 @@
+
+    
+<h2><span style="font-size:18px">Understanding AsyncTask</span></h2>
+<span style="font-size:18px">AsyncTask是Android 1.5 Cubake加入的用于实现异步操作的一个类，在此之前只能用Java SE库中的Thread来实现多线程异步，AsyncTask是Android平台自己的异步工具，融入了Android平台的特性，让异步操作更加的安全，方便和实用。实质上它也是对Java SE库中Thread的一个封装，加上了平台相关的特性，所以对于所有的多线程异步都强烈推荐使用AsyncTask，因为它考虑，也融入了Android平台的特性，更加的安全和高效。<br>
+</span>
+<p><span style="font-size:18px">AsyncTask可以方便的执行异步操作（doInBackground)，又能方便的与主线程进行通信，它本身又有良好的封装性，可以进行取消操作（cancel())。关于AsyncTask的使用，文档说的很明白，下面直接上实例。</span></p>
+<h2><span style="font-size:18px">实例<br>
+</span></h2>
+<p><span style="font-size:18px">这个实例用AsyncTask到网络上下载图片，同时显示进度，下载完图片更新UI。</span></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="java">package com.hilton.effectiveandroid.concurrent;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+
+import com.hilton.effectiveandroid.R;
+
+/*
+ * AsyncTask cannot be reused, i.e. if you have executed one AsyncTask, you must discard it, you cannot execute it again.
+ * If you try to execute an executed AsyncTask, you will get &quot;java.lang.IllegalStateException: Cannot execute task: the task is already running&quot;
+ * In this demo, if you click &quot;get the image&quot; button twice at any time, you will receive &quot;IllegalStateException&quot;.
+ * About cancellation:
+ * You can call AsyncTask#cancel() at any time during AsyncTask executing, but the result is onPostExecute() is not called after
+ * doInBackground() finishes, which means doInBackground() is not stopped. AsyncTask#isCancelled() returns true after cancel() getting
+ * called, so if you want to really cancel the task, i.e. stop doInBackground(), you must check the return value of isCancelled() in
+ * doInBackground, when there are loops in doInBackground in particular.
+ * This is the same to Java threading, in which is no effective way to stop a running thread, only way to do is set a flag to thread, and check
+ * the flag every time in Thread#run(), if flag is set, run() aborts.
+ */
+public class AsyncTaskDemoActivity extends Activity {
+    private static final String ImageUrl = &quot;http://i1.cqnews.net/sports/attachement/jpg/site82/2011-10-01/2960950278670008721.jpg&quot;;
+    private ProgressBar mProgressBar;
+    private ImageView mImageView;
+    private Button mGetImage;
+    private Button mAbort;
+    
+    @Override
+    public void onCreate(Bundle icicle) {
+	super.onCreate(icicle);
+	setContentView(R.layout.async_task_demo_activity);
+	mProgressBar = (ProgressBar) findViewById(R.id.async_task_progress);
+	mImageView = (ImageView) findViewById(R.id.async_task_displayer);
+	final ImageLoader loader = new ImageLoader();
+	mGetImage = (Button) findViewById(R.id.async_task_get_image);
+	mGetImage.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		loader.execute(ImageUrl);
+	    }
+	});
+	mAbort = (Button) findViewById(R.id.asyc_task_abort);
+	mAbort.setOnClickListener(new View.OnClickListener() {
+	    public void onClick(View v) {
+		loader.cancel(true);
+	    }
+	});
+	mAbort.setEnabled(false);
+    }
+    
+    private class ImageLoader extends AsyncTask&lt;String, Integer, Bitmap&gt; {
+	private static final String TAG = &quot;ImageLoader&quot;;
+
+	@Override
+	protected void onPreExecute() {
+	    // Initialize progress and image
+	    mGetImage.setEnabled(false);
+	    mAbort.setEnabled(true);
+	    mProgressBar.setVisibility(View.VISIBLE);
+	    mProgressBar.setProgress(0);
+	    mImageView.setImageResource(R.drawable.icon);
+	}
+	
+	@Override
+	protected Bitmap doInBackground(String... url) {
+	    /*
+	     * Fucking ridiculous thing happened here, to use any Internet connections, either via HttpURLConnection
+	     * or HttpClient, you must declare INTERNET permission in AndroidManifest.xml. Otherwise you will get
+	     * &quot;UnknownHostException&quot; when connecting or other tcp/ip/http exceptions rather than &quot;SecurityException&quot;
+	     * which tells you need to declare INTERNET permission.
+	     */
+	    try {
+		URL u;
+		HttpURLConnection conn = null;
+		InputStream in = null;
+		OutputStream out = null;
+		final String filename = &quot;local_temp_image&quot;;
+		try {
+		    u = new URL(url[0]);
+		    conn = (HttpURLConnection) u.openConnection();
+		    conn.setDoInput(true);
+		    conn.setDoOutput(false);
+		    conn.setConnectTimeout(20 * 1000);
+		    in = conn.getInputStream();
+		    out = openFileOutput(filename, Context.MODE_PRIVATE);
+		    byte[] buf = new byte[8196];
+		    int seg = 0;
+		    final long total = conn.getContentLength();
+		    long current = 0;
+		    /*
+		     * Without checking isCancelled(), the loop continues until reading whole image done, i.e. the progress
+		     * continues go up to 100. But onPostExecute() will not be called.
+		     * By checking isCancelled(), we can stop immediately, i.e. progress stops immediately when cancel() is called.
+		     */
+		    while (!isCancelled() &amp;&amp; (seg = in.read(buf)) != -1) {
+			out.write(buf, 0, seg);
+			current += seg;
+			int progress = (int) ((float) current / (float) total * 100f);
+			publishProgress(progress);
+			SystemClock.sleep(1000);
+		    }
+		} finally {
+		    if (conn != null) {
+			conn.disconnect();
+		    }
+		    if (in != null) {
+			in.close();
+		    }
+		    if (out != null) {
+			out.close();
+		    }
+		}
+		return BitmapFactory.decodeFile(getFileStreamPath(filename).getAbsolutePath());
+	    } catch (MalformedURLException e) {
+		e.printStackTrace();
+	    } catch (IOException e) {
+		e.printStackTrace();
+	    }
+	    return null;
+	}
+	
+	@Override
+	protected void onProgressUpdate(Integer... progress) {
+	    mProgressBar.setProgress(progress[0]);
+	}
+	
+	@Override
+	protected void onPostExecute(Bitmap image) {
+	    if (image != null) {
+		mImageView.setImageBitmap(image);
+	    }
+	    mProgressBar.setProgress(100);
+	    mProgressBar.setVisibility(View.GONE);
+	    mAbort.setEnabled(false);
+	}
+    }
+}</textarea><span style="font-size:18px">运行结果</span>
+<p></p>
+<p><img src="http://my.csdn.net/uploads/201205/12/1336823493_5309.png" alt=""><img src="http://my.csdn.net/uploads/201205/12/1336823519_8704.png" alt=""><img src="http://my.csdn.net/uploads/201205/12/1336823537_4056.png" alt=""></p>
+<p><span style="font-size:18px">先后顺序分别是下载前，下载中和下载后</span><br>
+</p>
+<h2><span style="font-size:18px">总结<br>
+</span></h2>
+<span style="font-size:18px">关于怎么使用看文档和这个例子就够了，下面说下，使用时的注意事项：<br>
+</span><br>
+<span style="font-size:18px">1. AsyncTask对象不可重复使用，也就是说一个AsyncTask对象只能execute()一次，否则会有异常抛出&quot;java.lang.IllegalStateException: Cannot execute task: the task is already running&quot;</span><br>
+<span style="font-size:18px">2. 在doInBackground()中要检查isCancelled()的返回&#20540;，如果你的异步任务是可以取消的话。</span><br>
+<blockquote><span style="font-size:18px">cancel()仅仅是给AsyncTask对象设置了一个标识位，当调用了cancel()后，发生的事情只有:AsyncTask对象的标识位变了，和doInBackground()执行完成后，onPostExecute()不会被回调了，而doInBackground()和onProgressUpdate()还是会继续执行直到doInBackground()结束。所以要在doInBackground()中不断的检查isCancellled()的返回&#20540;，当其返回true时就停止执行，特别是有循环的时候。如上面的例子，如果把读取数据的isCancelled()检查去掉，图片还是会下载，进度也一直会走，只是最后图片不会放到UI上(因为onPostExecute()没被回调)!</span><br>
+</blockquote>
+<blockquote><span style="font-size:18px">这里的原因其实很好理解，想想Java SE的Thread吧，是没有方法将其直接Cacncel掉的，那些线程取消也无非就是给线程设置标识位，然后在run()方法中不断的检查标识而已。</span><br>
+</blockquote>
+<p><span style="font-size:18px">3. 如果要在应用程序中使用网络，一定不要忘记在AndroidManifest中声明INTERNET权限，否则会报出很诡异的异常信息，比如上面的例子，如果把INTERNET权限拿掉会抛出&quot;UnknownHostException&quot;。刚开始很疑惑，因为模拟器是可以正常上网的，后来Google了下才发现原来是没权限，但是疑问还是没有消除，既然没有声明网络权限，为什么不直接提示无网络权限呢?</span></p>
+<h2><span style="font-size:18px">对比Java SE的Thread</span></h2>
+<p><span style="font-size:18px">Thread是非常原始的类，它只有一个run()方法，一旦开始，无法停止，它仅适合于一个非常独立的异步任务，也即不需要与主线程交互，对于其他情况，比如需要取消或与主线程交互，都需添加额外的代码来实现，并且还要注意同步的问题。</span></p>
+<p><span style="font-size:18px">而AsyncTask是封装好了的，可以直接拿来用，如果你仅执行独立的异步任务，可以仅实现doInBackground()。</span></p>
+<p><span style="font-size:18px">所以，当有一个非常独立的任务时，可以考虑使用Thread，其他时候，尽可能的用AsyncTask。</span><br>
+</p>
+

@@ -1,0 +1,31 @@
+
+    
+<p><span style="font-size:18px">信息的发送，对于Mms应用程序来讲主要就是在信息数据库中创建并维护一条信息记录，真正的发送过程交由底层（Frameworks层）函数来处理。</span></p>
+<p><span style="font-size:18px">总体的来讲，当信息创建完成后，对于信息通常有三个去处，一个是放弃这个信息，也就是用户不想要此信息，一旦选择，信息将不会被保存；第二个去处就是保存为草稿；最后一个去处就是发送此信息。</span></p>
+<p><span style="font-size:18px">当点击了发送后，UI层暂不会有变化，UI层要监听负责发送的各个类的回调信息和数据库的变化信息来更新UI。信息发送的第一站是WorkingMessage，它会先处理一下信息的相关内容，比如刷新收信人（Sync Recipients）以保证都是合法收信人，把附件（Slideshow）转成可发送的彩信附件Pdu（SendReq），makeSendReq。然后针对，不同的信息类型（短信，彩信）调用不同的处理类来处理。处理的流程也比较类&#20284;，都是先把消息放到一个队列中，然后启动相应的Service来处理。Service会维护信息队列，然后处理每个信息。短信是由Frameworks中的SmsManager发送出去，而彩信是通过Http协议发送。<img src="http://hi.csdn.net/attachment/201112/29/0_13251684007sY9.gif" alt=""></span></p>
+<h2><a name="_Toc311123742"><span style="font-size:18px">短信发送</span></a></h2>
+<p><span style="font-size:18px">在WorkingMessage拿到一个要发送的消息后，做了简单处理（刷新收信人），然后就会对短信和彩信彩取不同的处理流程。对于短信，WorkingMessage除了刷新联系人外，不会再做其他的事情，它会创建SmsMessageSender并调用其sendMessage()方法来发送信息，相关的参数收信人地址（是以分号分隔的一串字符），信息内容和所在对话的ID(thread id)在构造SmsMessageSender对象是传入的，构造完成后，直接调用其sendMessage()方法即可，接下来SmsMessageSender会处理所有的事情。</span></p>
+<p><span style="font-size:18px">在交由SmsMessageSender处理之前，WorkingMessage会回调UI一次，以让UI刷新收信人编辑框和信息文本输入框。</span></p>
+<p><span style="font-size:18px">SmsMessageSender的主要任务就是，把信息进行按收信人拆分，也就是说，短信是要给每个收信人都发一封，虽然你可能只编辑一个短信，但是当收信人不只一个时，就变成了多条短信，就要发出多条短信，要给每一个收信人都发一封短信。因此，SmsMessageSender的第一个任务就是分析收信人地址，得到收信人的个数，然后把信息按每个收信人都放入待发送的队列中。这样就得到了一个短信发送队列，短信的数目就是收信人的个数。事实上，SmsMessageSender的工作仅此而已，当把信息都放入发送队列后也就是写进数据库，然后信息的状态是正在发送中，它会发送Intent唤起SmsReceiverService来处理队列，它的工作就完成了，sendMessage()也就此返回。SmsMessageSender的sendMessage()返回后，WorkingMessage会再次回调UI的接口，因为此时短信已被写入数据库，所以UI会刷新信息列表，显示刚刚的短信，这时的状态应该是正在发送中，因为是从待发送队列中拿到的。从这以后，发送流程的类不会再直接与UI进行通信，发送服务SmsReceiverService等会直接更新数据库中短信的状态，而UI会监听数据库的变化，一旦信息数据发生变化，UI就会刷新列表中的消息，更新状态，比如将发送中变成已发送，或是标明发送失败等，而这些状态都是发送服务在更新。</span></p>
+<p><span style="font-size:18px">SmsReceiverService，不要被其名字虎住，它并不只负责接收信息，它是短信（SMS）处理的Service，负责短信的发送和接收，在得到发送短信息指令（ACTION_SEND_MESSAGE）后会从队列中读出第一个短信，然后创建SmsSingleRecipientSender对象，传入收信人地址，消息内容，所属的threadid和短信的Uri，并调用其sendMessage()发送这个短信。</span></p>
+<p><span style="font-size:18px">SmsSingleRecipientSender会调用SmsManager的方法divideMessage()来把短信分成适合发送的几个部分，因为可能信息过长，不能一次发送完成，所以就需要分成几部分来分次发送。同时会把消息移动到Outbox。然后会针对分割的每一部分都会创建二个PendingIntent，这二个PendingIntent都是给底层用的，一个用于当短信被发送出去时广播出来，另一个是在短信已被收信人接收到时广播出来。所以二个广播的作用是，一个可用于标识短信已发送，另一个则可以作为送达的通知。最后调用SmsManager.sendMultipartTextMessage交由底层来发送短信。</span></p>
+<p><span style="font-size:18px">SmsReceiverService并不是自己去监听SEND_MESSAGE_ACTION和MESSAGE_SENT_ACTION的，而是由SmsReceiver来监听这二个广播事件，然后通过StartService再把这二个事件传送给SmsReceiverService进行处理。</span></p>
+<p><span style="font-size:18px">信息已发送广播和信息已送达广播分别由SmsReceiverService监听和MessageStatusReceiver。它们收到广播后，会从Intent中取得详细的发送和送达状态，然后更新数据库中信息的状态(status)，UI当发现数据库变化后，就会更新UI。</span></p>
+<p><span style="font-size:18px">至此，一个短信发送完成。</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201112/29/0_13251684382SIg.gif" alt=""></span></p>
+<h2><a name="_Toc311123743"><span style="font-size:18px">彩信发送</span></a></h2>
+<p><span style="font-size:18px">彩信发送流程与短信不完全一致，WorkingMessage刷新收信人，生成彩信的可发送的Pdu—SendReq，接着会把彩信写入数据库，把要发送的SendReq也会写入数据库，后面会再从数据库中读取出SendReq，并标识为草稿；然后会构建MmsMessageSender，传入收信人和彩信的Uri，让其发送。这期间也会回调UI一次，以初始化收信人编辑框和信息编辑框。</span></p>
+<p><span style="font-size:18px">MmsMessageSender先从数据库中读出彩信发送的Pdu—SendReq，Google的内置包com.google.android.mms.*;里面封装了所有操作Pdu的方法，包括把Pdu写入数据库（PduPersister.persist()），从数据库中读取生成Pdu（PduPersister.load()）。然后根据当前彩信的配置和其他信息对SendReq进行更新，比如设置Expiration，Priority，Date和Size等，把彩信移到Outbox，然后启动TransactionService来处理彩信。sendMessage()就此返回。WorkingMessage会再次回调UI的接口，因为此时彩信已被在数据库中，所以UI会刷新信息列表，显示刚刚的彩信，这时的状态应该是正在发送中。</span></p>
+<p><span style="font-size:18px">TransactionService，与短信的SmsReceiverService类&#20284;，是负责处理彩信的服务，可以发送，接收等。对于TransactionService来讲，所有的需要处理的流程，无论是发送还是接收，都是一个Transaction。它内部有二个队列，一个是当前正在处理(processing)的Transaction，一个是待处理(pending)的Transaction。它维护这二个队列，并检查网络的连接，打开彩信网络连接，准备和检查环境，然后从待处理的队列中取出第一个，放入正在处理的队列中，并处理这个Transaction，也就是调用Transaction.process()。</span></p>
+<p><span style="font-size:18px">发送彩信是一个SendTransaction，它的process()方法负责发送彩信，它会创建一个独立的线程来做，因此不会阻塞TransactionService，处理服务就可以再处理其他的Transaction。它会先从数据库中取出彩信Pdu，M-Send.req,(SendReq)，更新一些字段，比如date，然后调用其父类Transaction.java中的方法sendPdu来把SendReq发送出去，sendPdu()会返回发送的结果（send
+ confirmation）。Transaction.sendPdu()会先设置好网路，然后直接调用HttpUtils中的httpConnection()方法，用HTTP把彩信发送出去，同时取得返回消息（Response）给SendTransaction。SendTransaction会检查发送结果，返回结果（Send Confirmation），分析状态并更新至数据库（比如发送失败或发送成功）。UI会监听到状态变化，并更新信息列表。</span></p>
+<p><span style="font-size:18px">到此，一个彩信发送完成。</span></p>
+<p><span style="font-size:18px">前面有提到过TransactionSettings，它是对于一个处理流程的相关配置信息，里面含有MMSC（Multimedia Message Service Center），Proxy和ProxyPort。这些信息，特别对于发送和接收来说是十分重要的。因为对于手机的信息，并不是手机直接把信息发送到接收人的手机上，而是直接发给服务中心，后面就是由服务中心再把信息发送给对应的接收人的手机上。对于彩信也是这样，HttpUtils通过HTTP协议把彩信发送给MMSC，它是一个URL地址，之后对于发送方来讲，彩信就发送完了，彩信服务中心（MMSC）会处理接下来的发送过程，服务中心是与手机运营相关的，它由运营商来提供。对于Mms发送彩信，是不会特意指定TransactionSettings的，也就是说它不会指定MMSC和Proxy，那么TransactionService就会用系统默认的MMSC，Proxy作为TranscationSetting，MMSC，Proxy和ProxyPort需要从Telephony数据库中查询出来，它们是与具体手机的APN设置和具体的运营商相关。所以，这里如果想要改变彩信的配置信息，只能更改APN系统设置来完成。</span></p>
+<p><span style="font-size:18px">而短信的发送就不涉及SMSC（短信服务中心），因为Frameworks中的工具已经封装好了SmsManager提供了几个发送短信的方法，可能它会去处理SMSC相关的东西。</span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201112/29/0_1325168490B7iN.gif" alt=""><br>
+</span></p>
+<p><span style="font-size:18px"><span style="font-size:18px">总结，可以看出数据库在信息的发送过程中扮演了重要的角色，当信息离开编辑器后就马上写入了数据库，发送过程中的各个类都是先从数据库中加载信息，然后做相应处理，然后写回数据库或是更新状态，然后再交由下一个流程来处理。而所谓的Pending Message Queue其实没有相应的数据结构，它们都是数据库中的信息且状态是待发送而已。所以信息离开编辑器后就被写入了数据库，只不过状态一直在改变，从发送中到已发送，或发送失败，或如果Telephony服务不可用会仍处在待发送，但对于UI页面来讲可能没有那么多状态，它可能只显示发送中，已发送和发送失败。</span><br>
+</span></p>
+

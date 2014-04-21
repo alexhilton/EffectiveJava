@@ -1,0 +1,206 @@
+
+    
+<span style="font-size:18px">在Android的API中可以发现有很多用整数集来作为参数的地方，先来看一下实例。<br>
+LinearLayout是大家所熟知的一个UI基本元素，它里面有一个方向的属性，可以通过以下方法来设置： </span><br>
+<textarea readonly name="code" class="java">   LinearLayout.setOrientation(int);</textarea><span style="font-size:18px">使用的时候，通常都是这样：</span><br>
+<textarea readonly name="code" class="java">LinearLayout.setOrientation(LinearLayout.HORIZONTAL);
+LinearLayout.setOrientation(LinearLayout.VERTICAL); </textarea><span style="font-size:18px">但也可以这样使用：</span><br>
+<textarea readonly name="code" class="java">LinearLayout.setOrientation(0); // LinearLayout.HORIZONTAL = 0
+LinearLayout.setOrientation(1); // LinearLayout.VERTICAL = 0x01</textarea><span style="font-size:18px">甚至可以这样：</span><br>
+<textarea readonly name="code" class="java">LinearLayout.setOrientation(Integer.MAX_VALUE);
+LinearLayout.setOrientation(Integer.MIN_VALUE);
+LinearLayout.setOrientation(2012);</textarea><span style="font-size:18px">因为方法setOrientation接收的参数是一个整数，所以你可以传任意合法的整数---至少这在编译时不会有任何问题。它只会在运行时可能引发问题，但如你所知，开发者只关注程序能否编译成功，至于运行时，那是用户关心的事儿，因为开发者不一定使用他们所开发出的程序。<br>
+除了这个例子，在Android的API中到处可以看到这种API，比如设置View的可见性，设置Wifi状态等等。都是定义了整数集，然后用整数来做为参数，并寄希望开发者能传递整数集中定义的常量来作为参数。但如你所知，并不是每个人都那么的守规矩，如果每个人都能遵守规则，这个世界就真的和谐了，蛋扯远了。<br>
+因为开发者通常只能关注编译，所以如果能把这个规则应用在编译时，那么就会大大减少出错的可能。有兴趣的朋友可以去试试看，给这些接收整数参数的方法传一些“平常”的数&#20540;，比如2012，Integer.MAX_VALUE,Integer.MIN_VALUE等等，看会出现什么状况。<br>
+另外，如果开发者传递与常量定义一致的整数&#20540;，虽然编译运行都不会有错，但代码的可读性会大大的降低，比如：</span><br>
+<textarea readonly name="code" class="java">LinearLayout.setOrientation(0);
+LinearLayout.setOrientation(1);</textarea><span style="font-size:18px">这完全没有错，但是代码的阅读者和维护者通常都会蛋疼的。<br>
+当然，Android自身还是有保护措施的，如果对API传递不合法参数，不会造成其他影响，只是设置不能生效，但API会使用默认&#20540;，因为对于每个内置参数，都有相应的默认&#20540;。如LinearLayout的orientation，默认&#20540;就是LinearLayout.HORIZONTAL，所以如果对setOrientation()传入非法&#20540;，LinearLayout会保持水平排列，无其他影响。后面有个对Linearlayout的orientation做的试验。<br>
+另外，如果在Layout XML文件中设置这些属性就不会有些问题，如：</span><br>
+<textarea readonly name="code" class="java">&lt;LinearLayout
+    android:orientation=&quot;vertical&quot;
+    android:gravity=&quot;center&quot;&gt;</textarea>
+<p><span style="font-size:18px">因为XML布局会在编译时被处理，如果有非法的&#20540;，会有编译错误的。我想这也就是Android特别鼓励开发者用XML来制作所有的布局的一个原因吧。</span></p>
+<p><span style="font-size:18px">实例，三个没有设置指向的线性布局，默认是水平放置，在代码中设置了几个离谱的&#20540;，发现它们还是水平的，也就是说设置离谱的&#20540;不会出错，但也不起作用：</span></p>
+<p><span style="font-size:18px">运行结果如下：</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201110/14/0_1318608491lSEM.gif" alt="" align="middle"></span></p>
+<p><span style="font-size:18px">代码如下：</span></p>
+<p><span style="font-size:18px"></span></p>
+<textarea readonly name="code" class="html">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    android:orientation=&quot;vertical&quot;
+    android:layout_width=&quot;fill_parent&quot;
+    android:layout_height=&quot;fill_parent&quot;
+    android:gravity=&quot;center&quot;
+    &gt;
+    &lt;LinearLayout
+        android:id=&quot;@+id/linearlayout_test_1&quot;
+	    android:layout_width=&quot;fill_parent&quot;
+	    android:layout_height=&quot;wrap_content&quot;&gt;
+    
+	  &lt;TextView 
+		   android:layout_width=&quot;wrap_content&quot;
+		   android:layout_height=&quot;wrap_content&quot; 
+		   android:textColor=&quot;#ff00ff00&quot;
+		   android:background=&quot;#aa331155&quot;
+		   android:layout_weight=&quot;1&quot;
+		   android:textSize=&quot;18sp&quot;
+		   android:text=&quot;Microsoft&quot;
+	       /&gt;
+	  &lt;TextView 
+	       android:layout_width=&quot;wrap_content&quot;
+	       android:layout_height=&quot;wrap_content&quot; 
+	       android:textColor=&quot;#ffff0000&quot;
+	       android:background=&quot;#aa117711&quot;
+	       android:layout_weight=&quot;1&quot;
+	       android:textSize=&quot;18sp&quot;
+	       android:text=&quot;Apple&quot;
+	       /&gt;
+	  &lt;TextView 
+	       android:layout_width=&quot;wrap_content&quot;
+	       android:layout_height=&quot;wrap_content&quot; 
+	       android:textColor=&quot;#ff0000ff&quot;
+	       android:background=&quot;#aa774411&quot;
+	       android:layout_weight=&quot;1&quot;
+	       android:textSize=&quot;18sp&quot;
+	       android:text=&quot;Google&quot;
+	       /&gt;
+    &lt;/LinearLayout&gt;
+    &lt;LinearLayout
+        android:id=&quot;@+id/linearlayout_test_2&quot;
+        android:layout_width=&quot;fill_parent&quot;
+        android:layout_height=&quot;wrap_content&quot;&gt;
+    
+      &lt;TextView 
+           android:layout_width=&quot;wrap_content&quot;
+           android:layout_height=&quot;wrap_content&quot; 
+           android:textColor=&quot;#ff00ff00&quot;
+           android:background=&quot;#aa331155&quot;
+           android:layout_weight=&quot;1&quot;
+           android:textSize=&quot;18sp&quot;
+           android:text=&quot;Microsoft&quot;
+           /&gt;
+      &lt;TextView 
+           android:layout_width=&quot;wrap_content&quot;
+           android:layout_height=&quot;wrap_content&quot; 
+           android:textColor=&quot;#ffff0000&quot;
+           android:background=&quot;#aa117711&quot;
+           android:layout_weight=&quot;1&quot;
+           android:textSize=&quot;18sp&quot;
+           android:text=&quot;Apple&quot;
+           /&gt;
+      &lt;TextView 
+           android:layout_width=&quot;wrap_content&quot;
+           android:layout_height=&quot;wrap_content&quot; 
+           android:textColor=&quot;#ff0000ff&quot;
+           android:background=&quot;#aa774411&quot;
+           android:layout_weight=&quot;1&quot;
+           android:textSize=&quot;18sp&quot;
+           android:text=&quot;Google&quot;
+           /&gt;
+    &lt;/LinearLayout&gt;
+    &lt;LinearLayout
+        android:id=&quot;@+id/linearlayout_test_3&quot;
+        android:layout_width=&quot;fill_parent&quot;
+        android:layout_height=&quot;wrap_content&quot;&gt;
+    
+      &lt;TextView 
+           android:layout_width=&quot;wrap_content&quot;
+           android:layout_height=&quot;wrap_content&quot; 
+           android:textColor=&quot;#ff00ff00&quot;
+           android:background=&quot;#aa331155&quot;
+           android:layout_weight=&quot;1&quot;
+           android:textSize=&quot;18sp&quot;
+           android:text=&quot;Microsoft&quot;
+           /&gt;
+      &lt;TextView 
+           android:layout_width=&quot;wrap_content&quot;
+           android:layout_height=&quot;wrap_content&quot; 
+           android:textColor=&quot;#ffff0000&quot;
+           android:background=&quot;#aa117711&quot;
+           android:layout_weight=&quot;1&quot;
+           android:textSize=&quot;18sp&quot;
+           android:text=&quot;Apple&quot;
+           /&gt;
+      &lt;TextView 
+           android:layout_width=&quot;wrap_content&quot;
+           android:layout_height=&quot;wrap_content&quot; 
+           android:textColor=&quot;#ff0000ff&quot;
+           android:background=&quot;#aa774411&quot;
+           android:layout_weight=&quot;1&quot;
+           android:textSize=&quot;18sp&quot;
+           android:text=&quot;Google&quot;
+           /&gt;
+    &lt;/LinearLayout&gt;
+&lt;/LinearLayout&gt;</textarea><span style="font-size:18px">和:</span><textarea readonly name="code" class="java">package com.android.explorer;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.LinearLayout;
+
+public class LinearLayoutTest extends Activity {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.linearlayout_test);
+        LinearLayout one = (LinearLayout) findViewById(R.id.linearlayout_test_1);
+        one.setOrientation(2012);
+        LinearLayout two = (LinearLayout) findViewById(R.id.linearlayout_test_2);
+        two.setOrientation(Integer.MAX_VALUE);
+        LinearLayout three = (LinearLayout) findViewById(R.id.linearlayout_test_3);
+        three.setOrientation(Integer.MIN_VALUE);
+    }
+}</textarea>
+<p></p>
+<h2><span style="font-size:18px">用Enum代替整数集</span></h2>
+<span style="font-size:18px">其实很简单，用Enum(枚举)就可以很方便的解决这个问题，使用起来也不比定义整数集繁琐，同样的可读。另外的优点就是，它的封装更好，最重要的是它会在编译时被检查。因为Java是一种Strong Type，也就是说在编译时，编译器会对所有原型类型和参数类型进行检查，如果类型不对，并且没有强制转型的，就会报出编译错误，当然编译器所支持的自动转型除外。比如一个需要int，而传的参数是long，虽然都差不多，没有溢出等，但还是会有编译错误。<br>
+所以，如果LinearLayout使用Enum，就像这样定义：</span><br>
+<textarea readonly name="code" class="java">public class LinearLayout extends ViewGroup {
+    private Orientation mOrientation;
+    
+    public enum Orientation {
+        HORIZONTAL, VERTICAL
+    };
+    
+    public void setOrientation(Orientation dir) {
+        mOrientation = dir;
+
+    }
+
+}</textarea><span style="font-size:18px">然后这样使用：</span><br>
+<textarea readonly name="code" class="java">import android.widget.LinearLayout;
+
+LinearLayout.setOrientation(Orientation.HORIZONTAL);
+LinearLayout.setOrientation(Orientation.VERTICAL); </textarea><span style="font-size:18px">那么，开发者就不会用错了，因为首先，它看到setOrientation所需要的参数是一个Orientation的枚举类型，就会自然的传送Orientation中定义的类型；另外，如果传其他的&#20540;，比如0或者1，编译器也不会答应的。<br>
+可悲的是Android中几乎所有的API都是以整数集的方式来定义的，所以就要时刻提醒自己和组里的人，一定要传所定义的整数集中的常量。<br>
+那么我们能做的，除了要传整数集中定义的常量，对于那些以整数集方式定义的API，以外。更重要的是当自己定义接口的时候，尽量用Enum而不要使用整数集。<br>
+还有一点需要注意的是，对于某些弱类型语言，也就是说在编译时不会对类型做特别细致的检查，比如C&#43;&#43;，C等，那么即使使用了Enum，也不一定安全，因为对于C&#43;&#43;和C来讲Enum中的常量与整数常量完全一样，连编译器都分不清。所以，对于这类语言，只能寄希望于开发者了。<br>
+</span>
+<h2><span style="font-size:18px">后记：</span></h2>
+<span style="font-size:18px">写完这篇，让我想起了另外一些与参数定义相关的问题，比如布尔型参数也不是一个很好的设计，因为使用者很难到底应该传True还是传False，特别是当方法名字不能体现Boolean参数作用时和文档不够清楚的时候。如果只有一个参数还好，根据方法名字和常识都能知道，比如：</span><br>
+<textarea readonly name="code" class="java">Button.setEnabled(true); // enable the button
+Button.setEnabled(false); // disable the button</textarea><span style="font-size:18px">但对于某些情况，当方法的名字不能体现Boolean参数的作用时，或是多于一个参数时，而方法的主要目的又不能体现Boolean参数的作用时，就很不清楚，比如：</span><br>
+<textarea readonly name="code" class="java">// com/android/mms/data/ContactList.java
+public String[] getNumbers(boolean);</textarea><span style="font-size:18px">您能猜出来这个boolean变量是决定是否要为彩信对联系人做特殊的处理吗？您在使用这个API的时候能很快知道该传True还是该传False吗？当读到这些语句的时候：</span><br>
+<textarea readonly name="code" class="java">String[] mms = getNumbers(true);
+String[] sms = getNumbers(false);</textarea><span style="font-size:18px">您能知道True和False的含义与作用吗？至少我看到这样的代码时，如果不去跟踪它的实现，是猜不出来的。<br>
+但现实的问题是，API通常又需要从调用者那里得到做还是不做的决定。一个可行的途径是用方法来封装和隐藏，比如：</span><br>
+<textarea readonly name="code" class="java">Button.setEnabled(true); // enable the button
+Button.setEnabled(false); // disable the button</textarea><span style="font-size:18px">可以改成：</span><br>
+<textarea readonly name="code" class="java">Button.enable();
+Button.disable();</textarea><span style="font-size:18px">这是简单的情况，对于稍复杂的情况，比如后一个例子，可以添加另外的接口，而不是用重载方法，但内部的实现，可能还是需要重载，但是这就把问题缩小了，起码对使用者来说是隐藏的：</span><br>
+<textarea readonly name="code" class="java">// com/android/mms/data/ContactList.java
+public String[] getNumbersForSms();
+public String[] getNumbersForMms();</textarea><span style="font-size:18px">这样一来，对外来讲就是良好的封装。内部实现可能还是需要一个类&#20284;这样的私有方法：</span><br>
+<textarea readonly name="code" class="java">// com/android/mms/data/ContactList.java
+public String[] getNumbersForSms() {
+   return getNumbers(false);
+}
+public String[] getNumbersForMms() {
+   return getNumbers(true);
+}
+private String[] getNumbers(boolean) {
+   // implementation
+}</textarea><span style="font-size:18px">但至少把问题缩小化了，也可以加上注释来说明。就不必导致使用者来猜方法的用法和含义了。<br>
+对于使用Boolean作为参数的弊端，可以参考陈皓的<a target="_blank" href="http://coolshell.cn/articles/5444.html">这篇博客</a>，讲的很透彻。</span><br>
+

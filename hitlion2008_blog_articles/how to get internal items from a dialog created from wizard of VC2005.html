@@ -1,0 +1,36 @@
+
+    <p><span style="font-size: medium;"><span style="font-family: comic sans ms,sans-serif;"><br />
+&nbsp;&nbsp;&nbsp; 1. It is pretty fast and convinient to create a dialog based application from VC2005's <br />
+&nbsp;&nbsp;&nbsp; &nbsp; project wizard. But Once you created it, it is very difficult for you to customize it.<br />
+&nbsp;&nbsp;&nbsp; &nbsp; For example, modifying a dialog based project into a multi-document one requires much more<br />
+&nbsp;&nbsp;&nbsp; &nbsp; efforts than create it from project wizard directly.<br />
+&nbsp;&nbsp;&nbsp; 2. If, after creating a dialog based application, you want to cutomize it, say changing the <br />
+&nbsp;&nbsp;&nbsp; &nbsp; languages, changing some properties of the items. A dialog sceleton contains a label, <br />
+&nbsp;&nbsp;&nbsp; &nbsp; instance of CStatic, two buttons, an about dialog and a main dialog(that dialog which will be<br />
+&nbsp;&nbsp;&nbsp; &nbsp; showed). Chances are that you want to change the titles or the contents of the label. To do that,<br />
+&nbsp;&nbsp;&nbsp; &nbsp; you have to get the instances of the items. Then you can change their properties through their<br />
+&nbsp;&nbsp;&nbsp; &nbsp; member functions. To get the instances, you must provide their ids, which are their identifications.<br />
+&nbsp;&nbsp;&nbsp; &nbsp; Those items are contained&nbsp; by the main dialog, which is the parent of those items. You can get the<br />
+&nbsp;&nbsp;&nbsp; &nbsp; child items through their ids. Here main dialog is the parent and its label and its buttons are <br />
+&nbsp;&nbsp;&nbsp; &nbsp; child items. Function:<br />
+&nbsp;&nbsp;&nbsp; &nbsp;<span style="font-size: small;">&nbsp;&nbsp;<span style="color: #008000;">&nbsp;&nbsp; GetDlgItem(const int id); </span>
+</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; are used to retrieve child items from parent instance.<br />
+&nbsp;&nbsp;&nbsp; &nbsp; Here to get the label, the two buttons from a typical dialog based applicaiton.<br />
+&nbsp;&nbsp;&nbsp; <span style="color: #008000;">&nbsp;<span style="font-size: small;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols="50" rows="15" name="code" class="cpp">button_cancel = (CButton *) GetDlgItem(IDCANCEL); // you should change IDCANCEL to your id
+            button_ok = (CButton *) GetDlgItem(IDOK);
+            label = (CStatic *) GetDlgItem(IDC_STATIC1);</textarea>
+&nbsp;</span>
+</span>
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp; Then you can set properties for those items, e.g. change the title:<br />
+&nbsp;<span style="font-size: small;">&nbsp;&nbsp; &nbsp;&nbsp;<span style="color: #008000;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols="50" rows="15" name="code" class="cpp">label-&gt;SetWindowText(label_tip); // label_tip is the contents you want
+            button_ok-&gt;SetWindowText(ok_title); // title for button OK
+            button_cancel-&gt;SetWindowText(cancel_title);</textarea>
+&nbsp;</span>
+<br />
+</span>
+</span>
+</span>
+</p>

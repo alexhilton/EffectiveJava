@@ -1,0 +1,108 @@
+
+    
+<h2><span style="font-size:18px">1. 什么是ContentProvider</span></h2>
+<p><span style="font-size:18px">也即内容提供者，是对所有数据访问的一层抽象，为数据访问提供了统一的接口。它有以下优点：</span></p>
+<p><span style="font-size:18px">a. 对数据的抽象，为所有的组件提供统一的访问数据的方式，从而让组件不必关心具体数据的呈现形式（文件or数据库）。数据，也可以只关心自身的管理，而不用去管使用者的访问问题。这样就达到了很好的封装。</span></p>
+<span style="font-size:18px">b. 接口更加方便，更加方便的让组件之间传送数据<br>
+ContentProvider的访问标识为Uri，通过统一的ContentResolver进行访问，而ContentResolver和Uri跟Application的上下文Context以及组件之间的信息传送工具Intent都是无缝接合，这就让组件之间进行数据共享和数据传递更加的方便和快捷。<br>
+所以，ContentProvider的最大好处在于它可以在不同组件之间方便的共享。所以，如果你的应用里面用到的数据需要在不同的组件之间共享，那么实现一个ContentProvider无疑是最佳方案。<br>
+</span>
+<h2><span style="font-size:18px">2. 实现方式</span></h2>
+<span style="font-size:18px">ContentProvider的实现方式非常简单，只需要根据需求实现一些接口即可，比如：query, insert, delete, update, openFile等。但是具体的数据的呈现形式则是根据不同的目的进行自由选择，比如对于结构化数据，选择SQLiteDatabase可能是比较好的方案，大量的字节流可能文件是首选等等。<br>
+需要注意一点的是，虽然Android中百分之九十的ContentProvider内部都是用SQLiteDatabase来存储结构化数据，但这并不意味着ContentProvider只能从SQLiteDatabase来管理数据。ContentProvider定义了一些接口，你只需要按照需要返回正确的数据即可，具体 的实现方式则由你自由选择。<br>
+比如，Contacts的ContentProvider能提供以vCard的方式输出，也就是说当读取一个vCard的uri时，这个流是一个vCard形式的文件流，实现起来的思路就是这样：<br>
+Cursor query(Uri, ....) {<br>
+&nbsp;&nbsp; if (uri is for vCard) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; query the Contact's infomation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; create a cursor with two columns name and size<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put contact's name into cursor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sum all Contact's field&nbsp; and get size<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; put that size into cursor<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return the cursor<br>
+&nbsp;&nbsp; }<br>
+}<br>
+这样通过Query就能得到这个vCard的相关信息文件名字和大小，再通过openInputStream就可以读取这个vCard文件流，但是实际上ContentProvider是没有vCard形式的数据，也没有一个vCard的文件，它只是在openFile的时候，识别出vCard的uri，把Contact数据转化成vCard形式写入输出流中：<br>
+ParcelFileDescriptor openFile(Uri...) {<br>
+&nbsp;&nbsp;&nbsp; if (uri is for vcard) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; generate vcard with VCardComposer<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write to output stream<br>
+&nbsp;&nbsp;&nbsp; }<br>
+}<br>
+</span>
+<h2><span style="font-size:18px">3. 其他替代方案</span></h2>
+<span style="font-size:18px">ContentProvider不是必须的，每个应用必然用到数据，但是可以选择用创建一个ContentProvider来管理，也可以直接使用文件或数据库，如下面的例子：<br>
+</span><textarea readonly name="code" class="java">package com.android.effective;
+
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.os.Bundle;
+import android.util.Log;
+
+public class SQLiteDatabaseDemo extends Activity {
+    private static final String TAG = &quot;SQLiteDatabaseDemo&quot;;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MyDatabase db = new MyDatabase(this);
+        
+        int id = db.setName(&quot;Michael Jordan&quot;);
+        Log.e(TAG, &quot;id of &quot; + id + &quot; is &quot; + db.getName(id));
+    }
+    
+    private class MyDatabase {
+        private static final String name = &quot;demo.db&quot;;
+        private static final String table = &quot;demo&quot;;
+        private final String[] projection = new String[] {&quot;_id&quot;, &quot;name&quot; };
+        private MyDatabaseHelper helper;
+        
+        public MyDatabase(Context context) {
+            helper = new MyDatabaseHelper(context, name, null, 1);
+        }
+        
+        public String getName(int id) {
+            final Cursor c = helper.getReadableDatabase().query(&quot;demo&quot;, projection, &quot;_id=&quot; + id,
+                    null, null, null, null);
+            if (c == null || !c.moveToFirst()) {
+                return null;
+            }
+            return c.getString(1);
+        }
+        
+        public int setName(String name) {
+            ContentValues cv = new ContentValues();
+            cv.put(&quot;name&quot;, name);
+            return (int) helper.getWritableDatabase().insert(table, &quot;name&quot;, cv);
+        }
+    }
+    
+    private class MyDatabaseHelper extends SQLiteOpenHelper {
+        public MyDatabaseHelper(Context context, String name,
+                CursorFactory factory, int version) {
+            super(context, name, factory, version);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(&quot;CREATE TABLE demo (_id INTEGER PRIMARY KEY, name TEXT);&quot;);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int old, int newver) {
+            
+        }
+    }
+}</textarea><span style="font-size:18px">这个例子中就没有使用ContentProvider而是让Activity直接操作SQLiteDatabase来实现数据的管理，或者不用数据库而直接使用文件进行管理数据。<br>
+这种方式实现起来可能更简单，对于需求不大，数据量不大，且只有单一组件使用的情况下，完全可以用这种方式。但是它的缺点也很明显，就是在组件之间传递会十分麻烦，甚至不能够在组件之间共享。为了共享，就要把数据层进行抽象，使其独立于任何一个Activity，以满足不同的组件对数据进行读写，但是这样一来跟实现一个ContentProvider就没有区别了，还不如实现一个ContentProvider来的方便。<br>
+所以，规则就是如果某些数据只在一个Activity中使用，那么没有必要创建ContentProvider，直接使用文件或直接操作Database就可以达到目的。但是如果需要跟其他的组件进行共享和传递数据，就必须使用ContentProvider。<br>
+</span>
+<p><span style="font-size:18px">另外，有了ContentProvider也可以方便跟其他应用进行交互，把数据传递给其他应用的组件。</span></p>
+<p><span style="font-size:18px">======================Update on 2012/5/8================================</span></p>
+<p><span style="font-size:18px">在使用SQLiteOpenHelper一定要注意线程同步问题，保证每一个SQLiteDatabase的方法(如execSQL）的线程安全性，否则可能会引起十分罕见的异常。曾遇到一个SQLiteStatement报出的NPE(NullPointerException)，就是由于有多个线程在操作同一个SQLiteOpenHelper，而且没有同步。</span><br>
+</p>
+

@@ -1,0 +1,202 @@
+
+    
+<h2><span style="font-size:18px">1.什么是Windows BATCH</span></h2>
+<p><span style="font-size:18px">BATCH也就是批处理文件，有时简称为BAT，是Windows平台上的一种可执行脚本，与*nix(Linux和Unix)上的Shell脚本和其他的脚本（Perl，Python）等是一样的，实质上就是一个文本文件，但是用特定的软件去解释的时候，就变成了可执行脚本。在Windows上，可执行脚本就是BATCH文件，也叫批处理文件，这是从DOS时代遗留下来的名字，意思就是把很多命令放到一起来执行。它的扩展名是*.bat，双击便可直接运行，在命令行（CMD或叫做命令提示符）下面也可以当作一个命令来运行。因为这是Windows支持的东西，所以只能在Windows平台使用。（特殊情况除外，不要钻牛角尖，没意思的)。比如著名的Windows垃圾清理小工具就是一个BAT批处理文件。<br>
+</span></p>
+<h2><span style="font-size:18px">2. 为什么需要BAT</span></h2>
+<p><span style="font-size:18px">归根结底是为了提高工作效率。这个解释起来比较费劲，因为在GUI大行其道的今天，再提命令行，很多人会不熟悉，或者认为这是倒退。但是众多关于提高工作效率的书籍都会提到命令行可以大大的提高效率，因为命令可以方便的直接写路径，而不用在文件浏览器中一层一层的打开，和命令行可以把命令组合起来，也就是把不同的命令组合起来来完成一个任务，而不用打开多个GUI窗口来做（甚至很多时候GUI窗口都是无法完成的）。对于这点*nix的程序猿们应该最有体会，真正的*nix高手是不会离开命令行的。他们的工作只需打开一个Terminal（命令行），编辑用Vim，其他全都用命令行的工具来完成，甚至他们都不用鼠标！<br>
+Windows的CMD没有*nix的Terminal那么强大，所以完全在其内做开发有点不切实际，虽然有很多工具可以让CMD变得强大些，但是还是无法达到*nix那样的地步，因为它们从根本上就是走的不同的路线*nix是为了开发人员准备的，而Windows是为了普通大众准备的。<br>
+再说的具体一点就是为了DRY和Automation，也就是说让计算机帮你完成一些机械重复性的工作任务（对于DRY和Automation可以参考《The Productive Programmer》和《Pragmatic Programmer》）。因为BAT可以组合命令，所以某个操作需要超过一个命令，或者参数较多时，或者路径较长时，就可以把它写成BAT，变成一个简单的命令，一次二个可能没感觉，但是当天天都用时，就省去了大量的Typing。举个例子，比如我要经常性的在手机上抓取Tcpdump，然后查看，通常要用到如下的命令：<br>
+</span><textarea readonly name="code" class="plain">D:\&gt;adb shell tcpdump -p -s 0 -i any -w /sdcard/capture.pcap
+D:\&gt;adb pull /sdcard/capture.pcap .</textarea>然后再用Wireshark去查看这个文件。如果一个一个的去敲的话，容易写错，通常要试几次才能成功。但是如果写一个BAT脚本的话：<br>
+<textarea readonly name="code" class="plain">::tcpdump.bat
+@echo off
+set dir=/sdcard
+set file=capture.pcap
+adb shell rm -r %dir%/%file%
+adb shell tcpdump -p -s 0 -i any -w %dir%/%file%
+@echo on
+::gettcpdump.bat
+@echo off
+set dir=/sdcard
+set file=capture.pcap
+set wireshark=&quot;C:\Program Files\Wireshark\Wireshark.exe&quot;
+del /q %file%
+adb remount
+adb pull %dir%/%file% .
+%wireshark% %file%
+@echo on</textarea>第一个脚本tcpdump.bat是抓取，第二个脚本是查看所抓取的数据，我每次只需运行这二个命令就可以轻松的查看：<br>
+<textarea readonly name="code" class="plain">D:\&gt;tcpdump
+Press Ctrl-C to stop capturing
+D:\&gt;gettcpdump</textarea>之后Wireshark就会把所抓取的数据打开，直接看就行了。<br>
+</p>
+<h2><span style="font-size:18px">3. 哪里可以用到BAT</span></h2>
+<p><span style="font-size:18px">任何需要重复做的事情都可以尝试用脚本来完成。比如，每天的版本更新，拷贝文件，每天都使用的命令等等。如前面所说的，只要某些事情你超过第二次做，或者每天都做几十次，就应该考虑用BAT。或者，某些命令很复杂，也要使用BAT，即使把二个简单命令合成一个BAT也是&#20540;得的。比如，调试的时候要查看手机内的数据，就可以用脚本来完成：<br>
+</span><textarea readonly name="code" class="plain">::getmmsdb.bat
+@echo off
+set datadir=/data/data/com.android.providers.telephony/databases
+set mmsdb=mmssms.db
+del /q %mmsdb%
+adb remount
+adb pull %datadir%/%mmsdb% .
+sqlite3 %mmsdb%
+@echo on</textarea>因为BAT中可以写任何可以在CMD命令行中运行的命令，另外，很多应用程序也提供了命令版本，比如WinRAR，如果你需要从某个地方拷贝东西并解压，就可以用BAT：<br>
+<textarea readonly name="code" class="plain">::copyversion.bat
+@echo off
+del /q stable.rar
+set winrar=&quot;C:\Program Files\WinRAR\WinRAR.exe&quot;
+copy /y \\192.168.0.1\version\release\stable.rar .
+%winrar% x stable.rar
+@echo on</textarea>不管怎么样，这都比手动去做要来的方便。<br>
+另外就是*nix上面的很多实用命令行程序都有了Windows的版本，比如Subversion，它有一个版本就是专门用于命令行的，所以把所安装的软件与内置的一些命令组合起来，可以创造出很强大的Automation的工具。<br>
+还有一点就是第三方工具的拓展，Windows本身的内置命令很少，但是有第三方的工具来拓展它比如PowerShell等，加之这些工具，可以让程序员的工具箱更加的丰富和强大。<br>
+其实，这里最关键的地方不在BAT，或者你是否会写这样的脚本，而是在于你能否意识到BAT脚本可以替代手工。可以读一读《The Productive Programmer》和《Pragmatic Programmer》来获取点灵感。<br>
+</p>
+<h2><span style="font-size:18px">4. 如何使用BAT</span></h2>
+<p><span style="font-size:18px">BAT是一个可执行脚本，也就是说它跟一个*.exe可执行程序一样，只要双击它就可以执行了。另外的方式就是通过CMD在命令行中启动它，但需要给出它的路径，也就是说要让解释程序能找到它，所以推荐的做法是把所写的BAT收集整理到一个文件夹中，然后把这个文件放到系统的环境变量PATH中去，这样就可以在任何的路径中使用了。<br>
+如，我的配置是这样的，把所有的BAT放在D:\work\bin下面，然后把D:\work\bin加到Path变量中去。<br>
+添加环境变量的方法是右击&quot;我的电脑&quot;--&gt;&quot;属性&quot;--&gt;&quot;高级&quot;--&gt;环境变量--&gt;在用户变量中编辑Path（如果没有就新加一个）然后把D:\work\bin加入其中，与其他的路径用分号;分隔。之后就可以像运行内置命令一样来运行它了。（如果你有权限，也可修改系统变量）。<br>
+</span></p>
+<h2><span style="font-size:18px">5. 如何写BAT</span></h2>
+<h3><span style="font-size:18px">0. 文件的编辑</span></h3>
+<p><span style="font-size:18px">它就是一个文本文件，所以用最简单的记事本就可以编辑。当然，你用其他的强大的工具也可以，比如如果用Vim编辑还能有语法高亮等VIP级待遇。无论用什么编辑器，一定要注意保存时一定把要文件的扩展名记为*.bat，否则就不再是可执行脚本了，大家都是程序猿，你们懂得。<br>
+前面提到了，BAT其实就是把CMD中的命令或其他可执行命令组合到一起，所以BAT的基石是命令，下面重点讲下命令。<br>
+</span></p>
+<h3><span style="font-size:18px">1. 基本命令及其通用的规则</span></h3>
+<p><span style="font-size:18px">这里指的基本命令是指CMD命令中的的内置命令，也就是help命令所显示的命令，不包括在环境变量中的以及第三方的，那些是外部命令。<br>
+基本的命令有文件操作，文件夹操作，时间等等。比如：del, ren, rd, cd, copy, xcopy, time等等。<br>
+</span></p>
+<blockquote>
+<h4><span style="font-size:18px">a. 命令的一般&#26684;式</span></h4>
+<p><span style="font-size:18px">与*nix系统的命令的一样，它的&#26684;式也都是<br>
+command [options] [arguments]<br>
+其中options是控制和改变命令的行为，每个选项必须以/开头，后面跟选项，可以把多个选项连在一起写，也可以用空&#26684;&#26684;开，每个选项也可以跟自己的参数。arguments就是传递给命令的参数，也就是要命令所执行的对象。如：<br>
+</span><textarea readonly name="code" class="plain">del /f /q /s tmp</textarea>这里/f /q /s就是三个选项/f意思是强制删除，/q是安静模式，也就是删除前不提示，/s是删除子目录；而tmp则是要删除的对象也就是del命令的参数。<br>
+<textarea readonly name="code" class="plain">dir /on tmp</textarea><br>
+这里的话/on是它的选项，其中/o是选项，意思是排序，而n是选项的参数，合起来就是按名字排序。<br>
+通常，一个命令都有缺省的选项和参数，也就是说你不指定，也会有。具体选项不同的命令会有不同的选项。<br>
+</p>
+<h4><span style="font-size:18px">b. 一些通用的选项：</span></h4>
+<p><span style="font-size:18px">虽然不同的命令有着不同的参数，但是有一些共同的：<br>
+</span></p>
+<ul>
+<li><span style="font-size:18px">/?&nbsp; 显示帮助信息，所有的命令都有（跟*nix的-h一样）</span></li><li><span style="font-size:18px">/s&nbsp; 对于文件夹操作来讲是包括子目录（跟*nix的-r一样）</span></li><li><span style="font-size:18px">/q&nbsp; 安静模式，也就是某些操作不要提示，比如删除时，或覆盖文件时不要提示</span></li></ul>
+<h4><span style="font-size:18px">c. 获取帮助</span></h4>
+<p><span style="font-size:18px">不可能记住所有的东西，所以每当遇到一个命令时就要获取其帮助信息。<br>
+help command<br>
+或<br>
+command /?<br>
+就可以看到command的帮助信息。而直接用help命令，则可以查看CMD命令行的帮助，也就是说它支持哪些内置命令。需要注意的是help只能查看有哪些内置以及显示内置命令的帮助信息。对于那些在环境变量Path中的命令，它是无法获取帮助信息的，对于那些命令，只能通过命令本身去找帮助信息。<br>
+</span></p>
+</blockquote>
+<h3><span style="font-size:18px">2. 扩展命令</span></h3>
+<p><span style="font-size:18px">就是CMD命令行非内置的，存在于环境变量Path中的命令，这些命令使用起来跟内部命令无区别，都可以在CMD中直接调用。这些命令通常都是由第三方或操作系统提供，完成某些特定领域的功能，比如C:\Windows\System和C:\Windows\System32下的很多可执行程序，都可做为外部命令来使用，比如你在命令行中直接输入notepad然后按回车，记事本就会打开。以及安装的第三方程序如WinRAR等。<br>
+这些程序或许支持命令模式，或许不支持，这个要去参考程序的文档，另外，即使其支持命令行，选项和参数也要参考文档。<br>
+</span></p>
+<h3><span style="font-size:18px">3. 注释和@及echo off</span></h3>
+<p><span style="font-size:18px">在BAT中以二个冒号开头的一行为注释，::只能注释一行，且必须在一行的开头<br>
+如：<br>
+:: This is a comment<br>
+:: copy a file to somewhere<br>
+@与echo off的作用一样，都是DOS 批处理的一个特殊标记符, 仅用于屏蔽命令行回显。其中@只能影响当前行，而echo off是关闭，直到echo on把回行显示打开。二个主要在BAT脚本中运用，在命令行中直接用看不出不同。在BAT中每当执行一个命令时，都会在CMD命令中显示出这个命令，比如：<br>
+::mydir.bat<br>
+dir /on<br>
+这样的脚本在运行时会是这样的：<br>
+D:\&gt;mydir<br>
+D:\&gt;dir /on<br>
+(显示文件夹的内容)<br>
+为了在执行脚本时不显示当前命令，就要用到关闭回行显示功能@和echo off，所以几乎每个BAT都有这二行<br>
+@echo off<br>
+....<br>
+@echo on<br>
+在开始脚本前关闭回行显示，然后在结束时再打开。用@的目的是把关闭回行显示命令的回行显示也不要显示出来（抱歉，有点绕）。<br>
+为什么要关闭回行显示呢？因为回行显示会跟所执行命令的输出混全在一起，所以看起来很不爽，特别是当BAT脚本的命令比较多时，所以要关闭它。<br>
+</span></p>
+<h3><span style="font-size:18px">4. 管道</span></h3>
+<p><span style="font-size:18px">与*nix一样，BAT中也可以使用管道，可以使用管道来把命令组合起来，比如最常见的使用方式就是：<br>
+type logfile.txt | more<br>
+以分屏查看。<br>
+</span></p>
+<h3><span style="font-size:18px">5. 变量的定义和使用</span></h3>
+<p><span style="font-size:18px">在BAT中用set命令来定义一个变量，然后用二个百分号来引用这个变量，所引用的地方全用所定义的&#20540;来完全替换，如：<br>
+</span><textarea readonly name="code" class="plain">D:\&gt;set logfile=&quot;D:\logs\log.txt&quot;
+D:\&gt;echo %logfile%
+D:\logs\log.txt</textarea></p>
+<h3><span style="font-size:18px">6. 重定向</span></h3>
+<p><span style="font-size:18px">与*nix一样BAT也支持文件流重定向。<br>
+</span></p>
+<ul>
+<li><span style="font-size:18px">&lt;&nbsp;&nbsp;&nbsp; 重定向输入流，最常用的方式是用文件代替标准输入</span></li><li><span style="font-size:18px">&gt;&nbsp;&nbsp;&nbsp; 重定向输出流，最常用的方式是把程序执行结果放到文件中</span></li><li><span style="font-size:18px">&gt;&gt;&nbsp;&nbsp; 重定向输出流，添加模式，也就是说从文件尾部开始添加，最常用的地方是保存Log用</span></li></ul>
+<p><span style="font-size:18px">虽然Windows看起来与*nix相去甚远（特别是前几年），但是BAT里面有着跟*nix和SHELL类&#20284;的一些重要的特性（管道和重定向），所以BAT还是相当强大的，虽然不能跟SHELL比，但是至少可以帮助我们完成很多机械重复的工作。<br>
+</span></p>
+<h3><span style="font-size:18px">7. 命令行参数</span></h3>
+<p><span style="font-size:18px">跟编程语言(C, C&#43;&#43;, Java, Perl)和SHELL一样，BAT也支持命令行参数，也就是执行命令时所给的参数。在BAT中用%[1-9]来引用它们，如：<br>
+::mytype.bat<br>
+@echo off<br>
+type %1<br>
+type %2<br>
+那么在运行时，<br>
+C:\&gt;mytype one.txt two.txt<br>
+其中%1就是one.txt，%2就是two.txt<br>
+跟C和C&#43;&#43;语言一样，还有一个%0可以用它就是脚本的名字。<br>
+</span></p>
+<h3><span style="font-size:18px">8. start命令</span></h3>
+<p><span style="font-size:18px">在*nix的SHELL中可以用command &amp;的形式来在后台运行一个命令，也就是用一个新进程来运行命令，而不阻塞下面的命令。有些时候这个很有用，比如你想用BAT打开几个XLSX文件，用如下脚本：<br>
+</span><textarea readonly name="code" class="plain">::openxls.bat
+@echo off
+set excel=&quot;C:\Program Files\Microsoft Office\Office12\EXCEL.EXE&quot;
+%excel% &quot;D:\documents\status.xlsx&quot;
+%excel% &quot;E:\report\report.xlsx&quot;
+@echo on</textarea>这样会有问题，运行到打开第一个文件时会停在那里，除非你关掉status.xlsx否则，它会阻塞在那里，第二个文件不会执行到。<br>
+解决方法就是为每一个会阻塞的命令开启一个新的进程，用start命令：<br>
+<textarea readonly name="code" class="plain">::openxls.bat
+@echo off
+set excel=&quot;C:\Program Files\Microsoft Office\Office12\EXCEL.EXE&quot;
+start %excel% &quot;D:\documents\status.xlsx&quot;
+start %excel% &quot;E:\report\report.xlsx&quot;
+@echo on</textarea>这样的话，二个文件都会被打开。<br>
+</p>
+<h3><span style="font-size:18px">9. BAT的不足之处</span></h3>
+<p><span style="font-size:18px">前面都在说BAT如何强大，但是毕竟Windows没有像*nix那样给予命令行的强大支持，它跟SHELL相比还差的很远，在执行命令和文件操作方面可能没什么大差别，但是在某些方面它还很弱：<br>
+</span></p>
+<blockquote>
+<h4><span style="font-size:18px">a. 输入的处理</span></h4>
+<p><span style="font-size:18px">虽然可以用&lt;来重定向输入流，但是它对输入的处理很弱，特别的它没的读取的命令（SHELL中的read），它也不能按行读入文件。所以当涉及到文件处理时，它就显得力不从心了。<br>
+</span></p>
+<h4><span style="font-size:18px">b. 文本处理的能力</span></h4>
+<p><span style="font-size:18px">如上一条说，很多时候能需要从一个文本文件读取内容，然后对其做一些处理。这点上面BAT很弱，跟SHELL是没法比的。因为SHELL本身有灵活的读取函数，可以按行读，也可以把一行按不同的单词来读，再加上其本身有字串处理函数，还有就是*nix有丰富的字串处理命令如grep, sed, ed, awk等等。当然，现在这些东西也都有了Windows的版本。但是用BAT来处理文件还是一个相当麻烦的事。<br>
+对于文本处理，最好是能用Perl等程序性的脚本来写，它在处理输入，读取和处理，以及正则表达式上都有很好的支持。<br>
+</span></p>
+</blockquote>
+<h3><span style="font-size:18px">10. 开机自动运行</span></h3>
+<p><span style="font-size:18px">某些软件会有内部选项以达到开机自动运行，甚至它总是开机自动运行，比如著名的QQ，迅雷暴风影音等等。对于我来说这些都是流氓软件，特别是那些无法取消其开机自动运行的，会造成开机时很卡。<br>
+但是我们日常工作都需要开一些固定的软件，比如邮件客户端，Eclipse，打开某个特定的文件夹，打开某个特定的网页等等。这些正派的软件反倒没有“开机自动运行”选项，怎么办呢？这时BAT就派上大用场了，可以写一个叫做startup.bat，在里面把要运行的程序都写上，然后在Start Menu的Startup文件夹中建一个指向我们startup.bat的快捷方式：<br>
+</span></p>
+<p><span style="font-size:18px"></span><textarea readonly name="code" class="plain">:: startup.bat
+@echo off
+&quot;C:\WINDOWS\explorer.exe&quot; &quot;C:\Documents and Settings\User\桌面\alex&quot;
+
+set ie=&quot;C:\Program Files\Internet Explorer\iexplore.exe&quot;
+set mail=&quot;https://webmail.microsoft.com/&quot;
+start %ie% %mail%
+
+start &quot;C:\Program Files\Microsoft Office\Office12\EXCEL.EXE&quot; &quot;D:\documents\report.xlsx&quot;
+
+start mstsc d:\work\rdps\linux.RDP
+start mstsc d:\work\rdps\windows.RDP
+
+ddms.bat
+clean.bat
+
+D:\eclipse-java-galileo-SR2-win32\eclipse.exe
+@echo on</textarea>每个工具都有其优势和不足，我们要做的就是用正确的工具去做正确的事，以期达到最高效的工作效率。虽然有Perl等更加强大的工具，虽然有PowerTools等拓展工具。但是当你有环境的限制的时候，比如由于工作环境的限制，你只有一个Windows系统，没有Perl或PowerTools时，你能用的就只有BAT了。这个时候就要发挥BAT的威力了，复杂的它做不了，但是简单的它还是能很好的胜任的。<br>
+脚本，强大也好，局限也罢，是为了帮助我们解决一些重复性的问题的。所以关键不在脚本，而是在于我们要发现日常工作中的重复性的劳动，然后用脚本来替代。切记，计算机的重复性远比人好，而且计算机就是被设计用来代替人类做一些机械重复的工作的，这是它的使命，让它完成它的使命吧！</p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:18px">参考资料：这几篇文章介绍的比较详细<br>
+基本介绍<br>
+&nbsp;<a href="http://tristones.viaspeip.com/archives/001130.html" target="_blank">”石头札记 批处理文件“</a><br>
+这二个哥们写了很多操作字串的BAT<br>
+<a href="http://www.dostips.com/DtTipsStringOperations.php" target="_blank">&nbsp;&quot;DOS -string operations&quot;</a><br>
+&nbsp;<a href="http://www.dostips.com/DtTipsStringManipulation.php" target="_blank">&quot;DOS - String Manipulation&quot;</a></span></p>
+

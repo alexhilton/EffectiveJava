@@ -1,0 +1,16 @@
+
+    
+<span style="font-size:18px">在使用Java语言开发的时候，总是难免的要用到XML文件来传输数据，因此总是会遇到解析XML的问题，特别是对于Android开发和Web开发。通常来讲解析XML文件有三种方法：DOM方法，Push方法和Pull方法。<br>
+</span>
+<ul>
+<li><span style="font-size:18px">DOM方法--DOM是Document Object Model的简称，也就是文档对象模型，它定义了一套与语言平台无关的接口用于访问和操作一般文档结构内容。DOM会以一个Node对象为结点的树来代表一个文档。因为XML文档都是一个树型结构，所以DOM可以用于解析XML。DOM解析会把整个XML文件读入转化成一个以Node对象为结点的树，以访问和操作文档。</span></li></ul>
+<blockquote><span style="font-size:18px">DOM方法能够完全地操作文档，并可以随机的访问，这是它的优势。但是因为它需要把整个文档都读入转化为树，所以很消耗内存。这种方法常用在程序需要见到并操作文档的整个结构。</span><br>
+</blockquote>
+<ul>
+<li><span style="font-size:18px">Push方法--Push处理器当文档被处理时会产生同步事件，这些事件可以被应用程序用一个回调句柄来处理。这种方法适用于快速的遍历文档，以检查它的合法性或取出文档的内容。</span></li></ul>
+<ul>
+<li><span style="font-size:18px">Pull方法--事件是在应用来控制下从文档中Pull出来。也就是说由应用程序来控制整个解析流程。这种方法最适用于解析的文档是从网络连接的网络流获取来的。</span></li></ul>
+<span style="font-size:18px">对于这几种方法Java中都有封装好的API可以直接使用。<br>
+对于DOM解析可以参考《Core Java Volume 2, Chapter 12》对于这几种方法可以参考《Pro XML Development with Java Technology》这本书，讲的很详细。<br>
+对于一般的解析XML，Pull方法都是推荐的方法，因为它把文档解析过程的控制权交给了应用程序，所以它更加方便的控制解析的流程。</span><br>
+

@@ -1,0 +1,82 @@
+
+    <p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; Selector in Android is one of 
+problems confusing developers. The reason is that it is very hard for 
+developers to control attributes of selector, for ListView and GridView 
+in particular. The paddings of selector, for instance, are very 
+confusing. If you use Android's resources, such as <span style="color: #ff0000;"><em>android.R.drawable.gallery_thumb</em>
+
+</span>
+
+</span>
+
+ <span style="font-size: large;">and set it as</span>
+
+ <span style="font-size: large;">selector of GridView, the paddings are 
+16px(in WVGA). These paddings will be adding around the view in GridView
+ but inside the selector, which means the selector will be stretched to 
+contain your view and the paddings. But, if you put the same resources 
+in your own package's resource folder <span style="color: #ff0000;"><em>/drawable/my_selector.xml</em>
+</span>
+, the 
+images used in selector are the same. Set it as selector for GridView, 
+the paddings are 0 and, what's worse, the selector won't be stretched to
+ contain your view, which means the selector stays in its own size and 
+might be smaller than your view. This is rather wierd and I wish the 
+upcoming SDK release can fix such an issue.</span>
+
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; In addition to the difference between
+ Android's resources and developer defined, such paddings of selector 
+are unable to change for developers. Sometimes, our layout is a little 
+bigger which almost reaches screen's edges. In such condition, after 
+adding selector(Android's resource), the selector will stretch out of 
+screen. This huants many developers a lot. It haunts me for a great 
+while at least.</span>
+
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp; To control the paddings, there are two ways:</span>
+
+</p>
+<p style="padding-left: 60px;"><span style="font-size: large;">1, also is the simpliest one, 
+that is re-design the image resources to exactly fit your view. But this
+ will limit the compatbility which will cause nightmare when 
+maintaining.</span>
+
+</p>
+<p style="padding-left: 60px;"><span style="font-size: large;">2. Another way is implement desired 
+GridView by yourself which enables you open interface to control these 
+paddings when setting selectors. Note: simply inherit GridView or 
+ListView and override method setSelector is not enough, because the 
+fields controlling paddings inside AbsListView are package access 
+control, which prevents classes in other packages including child 
+classes. One referencable example is GridViewSpecial in Andorid's 
+Gallery, which inherits View drectly and implement all it needs by 
+itself.</span>
+
+</p>
+<p style="padding-left: 60px;"><span style="font-size: large;">3. Third way is use shape instead of 
+images to implement desired selector, which enables you to control 
+everything. Let's take a look at an example first:</span>
+</p>
+<p style="padding-left: 60px;"><textarea cols="50" rows="15" name="code" class="xhtml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;   
+&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;  
+   &lt;item android:state_window_focused=&quot;false&quot;&gt;   
+      &lt;shape&gt;  
+         &lt;stroke    
+             android:width=&quot;2dip&quot;  android:color=&quot;#dcdcdc&quot; /&gt;
+         &lt;solid android:color=&quot;000000&quot;/&gt;    
+         &lt;padding    
+             android:left=&quot;10dip&quot;  android:top=&quot;10dip&quot;    
+             android:right=&quot;10dip&quot; android:bottom=&quot;10dip&quot; /&gt;    
+      &lt;/shape&gt;  
+   &lt;/item&gt;  
+&lt;/selector&gt;</textarea>
+</p>
+<p style="padding-left: 60px;"><span style="font-size: large;">This is a simple selector. For this 
+selector, you can control everything: stroke width, strok color , most 
+important the paddings. There are many other attributes of shape such as
+ gradient, corner enabling you to create more impressive selectors.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp; Although you can control the selector in more ideally way, it still causes troubles. The selector set to GridView, however, will affect your layout, even if you have set the vertical spacings and horizontal spacings. This needs you should adjust layout after setting selectors. So, implement your own GridView might be the best solution which is much easier to maintain, costly at first much easily after first pain, though.<br />
+</span>
+</p>

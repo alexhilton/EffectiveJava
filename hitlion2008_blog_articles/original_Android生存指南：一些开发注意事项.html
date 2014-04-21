@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Android生存指南：一些开发注意事项 - 浪人的星空 - 博客频道 - CSDN.NET</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="1. 为Activity声明系统配置变更事件系统配置变更事件是指转屏，区域语言发生变化，屏幕尺寸发生变化等等，如果Activity没有声明处理这些事件，发生事件时，系统会把Activity杀掉然后重启，并尝试恢复状态，Activity有机会通过onSaveInstanceState()保存一些基本数据到Bundle中，然后此Bundle会在Activity的onCreate()中传递过去。虽然" />
+<script src="http://static.blog.csdn.net/Scripts/jquery.js" type="text/javascript"></script>
+<script src="http://static.blog.csdn.net/scripts/plugins.js" type="text/javascript"></script>
+<script src="http://static.blog.csdn.net/scripts/common.js" type="text/javascript"></script>
+<link rel="Stylesheet" type="text/css" href="http://static.blog.csdn.net/skin/default/css/style.css" />
+<link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="/hitlion2008/rss/list" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link type="text/css" rel="stylesheet" href="http://static.blog.csdn.net/scripts/SyntaxHighlighter/styles/blue_green.css" />
+</head>
+<body>
+<script src="http://csdnimg.cn/pubnav/js/pub_topnav_2011.js"type="text/javascript"></script>
+<div id="container">
+<div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1>
+                <a href="/hitlion2008">浪人的星空</a></h1>
+            <h2>十年磨一剑，历练出锋芒，求知路漫漫，需不断探索之！</h2>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>
+            <!--<li id="btnHome"><a href="/hitlion2008"><span><img src="http://static.blog.csdn.net/images/ico_home.gif">我的首页</span></a></li>-->
+            <li id="btnContents"><a href="/hitlion2008?viewmode=contents"><span><img src="http://static.blog.csdn.net/images/ico_list.gif">目录视图</span></a></li>
+            <li id="btnView"><a href="/hitlion2008?viewmode=list"><span><img src="http://static.blog.csdn.net/images/ico_summary.gif">摘要视图</span></a></li>
+            <li id="btnRss"><a href="/hitlion2008/rss/list"><span><img src="http://static.blog.csdn.net/images/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "hitlion2008";
+    var blog_address = "http://blog.csdn.net/hitlion2008";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = $.cookie("UserName");
+</script>
+        
+<div id="body">
+<div id="main">
+<div class="main">
+<div class="notice"> 
+
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/7568876" target="_blank"><font color=red>精创之作《雷神的微软平台安全宝典》诚邀译者 </font></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://www.mobileasiaexpo.cn/?MAECN=CSDN2" target="_blank"><font color=blue>移动业界领袖会议·上海·6.20</font></a>
+<br>
+<a href="http://blog.csdn.net/blogdevteam/article/details/7489275" target="_blank"><font color=blue>第四届云计算大会门票抢购：史上最低价，每日限5张！ </font></a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="http://topic.csdn.net/u/20120416/10/9123faba-8474-4f2a-a0cf-a1b7d0fe5913.html" target="_blank"><font color=red>【分享季1】：网友推荐130个经典资源，分享再赠分！</font></a>
+
+</div><script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js"></script>
+
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Original"></span>
+    <h3>
+        <span class="link_title"><a href="/hitlion2008/article/details/7578007">
+        Android生存指南：一些开发注意事项
+        </a></span>
+    </h3>
+</div>
+
+        
+    <div class="article_manage">
+        <span class="link_categories">
+        分类：
+            <a href="/hitlion2008/article/category/664350">Android</a> 
+        </span>
+    <span class="link_postdate">2012-05-17 21:55</span>
+    <span class="link_view" title="阅读次数">203人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="#comments">评论</a>(3)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle('Android生存指南：一些开发注意事项','7578007');return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="#report"  onclick="javascript:report(7578007,2);return false;" title="举报">举报</a></span>
+    
+</div>
+
+    
+<div id="article_content" class="article_content">
+    
+<h2><span style="font-size:18px">1. 为Activity声明系统配置变更事件</span></h2>
+<span style="font-size:18px">系统配置变更事件是指转屏，区域语言发生变化，屏幕尺寸发生变化等等，如果Activity没有声明处理这些事件，发生事件时，系统会把Activity杀掉然后重启，并尝试恢复状态，Activity有机会通过onSaveInstanceState()保存一些基本数据到Bundle中，然后此Bundle会在Activity的onCreate()中传递过去。虽然这貌&#20284;正常，但是这会引发问题，因为很多其他的东西比如Dialog等是要依赖于具体Activity实例的。所以这种系统默认行为通常都不是我们想要的。<br>
+为了避免这些系统默认行为，就需要为Activity声明这些配置，如下二个是每个Activity必须声明的：<br>
+&lt;activity android:configChanges=&quot;orientation|keyboardHidden&quot;&gt;<br>
+几乎所有的Activity都要声明如上，为什么Android不把它们变成Default的呢?<br>
+</span>
+<h2><span style="font-size:18px">2. 尽量使用Android的API</span></h2>
+<span style="font-size:18px">这好像是废话，在Android上面开发不用Android API用什么？因为Android几乎支持Java SE所有的API，所以有很多地方Android API与Java SE的API会有重复的地方，比如说对于文件的操作最好使用Android里面Context封装的API，而不要直接使用File对象：<br>
+Context.openFileOutput(String); // no File file = new File(String)<br>
+原因就是API里面会考虑到Android平台本身的特性；再如，少用Thread，而多使用AsyncTask等。<br>
+</span>
+<h2><span style="font-size:18px">3. 要考虑到Activity和进程被杀掉的情况</span></h2>
+<span style="font-size:18px">如了通常情况退出Activity外，还有Activity因其他原因被杀的情况，比如系统内存过低，系统配置变更，有异常等等，要考虑和测试这种情况，特别是Activity处理重要的数据时，做好的数据的保存。<br>
+</span>
+<h2><span style="font-size:18px">4. 小心多语言</span></h2>
+<span style="font-size:18px">有些语言真的很啰嗦，中文或英文很简短就能表达的事情到了其他语言就变的死长死长的，所以如果是wrap_content就可能把其他控制挤出可视范围； 如果是指定长度就可能显示不全。也要注意特殊语言比如那些从右向左读的语言。<br>
+</span>
+<h2><span style="font-size:18px">5. 不要用四大组件去实现接口</span></h2>
+<span style="font-size:18px">一是组件的对象都比较大，实现接口比较浪费，而且让代码更不易读和理解； 另外更重要的是导致多方引用，可能会引发内存泄露。<br>
+</span>
+<h2><span style="font-size:18px">6. 用getApplication()来取Context当参数</span></h2>
+<span style="font-size:18px">对于需要使用Context对象作为参数的函数，要使用getApplication()获取Context对象当参数，而不要使用this，除非你需要特定的组件实例！getApplication()返回的Context是属于Application的，它会在整个应用的生命周期内存在，远大于某个组件的生命周期，所以即使某个引用长期持有Context对象也不会引发内存泄露。<br>
+</span>
+<h2><span style="font-size:18px">7. 主线程只做UI控制和Frameworks回调相关的事。附属线程只做费时的后台操作。交互只通过Handler。这样就可以避免大量的线程问题。</span></h2>
+<h2><span style="font-size:18px">8. Frameworks的回调不要做太多事情仅做必要的初始化，其他不是很重要的事情可以放到其他线程中去做，或者用Handler Schedule到稍后再做。</span></h2>
+<h2><span style="font-size:18px">9. 要考虑多分辨率</span></h2>
+<span style="font-size:18px">至少为hdpi, mdpi, ldpi准备图片和布局。元素的单位也尽可能的使用dip而不要用px。<br>
+</span>
+<h2><span style="font-size:18px">10. 利用Android手机的硬键</span></h2>
+<span style="font-size:18px">几乎所有的Android手机都有BACK和MENU，它们的作用是返回和弹出菜单，所以就不要再在UI中设计返回按扭和菜单按扭。很多优秀的应用如随手记和微信都有返回键，他们之所以有是因为他们都是从iOS上移植过来的，为了保存体验的一致，所以也有了返回和菜单。但这不够Android化，一个纯正的Android是没有必须重复硬键的功能的。</span><br>
+
+</div>
+<div class="share_buttons" id="sharePanel"></div>
+
+<div class="article_next_prev">
+        <li class="prev_article">
+            <span>上一篇：</span><a href="http://blog.csdn.net/hitlion2008/article/details/7567549">Android实战技巧：Dialog</a></li>
+        <li class="next_article">
+            <span>下一篇：</span><a href="http://blog.csdn.net/hitlion2008/article/details/7578178">Android生存指南:解Bug策略和思路</a></li>
+</div>
+
+
+        <div id="digg" ArticleId="7578007">
+            <dl id="btnDigg" class="digg digg_disable">
+                <dt>顶</dt>
+                <dd>3</dd>
+            </dl>
+            <dl id="btnBury" class="digg digg_disable">
+                <dt>踩</dt>
+                <dd>0</dd>
+            </dl>
+        </div>
+</div>
+<div id="ad_cen"></div>
+<script type="text/javascript">
+    new Ad(4, 'ad_cen');
+</script>
+<div id="comment_title" class="panel_head">查看评论<a name="comments"></a></div>
+<div id="comment_list"></div>
+<div id="comment_bar"></div>
+<div id="comment_form"></div>
+<div class="announce">* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '7578007';
+    var commentscount = 3;
+    var islock = false
+</script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/comment.js?v=1.1"></script>
+<div id="ad_bot"></div>
+<script type="text/javascript">
+    new Ad(5, 'ad_bot');
+</script>
+<div id="report_dialog"></div>
+
+
+<div class="clear"></div>
+</div>
+</div>
+<div id="side">
+    <div class="side">
+<div id="panel_Profile" class="panel">
+    <ul class="panel_head"><span>个人资料</span></ul>
+    <ul class="panel_body profile">
+        <div id="blog_userface">
+            <a href="http://my.csdn.net/hitlion2008" target="_blank">
+            <img src="http://avatar.csdn.net/6/A/5/1_hitlion2008.jpg" title="访问我的空间" style="max-width:90%"/>
+            </a>
+            <br />
+            <span><a href="http://my.csdn.net/hitlion2008" target="_blank">hitlion2008</a></span>
+        </div>
+<div class="interact">
+<!--<a href="#" class="attented" title="已关注"></a>-->
+<a href="#" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="http://my.csdn.net/my/letter/send/hitlion2008" class="letter" title="[发私信]"></a>
+</div>
+        <div id="blog_medal">
+        </div>
+        <ul id="blog_rank">
+            <li>访问：<span>110819次</span></li>
+            <li>积分：<span>3728分</span></li>
+            <li>排名：<span>第892名</span></li>
+        </ul>
+        <ul id="blog_statistics">
+            <li>原创：<span>146篇</span></li>
+            <li>转载：<span>38篇</span></li>
+            <li>译文：<span>1篇</span></li>
+            <li>评论：<span>284条</span></li>
+        </ul>
+    </ul>
+</div>
+
+<script type='text/javascript'>
+var _blogger='hitlion2008';
+$(document).ready(function () {
+    $('#span_add_follow').click(function () {
+        var url = "http://my.csdn.net/index.php/follow/do_follow?jsonpcallback=?";
+        $.getJSON(url, { "username": _blogger }, function (data) {
+            if (data.succ == 1) {
+                alert('关注成功！');
+                $('#span_add_follow').attr('class', 'attented').click(function () { return false; });
+            } else {
+                alert(data.msg);
+            }
+        });
+    });
+    if (getUN().toLowerCase() == _blogger.toLowerCase()) {
+        $('.interact').hide();
+    }
+});
+function getUN() {
+    var m = document.cookie.match(new RegExp("(^| )UserName=([^;]*)(;|$)"));
+    if (m) return m[2];
+    else return '';
+}
+</script>
+
+<div id="custom_column_8745367" class="panel">
+    <ul class="panel_head"><span>公告栏</span></ul>
+    <ul class="panel_body">
+        
+Get busy living or get busy dying!
+
+    </ul>
+</div><div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字" /></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog" />
+        <input type="hidden" name="q" id="inputQ" />
+        <input type="hidden" name="t" value="blog" />
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+    <ul class="panel_head"><span>文章分类</span></ul>
+    <ul class="panel_body">
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/1140762">Android Webkit专题研究</a><span>(0)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/664350">Android</a><span>(65)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/945580">Android Mms专题研究</a><span>(11)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/660940">Java</a><span>(12)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/1125789">Productive Programmer Toolbox</a><span>(3)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/660941">C/C++</a><span>(9)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/750169">Linux/Unix</a><span>(6)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/773484">学习方法</a><span>(13)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/777359">经验与总结</a><span>(11)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/661539">编程方法</a><span>(16)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/627045">生活在职场</a><span>(29)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/845531">杂谈</a><span>(18)</span>
+        
+        </li>
+        <li>
+        <a href="http://blog.csdn.net/hitlion2008/article/category/667763">健身</a><span>(4)</span>
+        
+        </li>
+    </ul>
+</div><div id="panel_Archive" class="panel">
+    <ul class="panel_head"><span>文章存档</span></ul>
+    <ul class="panel_body">
+        <div id="archive_list">
+        <!--归档统计-->
+        <li><a href="http://blog.csdn.net/hitlion2008/article/month/2012/05">2012年05月</a>(14)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2012/04">2012年04月</a>(5)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2012/03">2012年03月</a>(9)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2012/02">2012年02月</a>(9)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2012/01">2012年01月</a>(2)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/12">2011年12月</a>(8)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/11">2011年11月</a>(6)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/10">2011年10月</a>(11)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/09">2011年09月</a>(8)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/08">2011年08月</a>(4)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/07">2011年07月</a>(33)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/06">2011年06月</a>(2)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/05">2011年05月</a>(4)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/04">2011年04月</a>(1)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/03">2011年03月</a>(1)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/02">2011年02月</a>(1)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2011/01">2011年01月</a>(10)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2010/11">2010年11月</a>(2)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2010/09">2010年09月</a>(1)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2010/03">2010年03月</a>(27)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2010/02">2010年02月</a>(2)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2010/01">2010年01月</a>(8)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2009/12">2009年12月</a>(7)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2009/11">2009年11月</a>(6)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2009/05">2009年05月</a>(3)</li><li><a href="http://blog.csdn.net/hitlion2008/article/month/2008/09">2008年09月</a>(1)</li>
+        </div>
+    </ul>
+</div>
+<div id="hotarticls" class="panel">
+    <ul class="panel_head"><span>阅读排行</span></ul>
+    <ul class="panel_body">
+        <li>
+            <a href="/hitlion2008/article/details/7060486" title="这一年，我所感悟到的">这一年，我所感悟到的</a> (6209)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6737537" title="Android实战技巧：ViewStub的应用">Android实战技巧：ViewStub...</a> (5422)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7235492" title="杂谈：后台进程对Android性能的影响">杂谈：后台进程对Android性能的影响</a> (4948)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6856780" title="Android实战技巧：用TextView实现Rich Text---在同一个TextView中设置不同的字体风格">Android实战技巧：用TextVie...</a> (4512)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7252339" title="再论：如何解Bug">再论：如何解Bug</a> (4216)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6950493" title="写技术博客的注意事项">写技术博客的注意事项</a> (4111)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7047629" title="Android Mms专题之：Mms概览介绍">Android Mms专题之：Mms概览...</a> (3867)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6737459" title="Android实战技巧：如何在ScrollView中嵌套ListView">Android实战技巧：如何在Scrol...</a> (2575)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7055025" title="Android Mms专题之：Mms源码结构">Android Mms专题之：Mms源码...</a> (2248)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/5397796" title="将Android源码作为一个工程导入到Eclipse">将Android源码作为一个工程导入到E...</a> (2210)
+        </li>
+    </ul>
+</div>
+<div id="homepageArticles" class="panel">
+    <ul class="panel_head"><span>推荐文章</span></ul>
+    <ul class="panel_body" id="ad_commend"></ul>
+</div>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ad.js"></script>
+<script type="text/javascript">
+    new Ad(12, 'ad_commend');
+</script><div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body">
+    <li>
+    <a href="/hitlion2008/article/details/7578007#comments">Android生存指南：一些开发注意事项</a>
+    <p style="margin:0px;">hitlion2008:
+@a383028663:现实情况是你必须这样做，除非你不需要兼容多分辨率，9Patch虽可以有帮助，...
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7055025#comments">Android Mms专题之：Mms源码结构</a>
+    <p style="margin:0px;">hitlion2008:
+@oceanZhao:1. 查看网上别人的总结资料2. 跟流程，抓住一个流程，从头跟下去。3. 需要...
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7055025#comments">Android Mms专题之：Mms源码结构</a>
+    <p style="margin:0px;">oceanZhao:
+你好的啊，我想问一下的有什么方法能看MMs源码能快点看懂的哈，有什么方法没有的，谢谢啦。 现在公司要...
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7055025#comments">Android Mms专题之：Mms源码结构</a>
+    <p style="margin:0px;">oceanZhao:
+你好的啊，想你学习的啊。。。不错的哈。。。
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7404772#comments">Android Mms专题之：Compose详解</a>
+    <p style="margin:0px;">oceanZhao:
+太厉害了，楼主，学习啦。。。谢谢啦。有联系方式的吗，能交流一下的吗。
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7055025#comments">Android Mms专题之：Mms源码结构</a>
+    <p style="margin:0px;">oceanZhao:
+很好的啊，谢谢啦，我现在都是在看源码的，看着有点乱的，没有头绪的。只能慢慢看的哈。
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7578007#comments">Android生存指南：一些开发注意事项</a>
+    <p style="margin:0px;">a383028663:
+第九点如果三种分辨率都放素材图片那APP的体积会非常巨大。。。
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7578178#comments">Android生存指南:解Bug策略和思路</a>
+    <p style="margin:0px;">yz52113:
+Syntax error on token &quot;SetClass&quot;, Identifier expec...
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7581530#comments">Android天下大乱，Google无法一统山河</a>
+    <p style="margin:0px;">hitlion2008:
+@mcgrady_tracy:Google就是干这个的，他有怎么会嫌工作量增加呢！还是那句话，你光发...
+    </p>
+    </li>
+    <li>
+    <a href="/hitlion2008/article/details/7581530#comments">Android天下大乱，Google无法一统山河</a>
+    <p style="margin:0px;">mcgrady_tracy:
+@hitlion2008:谢谢你的回复，你说的也有一定道理，但是如果都将设备发送给Google，个人...
+    </p>
+    </li>
+</ul>
+</div>
+<div id="hotarticls" class="panel">
+    <ul class="panel_head"><span>评论排行</span></ul>
+    <ul class="panel_body">
+        <li>
+            <a href="/hitlion2008/article/details/7060486" title="这一年，我所感悟到的">这一年，我所感悟到的</a> (41)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6950493" title="写技术博客的注意事项">写技术博客的注意事项</a> (40)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7235492" title="杂谈：后台进程对Android性能的影响">杂谈：后台进程对Android性能的影响</a> (27)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7055025" title="Android Mms专题之：Mms源码结构">Android Mms专题之：Mms源码...</a> (22)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6856780" title="Android实战技巧：用TextView实现Rich Text---在同一个TextView中设置不同的字体风格">Android实战技巧：用TextVie...</a> (22)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7252339" title="再论：如何解Bug">再论：如何解Bug</a> (11)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6737537" title="Android实战技巧：ViewStub的应用">Android实战技巧：ViewStub...</a> (9)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/6926707" title="观点：何为经验">观点：何为经验</a> (7)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7047629" title="Android Mms专题之：Mms概览介绍">Android Mms专题之：Mms概览...</a> (6)
+        </li>
+        <li>
+            <a href="/hitlion2008/article/details/7581530" title="Android天下大乱，Google无法一统山河">Android天下大乱，Google无法...</a> (5)
+        </li>
+    </ul>
+</div>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<div class="clear"></div>
+</div>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/SyntaxHighlighter/shCore-src.js"></script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.js"></script>
+<script type="text/javascript" src="http://static.blog.csdn.net/scripts/article_code.js"></script>
+
+<script type="text/javascript" src="http://medal.blog.csdn.net/scripts/show.js"></script>
+<script type="text/javascript" src="http://medal.blog.csdn.net/showblogmedal.ashx?blogid=423774"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script>
+<script type="text/javascript" src="http://www.csdn.net/ui/scripts/Csdn/counter.js"></script>
+<script type="text/javascript" src="http://csdnimg.cn/pubfooter/js/publib_footer.js"></script>
+
+
+
+
+</div>
+</body>
+</html>

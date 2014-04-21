@@ -1,0 +1,167 @@
+
+    
+<h2><span style="font-size:18px">1. Testing for ContentProvider</span></h2>
+<span style="font-size:18px">在你开始为Provider写Case之前，应该仔细读一读SDK文档中关于Provider测试的说明。但是光读那些说明，你还是没办法写出正确的Case，因为你也知道，Android的文档是比较差劲的，有一些关键东西文档中没有说明，你也知道，这在Android当中并不少见。<br>
+你写个Provider的Case，如下：<br>
+</span><textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {
+
+}</textarea>编译有错误，它说ProviderTestCase2没有隐式的构造，看来我们需要一个构造函数，写一个标准的JUnit构造吧！<br>
+<textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {
+    public FeedProviderTest(String name) {
+        super(name);
+    }
+}</textarea>WTF，还是有编译错误，而且更严重！难道ProviderTestCase2不是继承自TestCase，用了Eclipse的建议，它创建了一个带有二个参数的构造：<br>
+<textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {
+    public FeedProviderTest(String name) {
+        super(name);
+    }
+    
+    public DemoProviderTest(Class&lt;FeedProvider&gt; providerClass,
+            String providerAuthority) {
+        super(providerClass, providerAuthority);
+        // TODO Auto-generated constructor stub
+    }
+}</textarea>但是仅一个名字的FeedProviderTest(String name)还是有错误，再试试不带参数的，还是不行，这说明ProviderTestCase2没有这样的构造函数，但是没有道理啊，因为它毕竟是继承自TestCase的啊！很神奇和诡异啊！<br>
+既然ProviderTestCase2没有一个参数的构造，那么只能去掉带有一参数的构造了！<br>
+<textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {
+    public DemoProviderTest(Class&lt;FeedProvider&gt; providerClass,
+            String providerAuthority) {
+        super(providerClass, providerAuthority);
+    }
+    
+    public void testConstructor() throws Throwable {
+        assertNotNull(&quot;can construct resolver&quot;, getMockContentResolver());
+        ContentProvider provider = getProvider();
+        assertNotNull(&quot;can instantiate provider&quot;, provider);
+    }
+}</textarea>写了一个基本的测试，运行了下，得到了一个Warning，是由JUnit Framework报出来的说DemoProviderTest没有定义公共的构造函数TestCase(name)或TestCase()，什么情况，不是我不定义而是有编译错误啊，因为该死的ProviderTestCase2没有这二个构造！该死，只能再把这个构造加回来！但是因为父类没有，只能引用父类的双参数的构造了！<br>
+<textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {  
+    public DemoProviderTest() {
+        super(null, null);
+    }
+    
+    public DemoProviderTest(Class&lt;FeedProvider&gt; providerClass,
+            String providerAuthority) {
+        super(providerClass, providerAuthority);
+    }
+    
+    public void testConstructor() throws Throwable {
+        assertNotNull(&quot;can construct resolver&quot;, getMockContentResolver());
+        ContentProvider provider = getProvider();
+        assertNotNull(&quot;can instantiate provider&quot;, provider);
+    }
+}</textarea>但是参数传什么呢？先用Null试试中吧！完全有错误，在父类的构造初始化时出现了NPE，这说明传Null肯定是不对的！看了下强加的带有二个参数的构造DemoProviderTest(Class&lt;FeedProvider&gt; providerClass, String providerAuthority)，也说应该传一个Class对象，和Provider的Authority，再试试看！<br>
+<textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {
+    public DemoProviderTest() {
+        super(FeedProvider.class, AUTHORITY);
+    }
+    
+    public DemoProviderTest(Class&lt;FeedProvider&gt; providerClass,
+            String providerAuthority) {
+        super(providerClass, providerAuthority);
+    }
+    
+    public void testConstructor() throws Throwable {
+        assertNotNull(&quot;can construct resolver&quot;, getMockContentResolver());
+        ContentProvider provider = getProvider();
+        assertNotNull(&quot;can instantiate provider&quot;, provider);
+    }
+}</textarea>这次Okay了，但是这样一来二个参数的构造就没有意义了，于是让一个参数的调用二个参数的：<br>
+<textarea readonly name="code" class="java">    public DemoProviderTest() {
+        this(FeedProvider.class, AUTHORITY);
+    }</textarea>还是Okay，这说明我们的Case必须给ProviderTestCase2提供正确的构造参数！<br>
+再加上setUp和tearDown:<br>
+<textarea readonly name="code" class="java">    @Override
+    public void setUp() throws Exception {
+        mContentResolver = getMockContentResolver();
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        mContentResolver = null;
+    }</textarea>运行，发现testConstructor挂了，说getMockContentResolver()返回的是Null，这怎么可能啊，太诡异了！想到还是可能初始化未正确，给setUp加上了父类的调用：<br>
+<textarea readonly name="code" class="java">    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        mContentResolver = getMockContentResolver();
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        mContentResolver = null;
+    }</textarea>这下再跑，全都Okay了，说明凡是涉及到重写(Override)父类的方法，都要调用父类的方法，以期正确初始化！下面是正确的完整版：<br>
+<textarea readonly name="code" class="java">public class DemoProviderTest extends ProviderTestCase2&lt;FeedProvider&gt; {
+    private ContentResolver mContentResolver;
+    
+    public DemoProviderTest() {
+        this(FeedProvider.class, AUTHORITY);
+    }
+    
+    public DemoProviderTest(Class&lt;FeedProvider&gt; providerClass,
+            String providerAuthority) {
+        super(providerClass, providerAuthority);
+    }
+    
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        mContentResolver = getMockContentResolver();
+    }
+    
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        mContentResolver = null;
+    }
+    
+    public void testConstructor() throws Throwable {
+        assertNotNull(&quot;can construct resolver&quot;, getMockContentResolver());
+        ContentProvider provider = getProvider();
+        assertNotNull(&quot;can instantiate provider&quot;, provider);
+    }
+}</textarea>总结一下，从这个例子得到的经验是，对于组件的测试，都要继承自android.test.*下面的组件测试框架，但是需要给这些组件测试框架传递正确的参数，否则Case无法测试：<br>
+二个构造函数<br>
+<textarea readonly name="code" class="java">    public DemoProviderTest() {
+        this(FeedProvider.class, AUTHORITY);
+    }
+    
+    public DemoProviderTest(Class&lt;FeedProvider&gt; providerClass,
+            String providerAuthority) {
+        super(providerClass, providerAuthority);
+    }</textarea>一个都不能少，而且是JUnit的指定构造函数(带有一个String，或不带参数的）要调用测试架构指定的构造，以给测试框架传递正确的参数！<br>
+还有就是重写的父类方法时，一定要把父类的方法也调用上，否则还是不会初始化正确！<br>
+但是这里不得不说这些组件测试框架写的真是不好用，首先，那个名字就让人费解，为什么有个2啊！Android真够2的！还有，既然作为框架，应该把初始化的工作做完整，做彻底，这样才能称的上框架。使用者应该只需要继承，把自己的事情做完，就应该能进行工作，就像组件Activity或ContentProvider一样，到了你的代码里的时候，框架里的初始化工作已经做完，所以你，继承者只需要关心你自已的初始化工作就好！但是测试框架就烂，继承者不但要关心自己的初始化还要保证给父类传递正确的参数！<br>
+<h2><span style="font-size:18px">2. Testing for Activity</span></h2>
+<span style="font-size:18px">同样对于Activity的测试也是要注意初始化的部分，只不过对于setUp和tearDown你不调super也没有关系！<br>
+</span><textarea readonly name="code" class="java">public class ExplorerActivityTester extends
+        ActivityInstrumentationTestCase2&lt;ExplorerActivity&gt; {
+    public ExplorerActivityTester() {
+        this(TARGET_PACKAGE_NAME, ExplorerActivity.class);
+    }
+    
+    public ExplorerActivityTester(String pkg, Class&lt;ExplorerActivity&gt; class1) {
+        super(pkg, class1);
+    }
+    
+    @Override
+    public void setUp() {
+        mInstrumentation = getInstrumentation();
+    }
+}</textarea>
+<h2><span style="font-size:18px">3. Obstacles to unit testing</span></h2>
+<span style="font-size:18px">在Android里面，由于其系统架构的特性决定了给Android写单元测试用例和验证测试用例特别因难<br>
+</span>
+<h3><span style="font-size:18px">a. Activity reuse</span></h3>
+<span style="font-size:18px">原因就是每一个测试的包，测试的包也是一个Apk，每一个包只能注入一个目标Apk，也就是说只能针对一个Apk里面的内容进行测试，一旦某个操作跳到了Apk以外的地方，就超出了测试框架的控制范围。但是组件重用机制在Android中非常的普遍，通过Intent来跳到其他的应用(apk)中，调用其他应用的组件来完成某个操作，这是Android的特性，是再普遍不过的了！但这就给单元测试用例埋下了无法逾越的障碍。测试框架本身更弱，一但跳出了某个组件，Instrumentation便无法对其进行控制，开源测试框架robutium-solo一定程度上解决了这个问，Solo可以操作一个包内的任何组件，特别地它能够解决多个Activity跳转的问题，但是如前所述，因为一个测试Apk只能注入一个目标Apk，所以一旦Activity跳到了应用外，Solo也没有了办法。这是一个无解的问题。因此，Android当中做测试，只能关注一些逻辑层，API层，数据和Provider，Service等一些与表层操作较远的代码！对于表层Activity跳来跳去的情况，只能做部分测试，或用MockObject来解决，但是这通常失去了测试的本身意义，因为要花大量时间去创建MockObject，不&#20540;！</span><br>
+<h3><span style="font-size:18px">b. ActionBar is not clickable</span></h3>
+<span style="font-size:18px">还有一非常恶心的问题是，对于Activity的ActionBar无法直接点击，真的不明白Google到底在搞什么，弄出来个新东东，竟然测试框架里面不支持操作！想到点击ActionBar只能通过Solo来点击屏幕坐标，这非常难以移植和维护！</span><br>
+<span style="font-size:18px">说到操作，还不得不说原生框架Instrumentation支持的操作非常少，而且不好用，它只能派发KeyEvent事件，很多情况下都不好用，比如有个对话框，想要点击Okay或是Cancel的话，就很麻烦，再如想点击一个ListView中的某一项的话也是非常麻烦！同样第三方的robotium-solo框架就好用多了，它进行了很好的封装，通过Solo.clickOnText()就可以方便的点击屏幕上的带有此文字的View。它的内部实现方式是通过View的显示Tree，根据Tag（文字）来查找相关的View，然后对其发送点击事件！这也解释了为什么Solo也无法点击ActionBar,因为ActionBar不是在Activity的View中，它是像StatusBar一样，属于系统级别的东西！</span><br>
+<h3><span style="font-size:18px">c. StatusBar belongs to Settings.apk</span></h3>
+<span style="font-size:18px">难以想象吧，随处可见的Statusbar竟然以属于Settings，只有注入了Settings的包才能对Statusbar进行操作。所以虽然Statusbar上面有你的Apk的相关的东西（比如提示）但是你还是无法直接操作它，除非你写一个专门注入Settings.apk的测试包！<br>
+</span>
+<h2><span style="font-size:18px">4. Security Concern</span></h2>
+<span style="font-size:18px">测试的代码（Instrumentation和TestRunner）也是以一个Apk的形式存在的，它可注入任何目标Apk，然后就可以对其进行操作，甚至获取其资源和数据。这就带来了安全上面的问题！可以把一个带有测试代码的Apk当成一个应用，一旦在某个手机运行，但可以操作任何一个应用。<br>
+其实，这本来不是问题，如果应用市场能对开发者上传的应用进行严&#26684;的测试和审核。但是现在的问题是无论是Google Play还是其他市场都不怎么测试，所以就会让不良者有机可乘！<br>
+其实，这里的关键问题在于，Android厂商不要盲目的追求数量！把应用集中销售是Apple想出来的主意，Apple的App Store也是做的最好的！Android只是一个效仿者，所以你发展的慢，数量不多，质量不够，收入不好，是正常的，因为你是一个追随者，你起步晚！对于厂商来讲，数量你没有办法控制，无法一下子弄出几万个应用来，这个是需要时间的，但是，至少，你可以严&#26684;控制质量啊！你可以做到对上传的应用进行严&#26684;的测试，这是对用户负责，也是对自己负责啊！所以无论是设备还是应用程序，都是Apple的要优质一些，Android总是要残次一些，所以你看Apple的东西价&#26684;就高，Android就便宜，当然价&#26684;也是Android的唯一优势！现的社会是一分钱一分货，便宜自然就没好货！</span><br>
+

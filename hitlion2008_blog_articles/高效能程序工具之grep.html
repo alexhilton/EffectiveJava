@@ -1,0 +1,52 @@
+
+    
+<p><span style="font-size:18px">grep是global regular expression pattern，意思是全局正则表达模式匹配。通俗来讲就是用于模式匹配，或者叫做查找。它有几个变体:</span></p>
+<ul>
+<li><span style="font-size:18px">egrep ---- 相当于grep -e</span></li><li><span style="font-size:18px">fgrep ---- 相当于grep -f</span></li><li><span style="font-size:18px">rgrep ---- 相当于grep -r</span></li></ul>
+<p><span style="font-size:18px">这几个不是很常用，已经是Deprecated，建议还是用grep。</span></p>
+<h2><span style="font-size:18px">命令&#26684;式</span></h2>
+<p><span style="font-size:18px">grep [options] [-e|--regexp PATTERN] PATTERN FILEs</span></p>
+<p><span style="font-size:18px">例如：<br>
+grep -rin --color -E -e &quot;task&quot; -e &quot;run&quot; RunOrStart.java</span></p>
+<h2>常用选项</h2>
+<ul>
+<li><span style="font-size:18px">-i&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忽略大小写</span></li><li><span style="font-size:18px">-r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 递归式的处理子目录</span></li><li><span style="font-size:18px">-n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 输出时带有与模式相匹配的行号</span></li><li><span style="font-size:18px">-w&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 仅匹配整个单词，相当于\bPATTERN\b</span></li><li><span style="font-size:18px">-e&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 指定一个模式</span></li><li><span style="font-size:18px">-E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 用扩展正则表达式</span></li><li><span style="font-size:18px">-x&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 匹配一整行，相当于^PATTERN$</span></li><li><span style="font-size:18px">-I&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 忽略二进制文件</span></li><li><span style="font-size:18px">--color&nbsp;&nbsp; 输出时用颜色来高亮显示匹配的模式</span></li></ul>
+<p><span style="font-size:18px">因为某些选项特别的常用，所以可以用alias来改造grep，让其变成默认选项：<br>
+alias grep=&quot;grep -rnEI --color&quot;<br>
+解释：</span></p>
+<p><span style="font-size:18px">-r 99%的情况下是肯定要查询子目录的。<br>
+-n 输出时带有行号可以方便后面的操作。<br>
+--color 高亮输出，方便查看<br>
+-I 多数情况下，都是处理纯文本(代码，Makefile，config file)，所以要忽略二进制文件，就不会出现如下的输出：</span></p>
+<textarea readonly name="code"class="plain" ><span style="font-size:18px;">alex:~$ grep shell *
+Binary file libwebcore.so matches</span></textarea>
+<p><span style="font-size:18px">-E 因为默认情况下是用BRE(Basic Regular Expression)，某些操作符如|(alternate), &#43;(one or more repetition)无效，如：<br>
+grep &quot;task|run&quot; * (no matches)</span></p>
+<textarea readonly name="code"class="plain" ><span style="font-size:18px;">grep &quot;task|run&quot; * (no matches)
+grep &quot;tas\w+r&quot; * (no matches)</span></textarea>
+<p><span style="font-size:18px">用-E来使用ERE(Extended Regular Expression)就可以使用这此：</span></p>
+<textarea readonly name="code"class="plain" ><span style="font-size:18px;">alex:~/work/java$ grep -E &quot;task|run&quot; *
+RunOrStart.java:        public void run() {
+RunOrStart.java:            System.out.println(&quot;TestRun.run(), start running are you aware of that&quot; + name);
+RunOrStart.java:            System.out.println(&quot;TestRun.run(), end running&quot; + name);
+RunOrStart.java:        public void run() {
+RunOrStart.java:            System.out.println(&quot;TastStart.run(), start running are you aware of that&quot; + name);
+RunOrStart.java:            System.out.println(&quot;TastStart.run(), end running&quot; + name);
+RunOrStart.java:        new TaskRun(&quot;taskrun&quot;).run();
+RunOrStart.java:        System.out.println(&quot;taskrun is ending&quot;);
+RunOrStart.java:        new TaskStart(&quot;with run&quot;).run();
+RunOrStart.java:        System.out.println(&quot;taskstart.run is ending&quot;);
+
+alex:~/work/java$ grep -E &quot;tas\w+r&quot; *
+RunOrStart.java:        new TaskRun(&quot;taskrun&quot;).run();
+RunOrStart.java:        System.out.println(&quot;taskrun is ending&quot;);
+RunOrStart.java:        System.out.println(&quot;taskstart.run is ending&quot;);</span></textarea>
+<h2><span style="font-size:18px">关于引号的使用quoted pattern</span></h2>
+<p><span style="font-size:18px">先来看二个例子：</span></p>
+<textarea readonly name="code"class="plain" ><span style="font-size:18px;">alex:~/work/java$ grep tas\w*r *(no outputs)
+alex:~/work/java$ grep &quot;tas\w*r&quot; *
+RunOrStart.java:        new TaskRun(&quot;taskrun&quot;).run();
+RunOrStart.java:        System.out.println(&quot;taskrun is ending&quot;);
+RunOrStart.java:        System.out.println(&quot;taskstart.run is ending&quot;);</span></textarea>
+<p><span style="font-size:18px">对于grep的参数PATTERN是一定要用引号的，单引双引均可，以防止Shell对某些具有特殊意义的字符进行扩展，如&amp;,\,|等，如不加引号会变成后台运行，转义和管道。</span></p>
+

@@ -1,0 +1,27 @@
+1: package com.javatour.io;
+2: 
+3: import java.io.BufferedReader;
+4: import java.io.BufferedWriter;
+5: import java.io.FileWriter;
+6: import java.io.IOException;
+7: import java.io.PrintWriter;
+8: import java.io.StringReader;
+9: 
+10: public class BasicFileOutput {
+11:     public static void main(String[] args) throws IOException {
+12:         BufferedReader reader = new BufferedReader(
+13:                 new StringReader(
+14:                         FileUtils.getFileContent(
+15:                             "src/com/javatour/io/BasicFileOutput.java")));
+16:         PrintWriter writer = new PrintWriter(
+17:                 new BufferedWriter(new FileWriter("BasicFileOutput.out")));
+18:         int lineCount = 1;
+19:         String s;
+20:         while ((s = reader.readLine()) != null) {
+21:             writer.println(lineCount++ + ": " + s);
+22:         }
+23:         System.out.print(writer.toString());
+24:         reader.close();
+25:         writer.close();
+26:     }
+27: }

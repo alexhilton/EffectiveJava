@@ -1,0 +1,110 @@
+
+    <p><span style="font-size: large;"><span style="font-family: comic sans ms,sans-serif;">C Programming language itself doesn't provide any good mechanism for error<br />
+
+handling. But standard library and Unix/Linux system calls do provide a<br />
+
+convinient way to handle errors. External variable errno, function strerror and<br />
+
+function perror from library &lt;errno.h&gt;, &lt;string.h&gt; and &lt;stdio.h&gt; are all the<br />
+
+things you need to make your programs more robust.<br />
+
+The general way to use errno to handle error is like this:<br />
+
+&nbsp;&nbsp;&nbsp; <textarea cols="50" rows="15" name="code" class="c-sharp">if ( (fp = fopen( filename, mode )) == NULL ) {
+      fprintf( stderr, &quot;cannot open file %s: %s/n&quot;, filename, strerror( errno ) );
+      return -1;
+}</textarea>
+
+&nbsp;<br />
+
+if you want to print error messages onto standard output(screen), you can use<br />
+
+&nbsp; perror as an alternative. <br />
+
+&nbsp; perror( const char *msg );<br />
+
+&nbsp; perror( msg ); is equal to printf( &quot;%s: %s/n&quot;, msg, strerror( errno ) );<br />
+
+There is a little difference between perror and strerror, the former is more<br />
+
+elegant and easier to use, but it can print messages on standard output only and<br />
+
+its format is predefined which cannot be changed. strerror provides much more <br />
+
+freedom. You can write the message to anywhere and use any format you want.<br />
+
+<br />
+
+We know something goes wrong according to the return value of some functions<br />
+
+like fopen etc. Then we can retrieve the detail information of the error through<br />
+
+errno and strerror and output the info to user or do some recovery operations.<br />
+
+But many times, we cannot know abnormal things happened through return value.<br />
+
+fgets, for instance, would return NULL if either EOF reached or error occured.<br />
+
+For these situations, we need to check errno to see whehter error has occured.<br />
+
+Before you do that you have to know two rules about errno: First, its value<br />
+
+is never cleared by a routine if an error does not occur. Therefore, we should<br />
+
+examine its value only when the return value from a function indicates that an<br />
+
+error occurred. Second, the value of errno is never set to 0 by any of the<br />
+
+functions, and none of the constants defined in &lt;errno.h&gt; has a value of 0. <br />
+
+As a result, if you want to know whether there is an error through errno, you'd<br />
+
+better initialize it, then see if it remains its initial value. Like this:<br />
+<textarea cols="50" rows="15" name="code" class="cpp">errno = 0;
+    /* some operation which an error might occur */
+    if ( errno != 0 ) {
+      /* an error has occured */
+      fprintf( stderr, &quot;error: %s/n&quot;, strerror( errno ) );
+      return -1;
+}</textarea>
+&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+
+<br />
+
+In addition, if you write some error handling routines for system calls, you'd<br />
+
+better save the original errno. Because, an error could occur during your<br />
+
+handling routine and errno could be overwritten. Take err_doit in comhdr.h for<br />
+
+example:<br />
+
+&nbsp;&nbsp;&nbsp; <textarea cols="50" rows="15" name="code" class="cpp">static void err_doit( int errnoflag, const char *fmt, va_list ap ) {
+        int errno_save;
+        char buf[ MAXLINE ];
+        errno_save = errno; /* value caller might want printed */
+        vsprintf( buf, fmt, ap );
+        if ( errnoflag ) {
+          sprintf( buf+strlen(buf), &quot;: %s&quot;, strerror( errno_save) );
+        }
+        strcat( buf, &quot;/n&quot; );
+        fflush( stdout ); /* in case stdout and stderr are the same */
+        fputs( buf, stderr );
+        fflush( NULL ); /* flushes all stdio output streams */
+        return;
+    }</textarea>
+&nbsp;<br />
+
+Here, vsprintf might fail and modify errno, if so, the following strerror(errno)<br />
+
+will no longer be the original error. Therefore, we have to save a copy of errno<br />
+
+in errno_save, just in case.<br />
+
+</span>
+
+</span>
+
+</p>

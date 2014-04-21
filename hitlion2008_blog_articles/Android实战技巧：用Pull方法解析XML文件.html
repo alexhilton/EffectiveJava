@@ -1,0 +1,259 @@
+
+    
+<span style="font-size:18px">Pull解析方法给应用程序完全的控制文档该怎么样被解析。Android中对Pull方法提供了支持的API，主要是</span><textarea readonly name="code" class="java">org.xmlpull.v1.XmlPullParser;
+org.xmlpull.v1.XmlPullParserFactory;</textarea><span style="font-size:18px">二个类，其中主要使用的是XmlPullParser，XmlPullParserFactory是一个工厂，用于构建XmlPullParser对象。<br>
+应用程序通过调用XmlPullParser.next()等方法来产生Event，然后再处理Event。可以看到它与Push方法的不同，Push方法是由Parser自己主动产生Event，回调给应用程序。而Pull方法是主动的调用Parser的方法才能产生事件。<br>
+假如XML中的语句是这样的：&quot;&lt;author country=&quot;United States&quot;&gt;James Elliott&lt;/author&gt;&quot;，author是TAG，country是ATTRIBUTE，&quot;James Elliott&quot;是TEXT。<br>
+要想解析文档先要构建一个XmlPullParser对象</span><br>
+<textarea readonly name="code" class="java">        final XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        final XmlPullParser parser = factory.newPullParser();</textarea><span style="font-size:18px">Pull解析是一个遍历文档的过程，每次调用next()，nextTag(), nextToken()和nextText()都会向前推进文档，并使Parser停留在某些事件上面，但是不能倒退。<br>
+然后把文档设置给Parser</span><br>
+<textarea readonly name="code" class="java">        parser.setInput(new StringReader(&quot;&lt;author country=\&quot;United States\&quot;&gt;James Elliott&lt;/author&gt;&quot;);</textarea><span style="font-size:18px">这时，文档刚被初始化，所以它应该位于文档的开始，事件应该是START_DOCUMENT，可以通过XmlPullParser.getEventType()来获取。然后调用next()会产生</span><br>
+<ul>
+<li><span style="font-size:18px">START_TAG，这个事件告诉应用程序一个标签已经开始了，调用getName()会返回&quot;author&quot;;再next()会产生</span></li></ul>
+<ul>
+<li><span style="font-size:18px">TEXT事件，调用getText()会返回&quot;James Elliott&quot;，再next()，会产生</span></li></ul>
+<ul>
+<li><span style="font-size:18px">END_TAG，这个告诉你一个标签已经处理完了，再next()，会产生</span></li></ul>
+<ul>
+<li><span style="font-size:18px">END_DOCUMENT，它告诉你整个文档已经处理完成了。</span></li></ul>
+<span style="font-size:18px">除了next()外，nextToken()也可以使用，只不过它会返回更加详细的事件，比如 COMMENT, CDSECT, DOCDECL, ENTITY等等非常详细的信息。如果程序得到比较底层的信息，可以用nextToken()来驱动并处理详细的事件。需要注意一点的是TEXT事件是有可能返回空白的White Spaces比如换行符或空&#26684;等。<br>
+另外有二个非常实用的方法nextTag()和nextText()<br>
+nextTag()--首先它会忽略White Spaces，如果可以确定下一个是START_TAG或END_TAG，就可以调用nextTag()直接跳过去。通常它有二个用处：当START_TAG时，如果能确定这个TAG含有子TAG，那么就可以调用nextTag()产生子标签的START_TAG事件；当END_TAG时，如果确定不是文档结尾，就可以调用nextTag()产生下一个标签的START_TAG。在这二种情况下如果用next()会有TEXT事件，但返回的是换行符或空白符。<br>
+nextText()--它只能在START_TAG时调用。当下一个元素是TEXT时，TEXT的内容会返回；当下一个元素是END_TAG时，也就是说这个标签的内容为空，那么空字串返回；这个方法返回后，Parser会停在END_TAG上。比如：<br>
+</span><textarea readonly name="code" class="html">&lt;author&gt;James Elliott&lt;/author&gt;
+&lt;author&gt;&lt;/author&gt;
+&lt;author/&gt;</textarea><span style="font-size:18px">当START_TAG时，调用nextText()，依次返回：<br>
+&quot;James Elliott&quot;<br>
+&quot;&quot;(empty)<br>
+&quot;&quot;(empty)<br>
+这个方法在处理没有子标签的标签时很有用。比如：</span><br>
+<textarea readonly name="code" class="html">&lt;title&gt;What Is Hibernate&lt;/title&gt;
+&lt;author&gt;James Elliott&lt;/author&gt;
+&lt;category&gt;Web&lt;/category&gt;</textarea><span style="font-size:18px">就可以用以下代码来处理：</span><br>
+<textarea readonly name="code" class="java">        while (eventType != XmlPullParser.END_TAG) {
+            switch (eventType) {
+            case XmlPullParser.START_TAG:
+                tag = parser.getName();
+                final String content = parser.nextText();
+                Log.e(TAG, tag + &quot;: [&quot; + content + &quot;]&quot;);
+                eventType = parser.nextTag();
+                break;
+            default:
+                break;
+            }
+        }</textarea><span style="font-size:18px">这就要比用next()来处理方便多了，可读性也大大的加强了。<br>
+最后附上一个解析XML的实例Android程序</span><br>
+<textarea readonly name="code" class="java">import java.io.IOException;
+import java.io.InputStream;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import android.util.Log;
+
+public class RssPullParser extends RssParser {
+    private final String TAG = FeedSettings.GLOBAL_TAG;
+    
+    private InputStream mInputStream;
+    
+    public RssPullParser(InputStream is) {
+        mInputStream = is;
+    }
+    
+    public void parse() throws ReaderBaseException, XmlPullParserException, IOException {
+        if (mInputStream == null) {
+            throw new ReaderBaseException(&quot;no input source, did you initialize this class correctly?&quot;);
+        }
+        final XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        final XmlPullParser parser = factory.newPullParser();
+        
+        parser.setInput(mInputStream);
+        int eventType = parser.getEventType();
+        if (eventType != XmlPullParser.START_DOCUMENT) {
+            throw new ReaderBaseException(&quot;Not starting with 'start_document'&quot;);
+        }
+        eventType = parseRss(parser);
+        if (eventType != XmlPullParser.END_DOCUMENT) {
+            throw new ReaderBaseException(&quot;not ending with 'end_document', do you finish parsing?&quot;);
+        }
+        if (mInputStream != null) {
+            mInputStream.close();
+        } else {
+            Log.e(TAG, &quot;inputstream is null, XmlPullParser closed it??&quot;);
+        }
+    }
+    
+    /**
+     * Parsing the Xml document. Current type must be Start_Document.
+     * After calling this, Parser is positioned at END_DOCUMENT.
+     * @param parser
+     * @return event end_document
+     * @throws XmlPullParserException
+     * @throws ReaderBaseException
+     * @throws IOException
+     */
+    private int parseRss(XmlPullParser parser) throws XmlPullParserException, ReaderBaseException, IOException {
+        int eventType = parser.getEventType();
+        if (eventType != XmlPullParser.START_DOCUMENT) {
+            throw new ReaderBaseException(&quot;not starting with 'start_document', is this a new document?&quot;);
+        }
+        Log.e(TAG, &quot;starting document, are you aware of that!&quot;);
+        eventType = parser.next();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            switch (eventType) {
+            case XmlPullParser.START_TAG: {
+                Log.e(TAG, &quot;start tag: '&quot; + parser.getName() + &quot;'&quot;);
+                final String tagName = parser.getName();
+                if (tagName.equals(RssFeed.TAG_RSS)) {
+                    Log.e(TAG, &quot;starting an RSS feed &lt;&lt;&quot;);
+                    final int attrSize = parser.getAttributeCount();
+                    for (int i = 0; i &lt; attrSize; i++) {
+                        Log.e(TAG, &quot;attr '&quot; + parser.getAttributeName(i) + &quot;=&quot; + parser.getAttributeValue(i) + &quot;'&quot;);
+                    }
+                } else if (tagName.equals(RssFeed.TAG_CHANNEL)) {
+                    Log.e(TAG, &quot;\tstarting an Channel &lt;&lt;&quot;);
+                    parseChannel(parser);
+                }
+                break;
+            }
+            case XmlPullParser.END_TAG: {
+                Log.e(TAG, &quot;end tag: '&quot; + parser.getName() + &quot;'&quot;);
+                final String tagName = parser.getName();
+                if (tagName.equals(RssFeed.TAG_RSS)) {
+                    Log.e(TAG, &quot;&gt;&gt; edning an RSS feed&quot;);
+                } else if (tagName.equals(RssFeed.TAG_CHANNEL)) {
+                    Log.e(TAG, &quot;\t&gt;&gt; ending an Channel&quot;);     
+                }
+                break;
+            }
+            default:
+                break;
+            }
+            eventType = parser.next();
+        }
+        Log.e(TAG, &quot;end of document, it is over&quot;);
+        return parser.getEventType();
+    }
+    
+    /**
+     * Parse a channel. MUST be start tag of an channel, otherwise exception thrown.
+     * Param XmlPullParser
+     * After calling this function, parser is positioned at END_TAG of Channel.
+     * return end tag of a channel
+     * @throws XmlPullParserException
+     * @throws ReaderBaseException
+     * @throws IOException
+     */
+    private int parseChannel(XmlPullParser parser) throws XmlPullParserException, ReaderBaseException, IOException {
+        int eventType = parser.getEventType();
+        String tagName = parser.getName();
+        if (eventType != XmlPullParser.START_TAG || !RssFeed.TAG_CHANNEL.equals(tagName)) {
+            throw new ReaderBaseException(&quot;not start with 'start tag', is this a start of a channel?&quot;);
+        }
+        Log.e(TAG, &quot;\tstarting &quot; + tagName);
+        eventType = parser.nextTag();
+        while (eventType != XmlPullParser.END_TAG) {
+            switch (eventType) {
+            case XmlPullParser.START_TAG: {
+                final String tag = parser.getName();
+                if (tag.equals(RssFeed.TAG_IMAGE)) {
+                    parseImage(parser);
+                } else if (tag.equals(RssFeed.TAG_ITEM)) {
+                    parseItem(parser);
+                } else {
+                    final String content = parser.nextText();
+                    Log.e(TAG, tag + &quot;: [&quot; + content + &quot;]&quot;);
+                }
+                // now it SHOULD be at END_TAG, ensure it
+                if (parser.getEventType() != XmlPullParser.END_TAG) {
+                    throw new ReaderBaseException(&quot;not ending with 'end tag', did you finish parsing sub item?&quot;);
+                }
+                eventType = parser.nextTag();
+                break;
+            }
+            default:
+                break;
+            }
+        }
+        Log.e(TAG, &quot;\tending &quot; + parser.getName());
+        return parser.getEventType();
+    }
+    
+    /**
+     * Parse image in a channel.
+     * Precondition: position must be at START_TAG and tag MUST be 'image'
+     * Postcondition: position is END_TAG of '/image'
+     * @throws IOException
+     * @throws XmlPullParserException
+     * @throws ReaderBaseException
+     */
+    private int parseImage(XmlPullParser parser) throws XmlPullParserException, IOException, ReaderBaseException {
+        int eventType = parser.getEventType();
+        String tag = parser.getName();
+        if (eventType != XmlPullParser.START_TAG || !RssFeed.TAG_IMAGE.equals(tag)) {
+            throw new ReaderBaseException(&quot;not start with 'start tag', is this a start of an image?&quot;);
+        }
+        Log.e(TAG, &quot;\t\tstarting image &quot; + tag);
+        eventType = parser.nextTag();
+        while (eventType != XmlPullParser.END_TAG) {
+            switch (eventType) {
+            case XmlPullParser.START_TAG:
+                tag = parser.getName();
+                Log.e(TAG, tag + &quot;: [&quot; + parser.nextText() + &quot;]&quot;);
+                // now it SHOULD be at END_TAG, ensure it
+                if (parser.getEventType() != XmlPullParser.END_TAG) {
+                    throw new ReaderBaseException(&quot;not ending with 'end tag', did you finish parsing sub item?&quot;);
+                }
+                eventType = parser.nextTag();
+                break;
+            default:
+                break;
+            }
+        }
+        Log.e(TAG, &quot;\t\tending image &quot; + parser.getName());
+        return parser.getEventType();
+    }
+    
+    /**
+     * Parse an item in a channel.
+     * Precondition: position must be at START_TAG and tag MUST be 'item'
+     * Postcondition: position is END_TAG of '/item'
+     * @throws IOException
+     * @throws XmlPullParserException
+     * @throws ReaderBaseException
+     */
+    private int parseItem(XmlPullParser parser) throws XmlPullParserException, IOException, ReaderBaseException {
+        int eventType = parser.getEventType();
+        String tag = parser.getName();
+        if (eventType != XmlPullParser.START_TAG || !RssFeed.TAG_ITEM.equals(tag)) {
+            throw new ReaderBaseException(&quot;not start with 'start tag', is this a start of an item?&quot;);
+        }
+        Log.e(TAG, &quot;\t\tstarting &quot; + tag);
+        eventType = parser.nextTag();
+        while (eventType != XmlPullParser.END_TAG) {
+            switch (eventType) {
+            case XmlPullParser.START_TAG:
+                tag = parser.getName();
+                final String content = parser.nextText();
+                Log.e(TAG, tag + &quot;: [&quot; + content + &quot;]&quot;);
+
+                // now it SHOULD be at END_TAG, ensure it
+                if (parser.getEventType() != XmlPullParser.END_TAG) {
+                    throw new ReaderBaseException(&quot;not ending with 'end tag', did you finish parsing sub item?&quot;);
+                }
+                eventType = parser.nextTag();
+                break;
+            default:
+                break;
+            }
+        }
+        Log.e(TAG, &quot;\t\tending &quot; + parser.getName());
+        return parser.getEventType();
+    }
+}</textarea><br>
+<br>
+

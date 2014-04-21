@@ -1,0 +1,82 @@
+
+    
+<h2><span style="font-size:18px">1、如何进行手机的调试模式</span></h2>
+<ol>
+<li><span style="font-size:18px">打开Call Dial页面</span></li><li><span style="font-size:18px">输入：*#*#4636#*#*</span></li><li><span style="font-size:18px">点击Call，然后就会进入调试模式</span></li></ol>
+<h2>2、如何从SIM卡中导入联系人</h2>
+<ol>
+<li>
+<p><span style="font-size:18px">进入手机的调试模式，然后按MENU进入Menu菜单，然后选择查看SIM卡地址</span></p>
+</li><li>
+<p><span style="font-size:18px">进入SIM卡地址后，再按MENU，选择全部导入，就可以了</span></p>
+</li></ol>
+<p>[Update on Thu Nov 10 2011]</p>
+<h2><span style="font-size:18px">3、刷机的注意事项<br>
+</span></h2>
+<p><span style="font-size:18px">使用Android手机难免进行刷机，这显然已经成为Android手机的一大特色，勘比苹果设备的JailBreak（越狱）。不同的厂商的不同机型有不同的刷机方法，这个可以到网上或论坛上搜一搜，一搜都是一大把的。烧机的时候要注意，先做好备份，认真阅读刷机教程，然后再进行操作。以免烧成砖头。</span></p>
+<p><span style="font-size:18px">对于Defy来讲，烧机主要用官方的工具RSDLite进行刷底包（*.sbf文件），操作也十分的简单，只是要先好底包，否则会有问题。刷之前仔细读读先行者的经验。</span></p>
+<p><span style="font-size:18px">对于Defy来讲，开机时先按音量加再按电源键会进入刷机模式，这时连电脑进行刷机。</span></p>
+<p><span style="font-size:18px">开机时先按音量减再按电源键，会出现小绿色机器人，再同时按音量加和音量减，或者点击屏幕右下角的地方，会进行Recovery模式，这个适用于Wipedata，Wipecache和安装升级包（需要事先放在SD上面的Zip包）。</span></p>
+<h2><span style="font-size:18px">4、关于adb时弹出insufficient permission问题的解决</span></h2>
+<p><span style="font-size:18px">刷完手机后第一次联上电脑，使用adb的时候突然有这个错误：</span></p>
+<p></p>
+<textarea readonly name="code" class="plain">shily@hh-desktop:~$adb shell
+error: insufficient permissions for device
+shily@hh-desktop:~$ adb devices
+List of devices attached
+????????????    no permissions</textarea><span style="font-size:18px">刚开始我还以为是手机的问题，因为刚刷完机还没有Root，所以可能涉及权限问题。但是又一想，不对啊。即使是没有Root过的手机ADB也应该是可以用的啊，这个只要手机的调试模式打开了应该可以用的。而且在Windows下ADB是完全可以用的。于是Google了一下，发现原来是PC系统的问题。我PC机用的是Fedora 15系统，正常情况下Shell用的是User，不是Root。而这个问题的原因就是在User情况下没有足够的权限启动ADB
+ Server。如果切到Root，把ADB server启动后，就可以了。</span><textarea readonly name="code" class="plain">sudo 'adb kill-server; adb start-server'</textarea>
+<p><span style="font-size:18px">但如果总是这样会很麻烦。又Google了下，发现已经有了更好的解决方法：</span></p>
+<p><span style="font-size:18px">就是用Root登录，然后在/etc/udev/rules.d/下面创建一个51-android.rules:</span></p>
+<p><span style="font-size:18px"><code>SUBSYSTEM==&quot;usb&quot;, SYSFS{idVendor}==&quot;0bb4&quot;, MODE=&quot;0666&quot;</code></span></p>
+<p><span style="font-size:18px"><code>其中0bb4是你的手机设备的Vid，可以用lsusb命令来获得。<br>
+</code></span></p>
+<p><span style="font-size:18px">创建完成之后，重新连接一下手机，之后就可以了。</span></p>
+<p>参考：<a target="_blank" href="http://hi.baidu.com/iceliushuai/blog/item/1e506160c5d01f48eaf8f801.html">http://hi.baidu.com/iceliushuai/blog/item/1e506160c5d01f48eaf8f801.html</a></p>
+<h2>5. Root</h2>
+<p><span style="font-size:18px">网络上有很多的Root方法，也有很多的一键式的Root工具SuperOneClick，但是很多的方法对于Defy来说貌&#20284;不行，经过反复尝试，最终发现用最原始的命令行方式进行Root是最有效的，也是比较方便，最重要的是它可行，它能够Root。其中一个方法可以参考CM提供的方法。另外一个方法就是，这个要在Linux下面，如果是Windows也可以，但要能够运行Adb命令。</span></p>
+<p><span style="font-size:18px">Step1： 连接手机至电脑，打开调试模式，在终端或命令行中输入：</span></p>
+<p><textarea readonly name="code" class="plain">adb shell mv /data/local/12m /data/local/12m.bak
+adb shell ln -s /data /data/local/12m
+adb reboot</textarea><span style="font-size:18px">手机会重启</span></p>
+<p><span style="font-size:18px">重启后，连接，然后输入：</span></p>
+<p><textarea readonly name="code" class="plain">adb shell rm /data/local/12m
+adb shell mv /data/local/12m.bak /data/local/12m
+adb shell mv /data/local.prop /data/local.prop.bak
+adb shell &quot;echo 'ro.sys.atvc_allow_netmon_usb=0' &gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_netmon_ih=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_res_core=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_res_panic=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_all_adb=1' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_all_core=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_efem=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_bp_log=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_ap_mot_log=0' &gt;&gt; /data/local.prop&quot;
+adb shell &quot;echo 'ro.sys.atvc_allow_gki_log=0' &gt;&gt; /data/local.prop&quot;
+adb reboot</textarea><span style="font-size:18px">重启后，再次输入：</span></p>
+<p><textarea readonly name="code" class="plain">adb remount
+adb push su /system/bin
+adb shell chmod 6755 /system/bin/su
+adb push Superuser.apk /system/app
+adb shell chmod 666 /system/app/Superuser.apk
+adb reboot</textarea><span style="font-size:18px">重启后，手机应该已经Root过了，Superuser程序也会装上了。</span></p>
+<h2>6. 安装CM的ROM</h2>
+<p><span style="font-size:18px">CyanogenMod是一个第三方的开发Android ROM的团队，它提供免费的ROM，这些ROM已经为很多机型适配好了，比如HTC，MOTO和Samsung的手机，都可能以找到CM的稳定的ROM。它与国内的MIUI很是类&#20284;。它的优点就是ROM很干净，基本没有第三方的软件，而且定制性比较强，已有集成了Root，始终是Android的最新版本等等。</span></p>
+<p><span style="font-size:18px">对于Defy当然也有CM7的ROM。安装方法如下：</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">1. 从CyanogenMod的官方网站下载最新的ROM，建议选择稳定版本，而不要选择实验版，它是一个Zip，大约115M左右，如果不放心，下载下来后可以做下MD5验证</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">2. 把下载下来的Zip放到SD卡的根目录下，并重命名为update.zip</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">3. 保证手机已Root过，且有充足的电量，且电脑上ADB可用</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">4. 安装Bootmenu，这个可以参考CyanogenMod<a target="_blank" href="http://wiki.cyanogenmod.com/wiki/Motorola_Defy:_Full_Update_Guide">官方网站的方法</a></span></p>
+<p style="margin-left:40px"><span style="font-size:18px">5. 备份重要的数据。无论是Root，还是刷机或是安装升级包，都有失败的风险，所以一定要先备份好数据。</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">6. 关闭手机</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">7. 按开机键，当显示屏亮了后，就按住音量减不放，之后会进入Bootmenu</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">8. 选择Recovery，音量加减是上下移动，电源键是选择</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">9. 进入Recovery后会有一个二级菜单，选择[Custom recovery]就会进入一个可安装升级，可备份，可擦除数据的菜单</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">10. 先擦除数据：先[Wipe data/factory reset]，再[wipe cache]</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">11. 然后先择[install update]，进去后选择SD上的刚才下载的升级包</span></p>
+<p style="margin-left:40px"><span style="font-size:18px">12. 然后重启手机就进入了CM的ROM</span></p>
+<p><span style="font-size:18px">记得进入Bootmenu后选择[Recovery]--&gt;[Custom recovery]就行了。</span></p>
+<p><span style="font-size:18px">参考<a target="_blank" href="http://wiki.cyanogenmod.com/wiki/Motorola_Defy:_Full_Update_Guide">官方的升级教程</a>。<br>
+</span></p>
+<p></p>
+

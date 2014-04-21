@@ -1,0 +1,50 @@
+
+    
+<h2><span style="font-size:18px">Trackball轨迹球</span></h2>
+<p><span style="font-size:18px">这有点类&#20284;于PC上面的鼠标，可以用于导航，为此便有了Focus，但是这实际操作意义并不大，因为整个屏幕都是触控的，还用导航干什么，先把Focus用Trackball移动到某个控件再去点击这不是多此一举吗？而且这个Focus十分难以控制，给开发者添加了无尽的烦恼，所以轨迹球是脑残的设计，所以现在Android的设备已经进化的都去掉了轨迹球了。当初为何加入这个东西呢？我猜因为Android的原始设计是一直带有键盘的，或者是为了非触控屏幕准备的，如果有非触控，用一个类&#20284;鼠标的灵活球来移动屏幕Focus还是十分方便的。但由于受到了iPhone的刺激，屏幕都是触控的了，这个球自然成了多余的东西，在走近死亡。</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_1332597898RZnN.gif" alt=""><img src="http://hi.csdn.net/attachment/201203/24/0_1332598014KY6Y.gif" alt=""></span></p>
+<h2><span style="font-size:18px">关于Focus</span></h2>
+<span style="font-size:18px">这是继承了PC了风&#26684;，是为了非触控屏幕而设计的，以告知用户现在在操作什么地方，同样对于全屏触摸来讲，这也有些多余。<br>
+另外就是长按事件的Focus，ICS的做法是用纯色来把所点击的区域填充，这十分脑残，因为会影响显示效果，会让用户看不清内容。还是iOS比较舒服，通常很多控件并不响应长按，它是把所点击的东西放大，并用动画来过度，这看起来比单纯的用纯色来填充要好的多。而且，iOS长按事件通常是用作一些显示位置上的操作，并不会弹出菜单。<br>
+另外就是Android中的长按通常都会唤出一个菜单，也就是说长按时的Focus仅是一个临时的显示，但有些时候会长期的显示，直到按了BACK或HOME，这时就有影响了。<br>
+</span>
+<p><span style="font-size:18px">关于控件对事件的响应对用户体验的影响要大于这些事件的临时状态（Focus时或Press时），因为用户通过点击来触发事件，最希望的是事件早些发生，如点了“保存”应该是保存事件顺利的快速的完成。所以这要依赖于开发者，处理好事件的响应，不要阻塞事件回调，否则就很难看，也很难用。</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_133259834717Kn.gif" alt=""><img src="http://hi.csdn.net/attachment/201203/24/0_1332598433x1k6.gif" alt=""><br>
+</span></p>
+<h2><span style="font-size:18px">ActionBar</span></h2>
+<p><span style="font-size:18px">Android从最初有全键盘，到后来有几个硬键，再到ICS的虚拟硬键，可谓是变化很多，也引入ActionBar这个虚拟硬键。这是一个好趋势，因为虚拟的点起来要省力的多。但是为什么要在屏幕的上下都要有呢？这会减少屏幕的可用空间的。至于为什么不全放在上面，我想是怕被人嘲笑在抄袭iOS吧！但是这个ActionBar确实与iOS有几分相&#20284;之处，而且与2.3以前的版本相差甚大，并且Landscape时就都跑到上面去了，都放在上面不更一至吗？</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_13325984682Nzx.gif" height="480" width="320" align="middle" alt=""><br>
+</span></p>
+<h2><span style="font-size:18px">Home Widget</span></h2>
+<span style="font-size:18px">这是一个中看不中用的东西，至于中不中看还要看开发的水平。特别是有关显示时间的Widget，是最没用的一个了，试问：当你看到Home时，你还用看Widget来看时间吗？StatusBar始终都在显示时间啊！最可气的一个是默认的时钟Widget，在默认的背景时你能看清吗？Widget的真正用意更像Windows的Gadget，也就是让你更加方便的进行某些操作（收信，新闻等），也就是某个应用的缩略版，但是总体讲Widget好用与否全在于开发者的水平，如果设计的不好反尔适得其反！<br>
+</span>
+<p><span style="font-size:18px">其实，Android搞了这么复杂的Widget全不如iOS的活体Icon用的好，比如iCalendar应用的Icon，能显示当前日期，这一个Icon胜过所有的Android日期Widget。它简洁，方便，适用，刚刚恰到好处。</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_1332598574NGjn.gif" height="320" width="480" align="middle" alt=""><br>
+</span></p>
+<h2><span style="font-size:18px">Home的Landscape</span></h2>
+<span style="font-size:18px">这个在以前的版本默认都是不支持的，ICS突然有了Lanscape，但是看看转屏后发生了什么？Google赖以为生的搜索框竟然变得那么丑？怪不得乔布斯骂施密特没品味！看了这个就知道。<br>
+</span>
+<h2><span style="font-size:18px">转屏动画</span></h2>
+<p><span style="font-size:18px">过了这么久，终于在ICS上面有了，还是相当不错的。至于为什么这么晚才有，是因为WindowManager等相关的系统架构不是很好加入这些东西，为什么呢？因为最初Android的设计是不会转屏的！</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_1332598652iqWH.gif" alt=""><br>
+</span></p>
+<h2><span style="font-size:18px">Landscape下的输入</span></h2>
+<span style="font-size:18px">这个是最脑残的一个，Landscape时输入法会占据整个屏幕，以至于用户使用的时候非常不方便，你都不知道你在录入哪个框？而在Portrait时由于屏幕太窄，输入法的按扭都会变得的特别小，很容易点错。我想这里的原因应该是屏幕比例失衡导致的！<br>
+</span>
+<p><span style="font-size:18px">说到屏幕比例失衡，手机还好，Android的平板和屏幕比例真的是太脑残了，16：9的比例除了看高清电影外其他的事情都引起不便：看书不方便，看网页不方便，看电影仅是用平板的一个很小的需求，还有更多的比如邮件，信息，上网，读书，游戏等等。而16：9的屏幕就像拿着一块长长的板砖，完全没有了感觉，最重要的是很多内容（书籍，网页等）与其屏幕比例根本没有适配，所以看的时候非常不舒服，特别是看PDF的书籍时。而iPad的4：3的比例就很好，跟纸质书籍的比例很像，横着竖着看起来都舒服！我最喜欢的就是用iPad来读PDF书籍，跟读纸质书籍没有区别，感觉很好！</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_133259872607uj.gif" alt=""><br>
+</span></p>
+<h2><span style="font-size:18px">短信列表</span></h2>
+<p><span style="font-size:18px">这个也够脑残的，这个页面有多丑就先不说了，就说为什么在每条信息的边上都要放置联系人联系人头像呢？每个对话的联系人只有发信人和收信人，也就是说对于一个对话中的所有消息来讲这些联系人是不变的，既然不变为什么要重复显示呢？这不但会增加内存消耗，也会影响加载速度和操作的流畅度。更加令人难以理解的是，对于发出去的信息，如果点击联人头像，屏幕会先黑一下，然后弹出”无此联系人！“。因为，对于发出去的信息的联系人应该对应于People应用中的Me，所以如果不设置Me的相关信息就会显示”无此联系人“，至于为什么屏幕会先黑一下，是因为它要显示一个Activity的对话框，此Activity会检查联系人是否存在(是否有联系人信息)，如果没有则弹消息”无此联系人“。</span></p>
+<p><span style="font-size:18px"><img src="http://hi.csdn.net/attachment/201203/24/0_1332598761uE73.gif" alt=""><img src="http://hi.csdn.net/attachment/201203/24/0_1332598778OCNr.gif" alt=""><br>
+</span></p>
+<h2><span style="font-size:18px">一些明显的Bug</span></h2>
+<span style="font-size:18px">进入People点击联系人Icon，会出现QuickContact，点击Message会进入发信页，此时按Home，再进入People，此时如果点击联系人Icon，QuickContact会出现在Mms的上面。此系发Intent唤起Mms时没有加NEW_TASK的Flag所致。<br>
+还有就是新联系人时会在号码中自动插入空&#26684;或-等分隔符，但是当在Mms中选择了此联系人后，在发送时竟然提示联系人非法！WTF，原因是Mms中在发信前检查时只认全数字的号码，但是这个判断用的是系统的API（isWellFormedPhoneNumber)！<br>
+这些都是由于所做的修改不一致造成的，也就是在联系人中修改，但是其他地方没有同步到！<br>
+</span>
+<p><span style="font-size:18px">类&#20284;的问题还有很多，很多，去问问那些维护Android的人就知道了（厂商的程序猿和解决方案的程序猿）。</span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<span style="font-size:18px">不晓得这是Bug，还是Android的特色！只是，可苦&#36924;了出货的厂商，更苦&#36924;了Android系统提供商（也就是专作解决方案的，如联发科），另外，Android每次升级，最痛苦的也都是这些人！每次升级都要进行大量的Merge和Bugfix工作，相当的苦&#36924;，这些人都被Google Android的升级给拖住了，所以如果Android升级过快，将会拖死这些人！而这些人被拖住，用户自然不能在第一时间得到升级，所以你看ICS出来已经快半年了，但能升级的设备有几个！Google想办法能跟厂商站在同一战线上，让每次升级都能方便快捷的与厂商进行整合，快速释放出升级包让用户得以升级，这样才能赢得更多的用户！不过感觉Android的发展也就这样了，因为碎片化已经失控，现在各个厂商各自为政，要么把Android深度定制，之后就不再叫Android了，要么多管齐下，各种平台齐发力。而且每个厂商都在试图建立自己的生态系统，所以Android想达到iOS那样的地步可能性几乎为零！</span><br>
+

@@ -1,0 +1,59 @@
+
+    
+<h2><span style="font-size:18px">Composing and editing</span></h2>
+<span style="font-size:18px">MMS在Android Mms应用里面的具体实现形式，或数据结构是SlideshowModel，它是一个每个节点为SlideModel的ArrayList，SlideModel是一个Model的List，也就是它可以接收任何Model的子类，Audio，Video，Image和Text都可以放到SlideModel上面。SlideModel主要用于管理其上面的各个媒体，比如它们的布局，它们的播放控制，而SlideshowModel主要用于管理所有的附件，比如把所有的附件转化成为Android的MMS协议的数据类型Pdu，以及从Pdu转化成为SlideshowModel。<br>
+Pdu是实现了MMS协议的标准&#26684;式，它可以直接的发送给MMSC，从MMSC取回来的也是一个Pdu&#26684;式的数据。应用层Mms不需要关心Pdu的具体实现方式，Android中有一个内部的包com.google.android.mms.*下面的类都是专门用于处理Android平台上的MMS。里面提供了工作可以把应用层的数据，比如媒体文件等，进行包装成Pdu，再把Pdu分解成为媒体文件。Pdu的数据结构包括PduBody，这个是用于存放多媒体文件的地方，其里面是PduPart的集合，每个PduPart代表一个文件。PduPersister用于操作这些数据结构，包括写入数据库，从数据库中读取等。<br>
+SlideshowModel或俗称幻灯片是应用层的MMS的实现形式，或者它是应用层MMS用来创建，编辑，显示和管理多媒体的一个数据结构。创建和发送MMS的时候，就是创建一个SlideshowModel，构建MediaModel，TextModel等加入到SlideshowModel中。在发送时，SlideshowModel会把其内的媒体文件取出来，转化为PduPart放入PduBody中。收到信息后从PduBody中取出PduPart，还原成媒体文件，生成MediaModel，加入到SlideshowModel中，也就是还原为幻灯片。应用拿到幻灯片后可以做显示和播放。<br>
+</span>
+<h2><span style="font-size:18px">附件类型</span></h2>
+<span style="font-size:18px">关于附件类型，Mms应用中所有的MMS都有一个幻灯片，其内含有所有的附件文件。但是Mms做了一些特殊的处理，对于一个MMS信息，它的附件类型分为IMAGE, AUDIO, VIDEO,和SLIDESHOW，这些从添加附件对话框的列表中可以看出，而且展现方式也有所不同。但是实际的实现上面并没有这么多的类型，只有一个SlideshowModel，所有的附件都在里面。它处理的规则是这样的，如果只添加了一个媒体(image, audio和video)时，会把类型设置为相应的媒体类型，而只有在附件对话框中明确选择添加幻灯片时并且添加了多张幻灯片后，附件类型才会是幻灯片。这个附件类型只在给MMS添加附件时和发送MMS前有效，主要用于在消息列表中如何展示媒体文件，如果是具体媒体类型，就直接显示，否则显示为幻灯片，这个附件类型仅存在于应用中显示媒体所用，并不会在发送出去的Pdu中有痕迹。当收到MMS后，也是根据转化后的SlideshowModel里面的内容来推测出附件类型，然后再做显示。所以，对于一个MMS来说它始终都有一个SlideshowModel，用户所感受到的附件类型仅是附件媒体显示上面的一个处理而已。<br>
+</span>
+<h2><span style="font-size:18px">创建和编辑MMS</span></h2>
+<span style="font-size:18px">与传统手机不同，创建MMS并不需要特殊的方式。因为Mms应用对MMS和SMS并不做严&#26684;的区分，而是以统一的对话中的一个消息来对待，所以MMS与SMS的区别也很简单，就看一个消息中只否有附件(WorkingMessage.hasAttachment())。创建MMS也十分简单，只需点击Composer而的Attach菜单添加媒体即可。在列表中选择image, audio和video后就只有一个媒体文件，都会跑到其他的Activity去选择文件，然后会返回其Uri给Composer，Composer会调用WorkingMessage.setAttachment()来做具体的添加，用Uri创建MediaModel然后加入到SlideshowModel中，并设置类型。另外，如果选择了Attach幻灯片，就会直接进入编辑幻灯片的而面，可以添加删除幻灯片页，给幻灯片页加媒体文件，设置布局等，之后Composer会把SlideshowModel显示出来，此时的附件类型也是SLIDESHOW，这些都是通过WorkingMessage.load()来完成的。<br>
+WorkingMessage在把媒体加到幻灯片里以后，就会回调一个接口 onAttachmentChanged()，Composer实现了此接口，这个接口主要用于通知Composer附件已发生变化，刷新UI以正确显示附件。Composer会创建AttachmentEditor来显示附件的内容，因为所有的附件都放在Slideshow里面这个Slideshow在WorkingMessage中，可以通过WorkingMessage.getSlideshow()来获取。AttachmentEditor会根据Slideshow里面的内容来创建不同的View以展示不同的附件，如果Slideshow中只有一个Video，Audio或Image，就直接创建VideoAttachmentView，AudioAttachmentView或ImageAttachmentView，而对于幻灯片中页数大于1时就会创建SlideshowAttachmentView。还有相应的按扭可以用来编辑，替换或删除，对于单个媒体有查看/播放，选择后可以查看原图和播放音频视频，替换可以重新重选择一个附件，删除会移除掉附件；对于Slideshow有编辑和删除，编辑会直接进入幻灯片的编辑页面，那里可以一页一页的对每页幻灯片进行详细的编辑，删除会移除掉附件。<br>
+编辑完附件后有三种处理方式，一个是发送信息，一个是保存为草稿另一个就是放弃信息。发送信息和保存草稿都会对幻灯片进行打包，转成Pdu，并保存到数据库，之后的幻灯片都需要从数据库加载并把Pdu解包成为SlidehshowModel。<br>
+</span>
+<h2><span style="font-size:18px">Packaging and unpackaging MMS</span></h2>
+<span style="font-size:18px">要发送信息前，或是保存草稿时，都需要把SlideshowModel进行打包生成Pdu&#26684;式，并保存至数据库。这个称为MMS的打包（Packaging），是由SlideshowModel.makePduBody()方法来完成，它会把幻灯片里面的内容一个一个的取出来，转成一个PduPart，再 放入PduBody中，以生成PduBody，一个媒体对应一个PduPart，同时还可以设置PduPart的属性以描述媒体的文件，比如ContentType，这是一个用于标识媒体MIME类型的字串；Filename文件的名字；
+ ContentLocation文件的路径。这些信息都用于描述PduPart中数据的元信息（MetaData），也就是数据具体是什么，以便让解包的时候对数据进行正确的处理。<br>
+之后PduPersister会通过其persist()方法把PduBody存入到数据库中，它会把PduPart中的描述性信息作数据库字段写入，把文件存储在TelephonyProvider文件夹下面(/data/data/android.providers.telephony/app_parts)，并把存储后的路径作为_data字段写入数据库，这样一条MMS的数据就都写入了数据库中。这以后，MMS的数据都是从数据库中加载，所以原SlideshowModel中的数据库不再有效，如Uri在原SlideshowModel中可能指向一个文件，或是其他数据库，在PduPersister.persist()之后就不再有效了。<br>
+当PduPersister.persist()之后，MMS的附件就都从数据中加载，PduPersister.load()会从数据库把数据加载成为一个PduBody，SlideshowModel的方法createFromPduBody()就是用于把PduBody转化成为一个SlideshowModel，从PduPart取出媒体信息以得到正确的媒体&#26684;式，和相关信息，可以通过Uri来获取具体文件（流）。<br>
+接收到的MMS过程也差不多当NotificationTransaction或RetrieveTransaction用HttpUtils从MMSC获取到MMS数据后会用PduParser来解析数据生成Pdu，再用PduPersister.persist()把其写入数据库，之后会再从数据库中加载。<br>
+</span>
+<h2><span style="font-size:18px">SMIL语言支持</span></h2>
+<span style="font-size:18px">对于每条MMS还有一个很重要的数据就是SMIL语言，SMIL是同步多媒体集成语言的简称(Synchronized Multimedia Integration Language)，它与HTML文档很类&#20284;，是W3C(World Wide Web Consortium)组织规定的多媒体操纵标准语言。MMS也是用它来管理和播放多媒体。来看一个具体的SMIL语言实例：<br>
+</span><textarea readonly name="code" class="html">&lt;smil xmlns=&quot;http://www.w3.org/2000/SMIL20/CR/Language&quot;&gt;
+        &lt;head&gt;
+                &lt;layout&gt;
+                        &lt;root-layout width=&quot;360&quot; height=&quot;615&quot;/&gt;
+                        &lt;region id=&quot;Image&quot; width=&quot;347&quot; height=&quot;260&quot; top=&quot;14&quot; left=&quot;7&quot; fit=&quot;meet&quot;/&gt;                               
+                        &lt;region id=&quot;Text&quot; width=&quot;326&quot; height=&quot;320&quot; top=&quot;281&quot; left=&quot;7&quot; fit=&quot;scroll&quot;/&gt;
+                &lt;/layout&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+                &lt;par dur=&quot;60s&quot;&gt;
+                        &lt;img src=&quot;0.jpg&quot; region=&quot;Image&quot;/&gt;
+                        &lt;text src =&quot;0.txt&quot; region=&quot;Text&quot;/&gt;
+                &lt;/par&gt;
+                &lt;par dur=&quot;60s&quot;&gt;
+                        &lt;text src =&quot;1.txt&quot; region=&quot;Text&quot;/&gt;
+                &lt;/par&gt;
+                &lt;par dur=&quot;60s&quot;&gt;
+                        &lt;text src =&quot;2.txt&quot; region=&quot;Text&quot;/&gt;
+                &lt;/par&gt;
+                &lt;par dur=&quot;60s&quot;&gt;
+                        &lt;text src =&quot;3.txt&quot; region=&quot;Text&quot;/&gt;
+                &lt;/par&gt;
+                &lt;par dur=&quot;60s&quot;&gt;
+                        &lt;text src =&quot;4.txt&quot; region=&quot;Text&quot;/&gt;
+                &lt;/par&gt;
+        &lt;/body&gt;
+&lt;/smil&gt;</textarea><br>
+SMIL语言播放多媒体时通常是一页页的，与幻为播放十分类&#20284;，因为很多SMIL播放器都会做成幻灯片形式。因为MMS用SMIL来传送多媒体，所以Mms终端应用都会以幻灯片的方式来播放MMS。这也就是为什么Mms应用中会出来SlideshowModel的原因。幻灯片方式显示彩信是一种常用的方法，即使某些终端应用没有用幻灯片放映的方式显示彩信，但是对于运营商或彩信平台发出来彩信都有页码标识，另外其他的一些手机，比如非智能手机查看彩信的方式也是以幻灯片一页一页的放映。<br>
+它主要记载着用于幻灯片的布局信息。这个SMIL语言就是用于幻灯片布局的，也就是说SMIL会像HTML文档布局网页那样来说明如何布局幻灯片，它有这些TAG：head, layout, body, par，head是头信息，里面有TAG layout用来说明这个幻灯片是如何布局的，具体的它用一些子TAG如root-layout, region等来说明幻灯片中的每一个元素如Image或Text如何布局。TAG body中列出了幻灯片的所有媒体元素和详细内容，比如image, audio, text等，每一par是一页，它的子TAG说明这一页有哪些内容，当然SMIL语言还有很多内容可以参考Wikipedia上的讲解。<br>
+当打包幻灯片时，也就是把SlideshowModel转化为Pdu时，会根据SlideshowModel的内容生成一个SMIL语言，通过SmilHelper.getDocument()来生成SMIL文档，把其加入到PduBody中并作为第一个PduPart，它的ContentType(MIME)是application/smil，它的内容就是SMIL文档。需要注意的是SMIL文档总是会在PduBody的第一个Part，并且它直接把文档内容写到PduPart中，而不是以文件的形式存在。<br>
+当解包的时候，会先取出SMIL文档，对其进行解析，生成幻灯片。<br>
+因为SMIL是一个标准的文档，所以W3C有其相应的规范，也有相应的库来解析和生成。在Mms应用中可以看到这样的二个Package: org.w3c.dom.*和com.android.mms.dom.*;其中org.w3c.dom是SMIL语言的一些标准库，而com.android.mms.dom.*;是对org.w3c.dom一些标准接口的实现，或者说是为了Mms应用而做的一些适配。那么在com.android.mms.model.*里面的一些类也是根据SMIL标准而写的，比如SmilHelper就是专门用于解析SMIL文档和生成SMIL文档，当然它会用到前面提到的二个Package里面的东西。还有如ImageModel，TextModel和RegionModel也都是基于SMIL标准的，比如它们分别
+ 对应SMIL文档中的标签img, text和region。<br>
+当然，这都是具体的终端应用的实现，可能不同的应用会有不同的方式，但发送出去的和接收到的都应该是标准的Pdu，而SMIL文档仅是一个其中一个PduPart而已。<br>
+

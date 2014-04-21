@@ -1,0 +1,421 @@
+
+    <p class="MsoNormal"><span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">简介</span>
+<span lang="EN-US">-----Java</span>
+<span style="font-family: 宋体;">调用</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">函数</span>
+</p>
+<p class="MsoNormal" style="text-indent: 21pt;"><span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">是面向对象的王牌语言，安全，规范，容易使用和&ldquo;一次编译，到处运行&rdquo;等等优点，很快让</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">成为了世界第一语言。在很多方面，</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">都是无可挑剔的，但当涉及到某个平台的底层时，或需要深入某个操作系统时，</span>
+<span lang="EN-US"> Java</span>
+<span style="font-family: 宋体;">就显得力不从心了。幸运的是，</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">提供了调用本地方法的方式，通过</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">，可以让</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">调用</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">语言函数。这为我们提供了很多便利，比如，我们有现成的</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">语言库，不想用</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">再重写，这时就可以通过</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">来实现代码重用。但更重要的，我认为，</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">可以拓展</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">，让其完成更多更复杂的操作系统相关的任务。对于</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">，</span>
+ <span style="font-family: 宋体;">最常用的应用是用其实现与操作系统密切相关的任务。</span>
+</p>
+<p class="MsoNormal" style="text-indent: 21pt;"><span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">与平常的接口过程没有二样儿，也是二个过程：定义接口和实现接口。只不过接口的定义是在</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">层，而实现却是在</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">。<em><span style="color: red;">这里要注意，虽然，也可以用</span>
+</em>
+</span>
+<em><span style="color: red;" lang="EN-US">C++</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">来实现接口，但是</span>
+<span style="color: red;" lang="EN-US">JNI</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">只支持标准</span>
+<span style="color: red;" lang="EN-US">C</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">，对</span>
+<span style="color: red;" lang="EN-US">C++</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">的类和</span>
+<span style="color: red;" lang="EN-US">STL</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">，模板和重载等不提供支持，所以当用</span>
+<span style="color: red;" lang="EN-US">C++</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">来实现时，请加上宏</span>
+<span style="color: red;" lang="EN-US">&rsquo;extern &ldquo;C&rdquo; { };</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">，</span>
+<span style="color: red;"> </span>
+</em>
+<em><span style="font-family: 宋体; color: red;">以去掉那些</span>
+<span style="color: red;" lang="EN-US">C</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">不支持的</span>
+<span style="color: red;" lang="EN-US">C++</span>
+</em>
+<em><span style="font-family: 宋体; color: red;">特性。</span>
+</em>
+</p>
+<p class="MsoNormal" style="text-indent: 15.8pt;"><strong><span lang="EN-US">JNI</span>
+</strong>
+<strong><span style="font-family: 宋体;">通常要四个步骤：</span>
+
+</strong>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><strong><span lang="EN-US"><span>1．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;"> </span>
+</span>
+</span>
+</strong>
+<!--    [endif]--><strong><span style="font-family: 宋体;">定义接口</span>
+
+</strong>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><strong><span lang="EN-US"><span>2．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;"> </span>
+</span>
+</span>
+</strong>
+<!--    [endif]--><strong><span style="font-family: 宋体;">用</span>
+<span lang="EN-US">C/C++</span>
+</strong>
+<strong><span style="font-family: 宋体;">实现接口</span>
+
+</strong>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><strong><span lang="EN-US"><span>3．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;"> </span>
+</span>
+</span>
+</strong>
+<!--    [endif]--><strong><span style="font-family: 宋体;">把</span>
+<span lang="EN-US">C/C++</span>
+</strong>
+<strong><span style="font-family: 宋体;">的实现做成共享库</span>
+<span lang="EN-US">(Windows</span>
+</strong>
+<strong><span style="font-family: 宋体;">平台的</span>
+<span lang="EN-US">.dll</span>
+</strong>
+<strong><span style="font-family: 宋体;">，</span>
+<span lang="EN-US">Linux</span>
+</strong>
+<strong><span style="font-family: 宋体;">平台的</span>
+<span lang="EN-US">.so)</span>
+</strong>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><strong><span lang="EN-US"><span>4．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;"> </span>
+</span>
+</span>
+</strong>
+<!--    [endif]--><strong><span style="font-family: 宋体;">集成</span>
+
+</strong>
+</p>
+<p class="MsoNormal"><span style="font-family: 宋体;">下面我们通过一个具体的真正的实例来演示如何实现一个</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">。</span>
+</p>
+<p class="MsoNormal" style="text-indent: 21.1pt;"><strong><span style="font-family: 宋体;">问题：</span>
+</strong>
+<span style="font-family: 宋体;">虽然</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">可以&ldquo;一次编译，到处运行&rdquo;，但是由于它对跨平台支持的太好了，所以用</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">很难分辨出平台之间的差异。比如，我们如果想为</span>
+<span lang="EN-US">64</span>
+<span style="font-family: 宋体;">位的</span>
+<span lang="EN-US">Windows</span>
+<span style="font-family: 宋体;">和</span>
+<span lang="EN-US">32</span>
+<span style="font-family: 宋体;">的</span>
+<span lang="EN-US">Windows</span>
+<span style="font-family: 宋体;">做点不同的东西，那么就需要我们用程序来区分这二个系统，以进行不同的处理。</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">里面提供了</span>
+<span lang="EN-US">os.arch</span>
+<span style="font-family: 宋体;">属性，但是这个是针对处理器的，并不是操作系统的。因为有些情况是在</span>
+<span lang="EN-US">32</span>
+<span style="font-family: 宋体;">位处理器上可能装</span>
+<span lang="EN-US">64</span>
+<span style="font-family: 宋体;">位的系统，在</span>
+<span lang="EN-US">64</span>
+<span style="font-family: 宋体;">位处理器也可装</span>
+<span lang="EN-US">32</span>
+<span style="font-family: 宋体;">位的系统，而我们想要的是操作系统是</span>
+<span lang="EN-US">64</span>
+<span style="font-family: 宋体;">位还是</span>
+<span lang="EN-US">32</span>
+<span style="font-family: 宋体;">位，并非处理器。这时就要求助于</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">了，用</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">语言通过</span>
+<span lang="EN-US">Windows</span>
+<span style="font-family: 宋体;">自身的</span>
+<span lang="EN-US">API</span>
+<span style="font-family: 宋体;">我们是可以很容易得出这个操作系统是</span>
+<span lang="EN-US">64</span>
+<span style="font-family: 宋体;">位还是</span>
+<span lang="EN-US">32</span>
+<span style="font-family: 宋体;">位。</span>
+</p>
+<p class="MsoNormal"><span style="font-family: 宋体;">实现过程：</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><span lang="EN-US"><span>1．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;">&nbsp;
+</span>
+</span>
+</span>
+<!--    [endif]--><strong><span style="font-family: 宋体;">定义接口：</span>
+</strong>
+<span style="font-family: 宋体;">可以用如下代码来定义</span>
+<span lang="EN-US">SystemType.java</span>
+</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <textarea cols="50" rows="15" name="code" class="java">public class SystemType {
+        public native boolean is64BitSystem();
+        static {
+               System.loadLibrary(&ldquo;SystemType&rdquo;);
+        }
+}&nbsp;</textarea></p>
+<p class="MsoNormal"><span lang="EN-US"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+</span>
+<span style="font-family: 宋体;">在这里，</span>
+<span lang="EN-US">public native boolean is64BitSystem();</span>
+<span style="font-family: 宋体;">就是我们在</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">层的接口，其他地方可以调用这个接口。下在的语句，是用来告诉</span>
+<span lang="EN-US">JVM</span>
+<span style="font-family: 宋体;">到哪个库里面去找接口的实现，另外我们还要告诉</span>
+<span lang="EN-US">JVM</span>
+<span style="font-family: 宋体;">，这个库是放在什么地方（路径），请参见</span>
+<span lang="EN-US">4</span>
+<span style="font-family: 宋体;">、集成。</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><span lang="EN-US"><span>2．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;">&nbsp;
+</span>
+</span>
+</span>
+<!--    [endif]--><strong><span style="font-family: 宋体;">实现：</span>
+</strong>
+<span style="font-family: 宋体;">这是</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">中最关键的，能否完成就在此了。对于</span>
+<span lang="EN-US">Windows</span>
+<span style="font-family: 宋体;">操作系统的类型（</span>
+<span lang="EN-US">32-64</span>
+<span style="font-family: 宋体;">），即使是用</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">也不是很容易的，因为很多常规方法都没有用。通过查找资料我找到了如下方法，通过验证，发现很有用</span>
+<span lang="EN-US">.</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-family: 宋体;">在实现的时候要注意，我们不能对</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">接口直接进行实现，因为毕竟是二种不同的语言。</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">语言只能实现它自己的接口</span>
+<span lang="EN-US">-----</span>
+<span style="font-family: 宋体;">头文件。为此我们必须要把</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">的接口转化为</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">语言的头文件。如下便可实现：</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span lang="EN-US">javac
+SystemType.java</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span lang="EN-US">javah SystemType</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-family: 宋体;">如果没有任何错误就会生成一个头文件</span>
+<span lang="EN-US">SystemType.h</span>
+<span style="font-family: 宋体;">，这就是我们要实现的。注意，如果你的</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">类是在某个包下面，那么在编译是要注意，一定要在根目录下，用完整的包名来编译，否则会出错。如：</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">SystemType.java</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">package util.system;</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">Public class SystemType { &hellip;. }</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">#pwd</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">/work/src/util/system</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">#cd /work/src</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">#javac util/system/SystemType.java</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">#javah util.system.SystemType</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-family: 宋体;">生成的头文件会是这相样子：</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span lang="EN-US">SystemType.h</span>
+</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <textarea cols="50" rows="15" name="code" class="cpp">/* DO NOT EDIT THIS FILE - it is machine generated */
+#include &lt;jni.h&gt;
+/* Header for class system_type_SystemType */
+ 
+#ifndef _Included_system_type_SystemType
+#define _Included_system_type_SystemType
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+/*
+* Class:     system_type_SystemType
+* Method:    is64BitWindows
+* Signature: ()Z
+*/
+JNIEXPORT jboolean JNICALL Java_system_1type_SystemType_is64BitWindows
+           (JNIEnv *, jobject);
+ 
+#ifdef __cplusplus
+}
+#endif
+#endif&nbsp;</textarea></p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span lang="EN-US">SystemType.c</span>
+</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <textarea cols="50" rows="15" name="code" class="cpp">#include &quot;stdafx.h&quot;
+#include &quot;comutil.h&quot;
+#include &quot;system_type_SystemType.h&quot;
+#include &lt;cstdio&gt;
+#include &lt;Shlobj.h&gt;
+#include &lt;Shfolder.h&gt;
+#include &lt;cerrno&gt;
+extern &quot;C&quot; {
+#ifdef _MANAGED
+#pragma managed(push, off)
+#endif
+ 
+typedef BOOL (WINAPI *IW64PFP)(HANDLE, BOOL *);
+ 
+BOOL APIENTRY DllMain( HMODULE hModule,
+                       DWORD  ul_reason_for_call,
+                       LPVOID lpReserved
+                                         )
+{
+    return TRUE;
+}
+ 
+JNIEXPORT jboolean JNICALL Java_system_1type_SystemType_is64BitWindows
+(JNIEnv *, jobject) {
+ 
+int res = false;
+/*
+  * On Windows, we need to open the log in current user's Application Data in which
+  * have the full accesses to write.
+  */
+ 
+IW64PFP IW64P = (IW64PFP)GetProcAddress(
+           GetModuleHandle(L&quot;kernel32&quot;), &quot;IsWow64Process&quot;);
+ 
+if(IW64P != NULL){
+           IW64P(GetCurrentProcess(), &amp;res);
+}
+return res;
+}
+ 
+#ifdef _MANAGED
+#pragma managed(pop)
+#endif
+}</textarea></p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><strong><span lang="EN-US"><span>3．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;"> </span>
+</span>
+</span>
+</strong>
+<!--    [endif]--><strong><span style="font-family: 宋体;">编译共享库：</span>
+
+</strong>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-family: 宋体;">把</span>
+<span lang="EN-US">Visual Studio</span>
+<span style="font-family: 宋体;">的项目属性改为</span>
+<span lang="EN-US">dll,</span>
+<span style="font-family: 宋体;">然后编译，还要在</span>
+<span lang="EN-US">extra
+include files</span>
+<span style="font-family: 宋体;">选项中把</span>
+<span lang="EN-US">JDK</span>
+<span style="font-family: 宋体;">提供的</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">头文件加上</span>
+<span lang="EN-US">(<em>jdk</em>
+/include, <em>jdk</em>
+/include/win32)</span>
+<span style="font-family: 宋体;">，就得到了我们想要的东西了，剩下的任务就是把这些东西集成起来，让他们工作。</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-family: 宋体;">注意：如果是在</span>
+<span lang="EN-US">Linux</span>
+<span style="font-family: 宋体;">平台下面，则要加上一些选项：</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">gcc &ndash;fPIC &ndash;I<em>jdk</em>
+/include &ndash;I<em>jdk</em>
+/include/linux
+&ndash;shared &ndash;l libSystemType.so SystemType.c</span>
+</p>
+<p class="MsoNormal" style="margin-left: 39pt; text-indent: -18pt;"><!--    [if !supportLists]--><span lang="EN-US"><span>4．<span style="font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; font-size: 7pt; line-height: normal; font-size-adjust: none; font-stretch: normal; -x-system-font: none;">&nbsp;
+</span>
+</span>
+</span>
+<!--    [endif]--><strong><span style="font-family: 宋体;">集成：</span>
+</strong>
+<span style="font-family: 宋体;">最后一道工序了，前面提到了，代码中的</span>
+<span lang="EN-US">System.loadLibrary</span>
+<span style="font-family: 宋体;">是告诉</span>
+<span lang="EN-US">JVM</span>
+<span style="font-family: 宋体;">到哪个库中去找接口的实现，而在运行的时候要给告诉</span>
+<span lang="EN-US">JVM</span>
+<span style="font-family: 宋体;">，这个库文件放在哪。因此我们要给</span>
+<span lang="EN-US">JVM</span>
+<span style="font-family: 宋体;">加上一个参数如</span>
+</p>
+<p class="MsoNormal" style="margin-left: 21pt; text-indent: 18pt;"><span style="font-size: 9pt; font-family: Arial;" lang="EN-US">java -Djava.library.path=D:/workspace/MyProject/libs</span>
+</p>
+<p class="MsoNormal" style="margin-left: 21pt; text-indent: 18pt;"><span style="font-family: 宋体;">然后把库放到</span>
+<span lang="EN-US">D:/workspace/MyProject/libs</span>
+<span style="font-family: 宋体;">就可以了。</span>
+</p>
+<p class="MsoNormal" style="text-indent: 15.75pt;"><span style="font-family: 宋体;">这样，一个简单的</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">就完成了，当然，还可以用</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">实现更复杂的功能。比如可以在</span>
+<span lang="EN-US">JNI</span>
+<span style="font-family: 宋体;">的</span>
+<span lang="EN-US">C</span>
+<span style="font-family: 宋体;">实现中使用一些</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">特性，如抛出异常，还可以使用</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">的</span>
+<span lang="EN-US">API</span>
+<span style="font-family: 宋体;">等等，更详细的请参见《</span>
+<span lang="EN-US">Java</span>
+<span style="font-family: 宋体;">核心编程，卷二，第十一章：本地方法》</span>
+<span lang="EN-US">.</span>
+</p>
+<p class="MsoNormal" style="text-indent: 13.5pt;"><span style="font-size: 9pt; font-family: 宋体;">参考资料：</span>
+<span style="font-size: 9pt;" lang="EN-US">Car S. Horstman, Gary
+Cornell </span>
+<span style="font-size: 9pt; font-family: 宋体;">《</span>
+<span style="font-size: 9pt;" lang="EN-US">Java</span>
+<span style="font-size: 9pt; font-family: 宋体;">核心技术，卷二：高级特性》第七版，十一章，</span>
+<span style="font-size: 9pt;" lang="EN-US">2008</span>
+</p>
+<p>&nbsp;</p>

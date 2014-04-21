@@ -1,0 +1,8 @@
+
+    
+<p><span style="font-size:18px">在Mms中每个Thread都有其相应的联系人，但是threads表中并没有直接保存联系人的信息（号码或名字），而是保存一个叫做recipient_id的东西，也还有一个类叫做data/RecipientIdCache.java专门管理它。<br>
+</span></p>
+<p><span style="font-size:18px">在数据库中专门有一个表来保存它canonical_addresses。它的目的就是为了能够快速的找到某一对话的联系人的信息。对话的表threads里面并没有保存其联系人的直接信息，而是有一列叫做recipient_ids的整数来代表收信人。而在数据库还有另外一个表叫做canonical_addresses，其用来匹配threads中的recipient_ids和号码，其只有二列，一个是_id，另一个就是它的号码。因为对话中并没有直接保存联系人的信息，所以当ConversationList想要显示一个Thread时，就要先查到它的RecipientId，然后再根据这个RecipientId到canonical_addresses中查找到号码，再用这个号码去联系人数据库查询到联系人的其他信息。这一整个过程比较烦琐，需要要查询三次数据库才能得到联系人的信息，就无法快速的显示出来。所以就有了RecipientIdCache这个类，这个类内部有一个Hash表，键是Thread的RecipientId，&#20540;是联系人的号码。其他的类，比如Conversation在查询Thread的时候不会直接去查询canonical_addresses表来得到对应RecipientId的联系人的号码，而是直接通过RecipientIdCache来获取。RecipientIdCache先从自己的Cache中来查到号码，如果查找
+ 不到再去查询数据库，并加到Cache中。每次发送信息时都会进行一次更新Cache的动作。因为RecipientId是Thread中的一个属性，所以当Thread表发生变化时，比如删除一个Thread时也都会进行更新RecipientIdCache。</span></p>
+<br>
+

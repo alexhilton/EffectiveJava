@@ -1,0 +1,136 @@
+
+    
+<span style="font-size:18px">Android当中的Mms对MMS(Multimedia Messaging Service)的操作关乎MMS协议部分都是通过Frameworks中提供的API来完成的：com.google.android.mms这个包在SDK中是不开放的，只能供内部程序使用，它封装了所有MMS所需要的API。<br>
+这个包就是Android中对MMS协议的实现，包括一些数据结构：GenericPdu，MultimediaMessagePdu，SendReq，SendConf，NotificationInd，RetrieveConf，PduHeaders，PduBody，PduPart等。也包括操作这些数据的类：PduPersister，PduParser和PduComposer。PduPersister主要供给Android内部的应用程序使用；而PduParser和PduComposer会涉及到PDU相关的协议，会与MMSC或其他平台有相互影响（比如所打包的字节流是否符合标准，能否被其他平台成功解析和识别等）<br>
+这个包的功能就是在发送时把多媒体数据打包成标准MMSC能识别的PDU&#26684;式数据，在接收时把PDU数据包解析出来以供更加方便的应用程序使用，同时也提供一些存储上的接口，比如把PDU保存到数据库，从数据库加载出PDU。<br>
+&nbsp;<br>
+</span>
+<table border="1" cellpadding="1" cellspacing="1" align="center" style="width:678px; height:93px">
+<tbody>
+<tr>
+<th scope="col"><span style="font-size:18px">Class</span></th>
+<th scope="col"><span style="font-size:18px">Purpose</span></th>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td><span style="font-size:18px">PduPersister</span></td>
+<td><span style="font-size:18px">用于管理PDU存储</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">PduParser</span></td>
+<td><span style="font-size:18px">用于解析PDU</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">PduComposer</span></td>
+<td><span style="font-size:18px">用于生成PDU</span></td>
+</tr>
+</tbody>
+</table>
+<p><span style="font-size:18px">PduPersister： 用于管理PDU存储，关键的方法：</span></p>
+<p><span style="font-size:18px"></span>
+<table border="1" cellpadding="1" cellspacing="1" align="center" style="width:693px; height:318px">
+<tbody>
+<tr>
+<th scope="col"><span style="font-size:18px">Return<br>
+</span></th>
+<th scope="col"><span style="font-size:18px">Method<br>
+</span></th>
+<th scope="col"><span style="font-size:18px">Description<br>
+</span></th>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td><span style="font-size:18px">PduPersister<br>
+</span></td>
+<td><span style="font-size:18px">getPduPersister(Context)<br>
+</span></td>
+<td><span style="font-size:18px">Get the object<br>
+</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">Uri<br>
+</span></td>
+<td><span style="font-size:18px">persist(GenericPdu, Uri)<br>
+</span></td>
+<td><span style="font-size:18px">把一个GenericPdu保存到Uri所指定的数据库中，返回指向新生成数据的Uri<br>
+</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">GenericPdu<br>
+</span></td>
+<td><span style="font-size:18px">load(Uri)<br>
+</span></td>
+<td><span style="font-size:18px">从数据库把Uri所指的数据加载出来成一个GenericPdu对象<br>
+</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">Uri<br>
+</span></td>
+<td><span style="font-size:18px">move(Uri, Uri)<br>
+</span></td>
+<td><span style="font-size:18px">把Pdu从一个地方移到另一个地方，比如从草稿箱移动到发件箱，当MMS已发送时。<br>
+</span></td>
+</tr>
+</tbody>
+</table>
+<span style="font-size:18px">&nbsp;&nbsp; <br>
+</span></p>
+<p><span style="font-size:18px">为什么会要把PDU的存储也封装成PduPersister呢？因为PDU的存储方式 是放在标准的SQLiteDatabase中，通过TelephonyProvider，而SQLiteDatabase中存储不能以直接的PDU的字节流来存储，必须要把PDU拆解成为可读的字段，因此在存储PDU和从存储加载PDU的过程 中涉及到PDU数据上面的处理，因此封装出来，更方便使用。</span></p>
+<p><span style="font-size:18px"><br>
+</span></p>
+<p><span style="font-size:18px"></span><span style="font-size:18px">PduParser：用于把PDU字节流解析成为Android可识别的GenericPdu</span></p>
+<p><span style="font-size:18px"></span>
+<table border="1" cellpadding="1" cellspacing="1" align="center" style="width:630px; height:153px">
+<tbody>
+<tr>
+<th scope="col"><span style="font-size:18px">Return</span></th>
+<th scope="col"><span style="font-size:18px">Method</span></th>
+<th scope="col"><span style="font-size:18px">Description</span></th>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td><span style="font-size:18px">PduParser</span></td>
+<td><span style="font-size:18px">PduParser(byte[])</span></td>
+<td><span style="font-size:18px">Construct an object</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">GenericPdu</span></td>
+<td><span style="font-size:18px">parse()</span></td>
+<td><span style="font-size:18px">Parse the PDU byte stream into Android PDU GenericPdu</span></td>
+</tr>
+</tbody>
+</table>
+<br>
+</p>
+<span style="font-size:18px">&nbsp;<br>
+</span>
+<p><span style="font-size:18px">PduComposer：把GenericPdu打包生成PDU字节流</span></p>
+<span style="font-size:18px"><span style="font-size:18px"></span></span>
+<table border="1" cellpadding="1" cellspacing="1" align="center" style="width:621px; height:138px">
+<tbody>
+<tr>
+<th scope="col"><span style="font-size:18px">Return</span></th>
+<th scope="col"><span style="font-size:18px">Method</span></th>
+<th scope="col"><span style="font-size:18px">Description</span></th>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td><span style="font-size:18px">PduComposer</span></td>
+<td><span style="font-size:18px">PduComposer(Context, GenericPdu)</span></td>
+<td><span style="font-size:18px">Construct an object</span></td>
+</tr>
+<tr>
+<td><span style="font-size:18px">byte[]</span></td>
+<td><span style="font-size:18px">make()</span></td>
+<td><span style="font-size:18px">Transfer the GenericPdu into a PDU byte stream</span></td>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<br>
+

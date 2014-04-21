@@ -1,0 +1,52 @@
+
+    <p><span style="font-size: large;"><strong>Java GC mythology</strong>
+<br />
+</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp; Java was born with the ambition that free developers from worrying memory issues. It is said that the GC(Garbage Collection) would destruct objects and free memories on the behalf of developers. That is good news to hear, because for years dangling pointers and memory leak have haunted almost every C/C++ developers. But is it really as good as it is claimed?</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp; Apparently not.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp; Java programs also have memory leak. What's worse, memory leak in Java is more sutle and much harder to detect.</span>
+</p>
+<p><span style="font-size: large;"><strong>Android is vulnerable to memory leak</strong>
+<br />
+</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp; Java is the official development language on Android platform. And due to its special framework, Android applications are much more vulnerable to leak memory. So Android developers should pay more attentions and code more carefully to avoid memory leak.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp; Context object, for instance, are one of most common objects, which is used everywhere. Context, however, should be used more carefully. You can get almost every piece of information about Android system through Context, which means, Context must hold many may references to many other long living objects in Android system. In addition, many callbacks or listeners of frameworks require a reference to Context object.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp; Thus, Context of your application will be referenced by many many other long living objects, frameworks, callbacks and listeners. If anyone of them won't release their references to your Context object, your application has a memory leak, when rotating or even when finishing your application.</span>
+</p>
+<p><span style="font-size: large;"><strong>How to avoid memory leak</strong>
+<br />
+</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp; To avoid memory leak caused by Context, try to:</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1. Use ApplicationContext instead of Context. ApplicationContext has a much shorter life circle. It will be cleaned once application process is exit. And it can perform most tasks like Context.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. Avoid unncessary references to Context object. If you can avoid use of Context, remove it from argument list of constructor and from field.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3. Pass required arguments directly instead passing a Context object. If you need a string resource or a ContentResolver, try to pass Context.getString(id) and Context.getContentResolver() instead of passing a Context.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4. Do remember unregister any listeners registered before(all these callbacks and listeners would hold a reference to Context). This is rather important. Any unregistered listeners will cause leaks of memory. Make sure they are unregistered including normal exit and exceptional exit. For instance, if you register some listeners in onCreate() of an Activity, make sure unregister them in onDestroy(); if you put registers in onResume(), do unregister them in onPause(); Apart of that, make sure unregister them in exceptional conditions.</span>
+</p>
+<p><strong><span style="font-size: large;">When memory leak more likely happen</span>
+</strong>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; If your application consumes memories increasingly without decreasing when constantly do some interactions, you probably have a memory leak. This is much easier to detect, of course.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; Another two more subtle situations are rotating and changing system language(locale). Generally, Android restarts activities with restoring their former states when rotating and changing system language. If your application holds any unnecessary references to Context or does not unregister callbacks or listeners of frameworks in onDestroy(), onStop() or onPause(), you have memory leak.</span>
+</p>
+<p><strong><span style="font-size: large;">How to detect memory leak</span>
+</strong>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; If your application have memory leak, it consumes heap memory until reaching heap size limits. Then ActivityManager will kill your application process with error OutOfMemory reported.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; You can watch heap memory usage status with DDMS when your application is running.</span>
+</p>
+<p><span style="font-size: large;">&nbsp;&nbsp;&nbsp;&nbsp; If you feel there is a possibility of memory leak, you can dump heap information and analyze it with MAT(Eclipse plugin Memory Analysis Tools), which tells you what might cause memory leak.<br />
+</span>
+</p>
